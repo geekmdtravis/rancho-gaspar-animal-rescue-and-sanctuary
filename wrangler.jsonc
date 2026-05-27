@@ -1,0 +1,15 @@
+{
+  // Static-assets-only Worker. This site is a *static* Astro build (no SSR
+  // adapter — see astro.config.mjs / README). Declaring `assets` with no
+  // `main` tells Cloudflare to serve the prebuilt files in ./dist verbatim
+  // and NOT to run the Astro Cloudflare SSR adapter. Without this, the
+  // dashboard's Astro-on-Workers preset builds in server mode, which rewrites
+  // <Image> to runtime "/_image?href=..." URLs (and skips generating the
+  // responsive /_astro/*.webp files) — those then 404 because there is no
+  // worker serving the image endpoint.
+  "name": "rancho-gaspar-animal-rescue-and-sanctuary",
+  "compatibility_date": "2026-05-26",
+  "assets": {
+    "directory": "./dist"
+  }
+}
