@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "npm run build && wrangler dev",
     "astro": "astro",
     "check": "astro check",
     "lint": "eslint .",
@@ -19,7 +19,9 @@
     "i18n:bless": "node scripts/i18n-bless.mjs",
     "test:unit": "node --test \"tests/unit/**/*.test.mjs\"",
     "test:e2e": "playwright test",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate-types": "wrangler types",
+    "deploy": "npm run build && wrangler deploy"
   },
   "lint-staged": {
     "*.{astro,ts,tsx,js,mjs,cjs}": [
@@ -29,6 +31,7 @@
     "*.{json,css,md,yml,yaml}": "prettier --write --ignore-unknown"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.5.5",
     "astro": "^6.3.8"
   },
   "devDependencies": {
@@ -44,6 +47,10 @@
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.0",
+    "wrangler": "^4.95.0",
     "yaml": "^2.9.0"
+  },
+  "overrides": {
+    "vite": "^7"
   }
 }
