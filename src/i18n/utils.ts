@@ -1,6 +1,6 @@
 // i18n/utils.ts — locale helpers shared across pages and components.
 import { ui, defaultLang, type Lang } from './ui';
-import { formatAgeWith } from './age';
+import { formatAgeWith, lifeSpanWith } from './age';
 
 export const languages: Record<Lang, string> = {
   en: 'English',
@@ -48,6 +48,18 @@ export function formatAge(
   now: Date = new Date(),
 ): string | undefined {
   return formatAgeWith(dob, estimated, (ui[lang] ?? ui[defaultLang]).age, now);
+}
+
+/**
+ * Birth–death year span for an animal that has passed away, e.g. "2015–2024".
+ * Returns `undefined` when there's no death date so callers fall back to age.
+ */
+export function formatLifespan(
+  dob: Date | undefined | null,
+  estimated: boolean,
+  dod: Date | undefined | null,
+): string | undefined {
+  return lifeSpanWith(dob, estimated, dod);
 }
 
 /** Strip the locale prefix from a pathname (for building language switchers). */

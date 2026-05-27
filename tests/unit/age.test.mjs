@@ -3,7 +3,7 @@
 // deterministic forever.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ageParts, formatAgeWith } from '../../src/i18n/age.ts';
+import { ageParts, formatAgeWith, lifeSpanWith } from '../../src/i18n/age.ts';
 
 const now = new Date('2026-05-26T12:00:00Z');
 
@@ -55,4 +55,19 @@ test('formatAge: singular vs plural', () => {
 test('formatAge: undefined dob yields undefined so callers can omit it', () => {
   assert.equal(formatAge(undefined, true, 'en', now), undefined);
   assert.equal(formatAge(new Date('bad'), true, 'en', now), undefined);
+});
+
+test('lifeSpanWith: birth–death years, with estimate prefix', () => {
+  assert.equal(lifeSpanWith(new Date('2015-06-01'), false, new Date('2024-09-10')), '2015–2024');
+  assert.equal(lifeSpanWith(new Date('2015-06-01'), true, new Date('2024-09-10')), '~2015–2024');
+});
+
+test('lifeSpanWith: falls back to death year alone when birth is unknown', () => {
+  assert.equal(lifeSpanWith(undefined, true, new Date('2024-09-10')), '2024');
+  assert.equal(lifeSpanWith(new Date('bad'), false, new Date('2024-09-10')), '2024');
+});
+
+test('lifeSpanWith: undefined/invalid death date yields undefined (animal is living)', () => {
+  assert.equal(lifeSpanWith(new Date('2015-06-01'), true, undefined), undefined);
+  assert.equal(lifeSpanWith(new Date('2015-06-01'), true, new Date('bad')), undefined);
 });

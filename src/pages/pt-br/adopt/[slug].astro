@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import AnimalProfile from '../../../components/AnimalProfile.astro';
-import { listAnimals, animalSlug } from '../../../lib/animals';
+import { listForRoute, animalSlug } from '../../../lib/animals';
 
 export async function getStaticPaths() {
-  const animals = await listAnimals('pt-br', 'adoptable');
+  const animals = await listForRoute('pt-br', 'adopt');
   return animals.map((entry) => ({ params: { slug: animalSlug(entry) }, props: { entry } }));
 }
 

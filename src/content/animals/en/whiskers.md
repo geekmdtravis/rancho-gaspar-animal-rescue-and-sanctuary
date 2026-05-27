@@ -6,6 +6,7 @@ dob: 2025-11-20
 dobEstimated: true
 breed: Domestic shorthair
 status: adoptable
+adopted: true
 summary: Curious, cuddly, and loves to explore.
 tags:
   - Indoor

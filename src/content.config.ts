@@ -6,6 +6,12 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
+// Sveltia writes a *cleared* optional field as an empty string (dates/text) or
+// `null` (numbers), not as an absent key. Coerce those back to `undefined` so
+// clearing a field in the CMS — e.g. leaving "date of death" blank, which is
+// the norm — doesn't fail the schema with "expected date, received object".
+const blankToUndefined = (v: unknown) => (v === '' || v === null ? undefined : v);
+
 const animals = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/animals' }),
   schema: ({ image }) =>
@@ -15,13 +21,21 @@ const animals = defineCollection({
       sex: z.enum(['F', 'M', 'unknown']).default('unknown'),
       // Age is derived from `dob`, never stored, so it never goes stale. Most
       // rescue birthdays are estimates — `dobEstimated` drives the "~" prefix.
-      dob: z.coerce.date().optional(),
+      dob: z.preprocess(blankToUndefined, z.coerce.date().optional()),
       dobEstimated: z.boolean().default(true),
+      // Date of death. Set only once an animal has passed away — it flips any
+      // animal (adoptable or resident) into an "in memoriam" entry shown on the
+      // residents page. Left unset for living animals.
+      dod: z.preprocess(blankToUndefined, z.coerce.date().optional()),
       breed: z.string().optional(),
       weight: z.string().optional(),
       // The differentiator: an adoptable animal is looking for a home; a
       // resident lives at the sanctuary permanently and is not for adoption.
       status: z.enum(['adoptable', 'resident']),
+      // An adoptable animal that has found its forever home. Still shown on the
+      // adopt page (celebrated, with an "Adopted" badge) but hidden behind a
+      // "show adopted" toggle by default. Meaningless for residents.
+      adopted: z.boolean().default(false),
       // Short personality blurb shown on cards.
       summary: z.string().optional(),
       tags: z.array(z.string()).default([]),
@@ -35,7 +49,7 @@ const animals = defineCollection({
       gallery: z.array(image()).default([]),
       // Adoption fee in USD (the canonical amount). Shown USD-first with an
       // approximate BRL value fetched in-browser — see src/lib/fx-client.ts.
-      adoptionFee: z.number().nonnegative().optional(),
+      adoptionFee: z.preprocess(blankToUndefined, z.number().nonnegative().optional()),
       quickFacts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
     }),
 });

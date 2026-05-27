@@ -16,8 +16,15 @@ import AnimalCard from './AnimalCard.astro';
 import PhotoSlot from './PhotoSlot.astro';
 import Heart from './icons/Heart.astro';
 import Icon from './icons/Icon.astro';
-import { t, localizePath, formatAge, type Lang } from '../i18n/utils';
-import { similarAnimals, animalPath, type Animal } from '../lib/animals';
+import { t, localizePath, formatAge, formatLifespan, type Lang } from '../i18n/utils';
+import {
+  similarAnimals,
+  animalPath,
+  animalRoute,
+  isDeceased,
+  isAdopted,
+  type Animal,
+} from '../lib/animals';
 import FxAmount from './FxAmount.astro';
 
 interface Props {
@@ -27,19 +34,41 @@ interface Props {
 const { lang, entry } = Astro.props;
 const dict = t(lang);
 const d = entry.data;
-const isAdopt = d.status === 'adoptable';
+// Four lifecycle states drive the whole page. Deceased takes precedence, then
+// adopted; otherwise the stored status decides.
+const deceased = isDeceased(entry);
+const adopted = isAdopted(entry);
+const isResident = !deceased && d.status === 'resident';
+const isAvailable = !deceased && !adopted && d.status === 'adoptable';
+// The animal lives under /adopt or /residents (memorials route to residents).
+const route = animalRoute(entry);
+const isAdopt = route === 'adopt';
+// The adoption machinery (apply CTA, fee, foster note, process steps) is only
+// meaningful for an animal actually up for adoption right now. Sponsoring
+// applies to any living animal in our care.
+const showSponsor = isAvailable || isResident;
 
 const { Content } = await render(entry);
 const similar = await similarAnimals(entry, lang);
 
-const statusLabel = isAdopt ? dict.status.adoptable : dict.status.resident;
-const age = formatAge(d.dob, d.dobEstimated, lang);
-const meta = [d.sex === 'unknown' ? null : d.sex, age, d.breed, d.weight].filter(Boolean);
+const statusLabel = deceased
+  ? dict.status.inMemoriam
+  : adopted
+    ? dict.status.adopted
+    : isResident
+      ? dict.status.resident
+      : dict.status.adoptable;
+const statusVariant = deceased || isResident ? 'lilac' : adopted ? 'success' : 'primary';
+// Memorials show a birth–death span in place of a current age.
+const lifespan = formatLifespan(d.dob, d.dobEstimated, d.dod);
+const ageOrSpan = deceased ? lifespan : formatAge(d.dob, d.dobEstimated, lang);
+const meta = [d.sex === 'unknown' ? null : d.sex, ageOrSpan, d.breed, d.weight].filter(Boolean);
 // Adoption fee is authored in USD; shown USD-first with an approximate BRL
 // value fetched in-browser (see FxAmount). Kept out of the plain-text quick
 // facts so its BRL slot can be a live component rather than a baked string.
+// Only shown while the animal is actually available.
 const facts = d.quickFacts;
-const feeUsd = isAdopt && d.adoptionFee ? d.adoptionFee : null;
+const feeUsd = isAvailable && d.adoptionFee ? d.adoptionFee : null;
 
 const crumbs = [
   { label: dict.nav.home, href: localizePath('/', lang) },
@@ -56,6 +85,7 @@ const shareLabel = `${dict.profile.share} ${d.name}`;
 const copiedLabel = lang === 'pt-br' ? 'Link copiado' : 'Link copied';
 const applyHref = `mailto:ranchogasparsanctuary@gmail.com?subject=${encodeURIComponent(applyLabel)}`;
 const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
+const backLabel = isAdopt ? dict.profile.backAdopt : dict.profile.backResidents;
 ---
 
 <section class="rg-container rg-section--tight">
@@ -101,7 +131,7 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     <!-- Detail panel -->
     <div class="ap-panel">
       <div class="ap-badges">
-        <Badge variant={isAdopt ? 'primary' : 'lilac'}>{statusLabel}</Badge>
+        <Badge variant={statusVariant}>{statusLabel}</Badge>
         {d.tags.map((tag) => <Badge variant="sage">{tag}</Badge>)}
       </div>
 
@@ -112,10 +142,35 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
       {meta.length > 0 && <p class="ap-meta">{meta.join(' · ')}</p>}
 
       {
-        !isAdopt && (
+        isResident && (
           <div class="ap-resident-note">
             <Heart size={16} color="var(--rg-primary-deep)" filled />
             <span>{dict.status.residentNote}</span>
+          </div>
+        )
+      }
+      {
+        adopted && (
+          <div class="ap-state-note ap-state-note--adopted">
+            <Heart size={16} color="var(--rg-success)" filled />
+            <div>
+              <strong>{dict.profile.adoptedTitle}</strong>
+              <p>{dict.profile.adoptedBody}</p>
+            </div>
+          </div>
+        )
+      }
+      {
+        deceased && (
+          <div class="ap-state-note ap-state-note--memorial">
+            <Heart size={16} color="var(--rg-primary-deep)" filled />
+            <div>
+              <strong>
+                {dict.profile.memorialTitle}
+                {lifespan && <span class="ap-memorial-years"> · {lifespan}</span>}
+              </strong>
+              <p>{dict.profile.memorialBody}</p>
+            </div>
           </div>
         )
       }
@@ -146,20 +201,33 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
 
       <div class="ap-cta">
         {
-          isAdopt ? (
+          isAvailable ? (
             <Button href={applyHref} variant="primary" size="lg" block>
               <Heart slot="icon" size={16} color="#fff" filled />
               {applyLabel}
             </Button>
-          ) : (
+          ) : isResident ? (
             <Button href="#sponsor" variant="primary" size="lg" block>
               <Heart slot="icon" size={16} color="#fff" filled />
               {dict.profile.sponsorTitle}
             </Button>
+          ) : (
+            <Button href={backHref} variant="primary" size="lg" block>
+              <Icon slot="iconRight" name="arrow-right" />
+              {backLabel}
+            </Button>
           )
         }
         {
-          isAdopt ? (
+          isResident ? (
+            <a
+              class="ap-icon-btn"
+              href={`mailto:ranchogasparsanctuary@gmail.com`}
+              aria-label={dict.profile.save}
+            >
+              <Heart size={18} color="var(--rg-primary)" />
+            </a>
+          ) : (
             <button
               class="ap-icon-btn"
               type="button"
@@ -180,20 +248,12 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
                 {copiedLabel}
               </span>
             </button>
-          ) : (
-            <a
-              class="ap-icon-btn"
-              href={`mailto:ranchogasparsanctuary@gmail.com`}
-              aria-label={dict.profile.save}
-            >
-              <Heart size={18} color="var(--rg-primary)" />
-            </a>
           )
         }
       </div>
 
       {
-        isAdopt && (
+        isAvailable && (
           <div class="ap-foster">
             <Heart size={16} color="var(--rg-primary-deep)" filled />
             <div>
@@ -207,7 +267,7 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
   </div>
 
   <!-- Story + process / sponsor -->
-  <div class="ap-lower">
+  <div class:list={['ap-lower', !showSponsor && 'ap-lower--full']}>
     <div class="ap-story">
       <SectionLabel>{dict.profile.aboutEyebrow}</SectionLabel>
       <h2 class="ap-h2 rg-display">{aboutHeading}</h2>
@@ -216,7 +276,7 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
       </div>
 
       {
-        isAdopt && (
+        isAvailable && (
           <div class="ap-process">
             <SectionLabel>{dict.profile.processEyebrow}</SectionLabel>
             <h2 class="ap-h2 rg-display">{dict.profile.processHeading}</h2>
@@ -226,12 +286,16 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
       }
     </div>
 
-    <aside class="ap-aside" id="sponsor">
-      <SectionLabel>{dict.profile.sponsorEyebrow}</SectionLabel>
-      <h3 class="ap-aside-title rg-display">{dict.profile.sponsorTitle}</h3>
-      <p class="ap-aside-body">{dict.profile.sponsorBody}</p>
-      <DonationWidget lang={lang} compact amounts={[25, 50, 100, 200]} defaultAmount={50} />
-    </aside>
+    {
+      showSponsor && (
+        <aside class="ap-aside" id="sponsor">
+          <SectionLabel>{dict.profile.sponsorEyebrow}</SectionLabel>
+          <h3 class="ap-aside-title rg-display">{dict.profile.sponsorTitle}</h3>
+          <p class="ap-aside-body">{dict.profile.sponsorBody}</p>
+          <DonationWidget lang={lang} compact amounts={[25, 50, 100, 200]} defaultAmount={50} />
+        </aside>
+      )
+    }
   </div>
 
   <!-- Similar -->
@@ -267,7 +331,7 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
   }
 
   <p class="ap-back">
-    <a href={backHref}>← {isAdopt ? dict.profile.backAdopt : dict.profile.backResidents}</a>
+    <a href={backHref}>← {backLabel}</a>
   </p>
 </section>
 
@@ -376,6 +440,38 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     font-size: 14px;
     font-weight: 700;
     color: var(--rg-primary-deep);
+  }
+  /* Adopted / in-memoriam callouts share the resident-note's shape but each get
+     their own accent. */
+  .ap-state-note {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--rg-primary-soft);
+    background: var(--rg-primary-faint);
+  }
+  .ap-state-note strong {
+    font-size: 14px;
+    color: var(--rg-primary-deep);
+  }
+  .ap-state-note p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--rg-ink-soft);
+    line-height: 1.5;
+  }
+  .ap-state-note--adopted {
+    border-color: #bfe3cd;
+    background: #eef8f1;
+  }
+  .ap-state-note--adopted strong {
+    color: var(--rg-success);
+  }
+  .ap-memorial-years {
+    font-weight: 700;
+    color: var(--rg-ink-soft);
   }
   .ap-facts {
     margin-top: 20px;
@@ -497,6 +593,10 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     grid-template-columns: 2fr 1fr;
     gap: 32px;
     align-items: start;
+  }
+  /* No sponsor aside (adopted / in memoriam) — let the story use full width. */
+  .ap-lower--full {
+    grid-template-columns: 1fr;
   }
   .ap-h2 {
     font-size: 24px;

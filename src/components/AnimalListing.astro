@@ -7,21 +7,27 @@ import SectionLabel from './SectionLabel.astro';
 import AnimalCard from './AnimalCard.astro';
 import Button from './Button.astro';
 import Icon from './icons/Icon.astro';
+import Heart from './icons/Heart.astro';
 import { t, localizePath, type Lang } from '../i18n/utils';
-import { listAnimals, animalPath, type AnimalStatus } from '../lib/animals';
+import { listForRoute, animalPath, isAdopted, type AnimalRoute } from '../lib/animals';
 import FxAmount from './FxAmount.astro';
 
 interface Props {
   lang: Lang;
-  status: AnimalStatus;
+  route: AnimalRoute;
 }
-const { lang, status } = Astro.props;
+const { lang, route } = Astro.props;
 const dict = t(lang);
-const isAdopt = status === 'adoptable';
+const isAdopt = route === 'adopt';
 const page = isAdopt ? dict.adoptPage : dict.residentsPage;
 const statusLabel = isAdopt ? dict.status.adoptable : dict.status.resident;
 
-const animals = await listAnimals(lang, status);
+const animals = await listForRoute(lang, route);
+// The adopt grid includes animals that have already been adopted; they're
+// rendered but hidden until the visitor toggles "show adopted". The count and
+// "fees from" figure reflect only the animals still looking for homes.
+const available = isAdopt ? animals.filter((a) => !isAdopted(a)) : animals;
+const hasAdopted = isAdopt && animals.some((a) => isAdopted(a));
 
 // "Adoption fees from {fee}" is derived from the lowest actual adoptionFee
 // (USD, rendered via FxAmount) rather than hardcoded, so it can never drift
@@ -30,12 +36,15 @@ const animals = await listAnimals(lang, status);
 // text, and the trailing punctuation rides into FxAmount's slot so it stays
 // tight against the figure (no stray space before the period).
 const fees = isAdopt
-  ? animals.map((a) => a.data.adoptionFee).filter((f): f is number => typeof f === 'number')
+  ? available.map((a) => a.data.adoptionFee).filter((f): f is number => typeof f === 'number')
   : [];
 const feeMin = fees.length > 0 ? Math.min(...fees) : null;
 const [feeBefore, feeAfter] = dict.adoptPage.feesFrom.split('{fee}');
 const feeNote = dict.fx.unavailable;
 const leadText = feeMin != null ? `${page.body} ${feeBefore}` : page.body;
+// The headline count counts only animals visible by default (adopted ones are
+// off until toggled), so it matches "X pets currently looking for homes".
+const count = isAdopt ? available.length : animals.length;
 
 const crumbs = [
   { label: dict.nav.home, href: localizePath('/', lang) },
@@ -91,15 +100,21 @@ const speciesChips = [
               {c.label}
             </button>
           ))}
+          {hasAdopted && (
+            <button type="button" class="chip chip--toggle" data-show-adopted aria-pressed="false">
+              <Heart size={13} color="currentColor" />
+              {dict.adoptPage.showAdopted}
+            </button>
+          )}
         </div>
       </div>
     )
   }
 
   {
-    animals.length > 0 && (
+    count > 0 && (
       <p class="al-count">
-        <strong>{animals.length}</strong> {page.countSuffix}
+        <strong>{count}</strong> {page.countSuffix}
       </p>
     )
   }
@@ -115,6 +130,8 @@ const speciesChips = [
               class="al-item"
               data-species={e.data.species}
               data-name={e.data.name.toLowerCase()}
+              data-adopted={isAdopted(e) ? 'true' : undefined}
+              hidden={isAdopted(e) || undefined}
             >
               <AnimalCard
                 name={e.data.name}
@@ -122,11 +139,16 @@ const speciesChips = [
                 sex={e.data.sex === 'unknown' ? undefined : e.data.sex}
                 dob={e.data.dob}
                 dobEstimated={e.data.dobEstimated}
+                dod={e.data.dod}
+                adopted={e.data.adopted}
                 lang={lang}
                 description={e.data.summary}
                 status={e.data.status}
                 statusLabel={statusLabel}
+                adoptedLabel={dict.status.adopted}
+                memorialLabel={dict.status.inMemoriam}
                 meetLabel={dict.adoptables.meet}
+                rememberLabel={dict.status.remember}
                 tags={e.data.tags}
                 href={localizePath(animalPath(e), lang)}
                 image={e.data.cover}
@@ -166,16 +188,20 @@ const speciesChips = [
     const items = Array.from(grid.querySelectorAll<HTMLElement>('.al-item'));
     const search = document.querySelector<HTMLInputElement>('#al-search');
     const chips = Array.from(document.querySelectorAll<HTMLElement>('[data-species-filter]'));
+    const adoptedToggle = document.querySelector<HTMLButtonElement>('[data-show-adopted]');
     const emptyMsg = document.querySelector<HTMLElement>('[data-empty-filtered]');
     let species = 'all';
     let term = '';
+    let showAdopted = false;
 
     const apply = () => {
       let visible = 0;
       for (const item of items) {
         const okSpecies = species === 'all' || item.dataset.species === species;
         const okTerm = !term || (item.dataset.name ?? '').includes(term);
-        const show = okSpecies && okTerm;
+        // Adopted animals stay hidden until the toggle is on.
+        const okAdopted = showAdopted || item.dataset.adopted !== 'true';
+        const show = okSpecies && okTerm && okAdopted;
         item.hidden = !show;
         if (show) visible++;
       }
@@ -191,6 +217,12 @@ const speciesChips = [
     });
     search?.addEventListener('input', () => {
       term = search.value.trim().toLowerCase();
+      apply();
+    });
+    adoptedToggle?.addEventListener('click', () => {
+      showAdopted = !showAdopted;
+      adoptedToggle.classList.toggle('is-active', showAdopted);
+      adoptedToggle.setAttribute('aria-pressed', String(showAdopted));
       apply();
     });
   }
@@ -269,6 +301,20 @@ const speciesChips = [
   .chip.is-active {
     background: var(--rg-primary);
     color: #fff;
+  }
+  /* The adopted toggle reads as a separate control: outlined when off, filled
+     primary when on (handled by .is-active above). */
+  .chip--toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 4px;
+    background: transparent;
+    color: var(--rg-primary-deep);
+    border: 1.5px solid var(--rg-border-strong);
+  }
+  .chip--toggle.is-active {
+    border-color: var(--rg-primary);
   }
   .al-count {
     font-size: 13px;

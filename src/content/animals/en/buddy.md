@@ -4,9 +4,11 @@ species: dog
 sex: M
 dob: 2024-04-10
 dobEstimated: true
+dod: ''
 breed: Labrador mix
 weight: 22kg
 status: adoptable
+adopted: true
 summary: Loyal, friendly, and great with other dogs.
 tags:
   - Trained

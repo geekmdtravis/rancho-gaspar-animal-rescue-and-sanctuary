@@ -38,6 +38,25 @@ export function ageParts(dob: Date, now: Date = new Date()): AgeParts {
 }
 
 /**
+ * Birth–death year span for a memorial card, e.g. "2015–2024" (en dash). The
+ * birth year carries the estimate "~" prefix when `dobEstimated` is on. With no
+ * usable birth date it falls back to just the death year ("2024"). Returns
+ * `undefined` when there's no death date, so living animals show their age via
+ * `formatAgeWith` instead. Locale-agnostic — years are universal.
+ */
+export function lifeSpanWith(
+  dob: Date | undefined | null,
+  dobEstimated: boolean,
+  dod: Date | undefined | null,
+): string | undefined {
+  if (!dod || Number.isNaN(dod.getTime())) return undefined;
+  const death = dod.getFullYear();
+  if (!dob || Number.isNaN(dob.getTime())) return String(death);
+  const prefix = dobEstimated ? '~' : '';
+  return `${prefix}${dob.getFullYear()}–${death}`;
+}
+
+/**
  * Locale-agnostic age string: the caller supplies the words (so this stays
  * import-free and trivially testable). Estimated birthdays get a "~" prefix.
  * Returns `undefined` for a missing/invalid dob so callers can omit the field.

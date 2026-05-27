@@ -18,7 +18,9 @@ test.describe('Adopt listing', () => {
 
   test('a real cover photo is cropped square, not rendered full-height', async ({ page }) => {
     await page.goto('/adopt');
-    const img = page.locator('a[href="/adopt/buddy"] img').first();
+    // Clover is visible by default and has a real (portrait) cover photo; the
+    // card must still crop it to a square rather than letting it run tall.
+    const img = page.locator('a[href="/adopt/clover"] img').first();
     await expect(img).toBeVisible();
     const box = await img.boundingBox();
     expect(box, 'cover image should have a layout box').not.toBeNull();
@@ -34,6 +36,25 @@ test.describe('Adopt listing', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
       'Encontre seu novo melhor amigo',
     );
+  });
+
+  test('adopted animals are hidden until the "show adopted" toggle is on', async ({ page }) => {
+    await page.goto('/adopt');
+    // Whiskers has been adopted, so the card is rendered but hidden by default.
+    const whiskers = page.locator('a[href="/adopt/whiskers"]').first();
+    await expect(whiskers).toBeHidden();
+
+    const toggle = page.getByRole('button', { name: 'Show adopted' });
+    await expect(toggle).toBeVisible();
+    await toggle.click();
+
+    await expect(whiskers).toBeVisible();
+    // Once revealed, the card wears an "Adopted" badge.
+    await expect(page.locator('.acard--adopted').first()).toContainText('Adopted');
+
+    // Toggling off hides it again.
+    await toggle.click();
+    await expect(whiskers).toBeHidden();
   });
 });
 
@@ -62,18 +83,37 @@ test.describe('Animal profiles', () => {
     await expect(share.locator('.ap-share-feedback')).toBeVisible();
   });
 
+  test('adopted profile celebrates the placement and drops the apply CTA', async ({ page }) => {
+    await page.goto('/adopt/whiskers');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Whiskers');
+    await expect(page.locator('.ap-state-note--adopted')).toContainText('loving home');
+    await expect(page.getByRole('link', { name: /Apply to adopt/i })).toHaveCount(0);
+  });
+
   test('resident profile is clearly not for adoption', async ({ page }) => {
-    await page.goto('/residents/gaspar');
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Gaspar');
+    await page.goto('/residents/mochi');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Mochi');
     await expect(page.locator('.ap-resident-note')).toContainText(/not for adoption/i);
+    await expect(page.getByRole('link', { name: /Apply to adopt/i })).toHaveCount(0);
+  });
+
+  test('a memorial profile shows the in-memoriam note and no apply CTA', async ({ page }) => {
+    await page.goto('/residents/grumpy');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Grumpy');
+    // Birth–death span (estimated birth year) stands in for a current age.
+    await expect(page.locator('.ap-state-note--memorial')).toContainText('~2003–2024');
     await expect(page.getByRole('link', { name: /Apply to adopt/i })).toHaveCount(0);
   });
 });
 
 test.describe('Residents listing', () => {
-  test('lists permanent residents', async ({ page }) => {
+  test('lists permanent residents and animals in memoriam', async ({ page }) => {
     await page.goto('/residents');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('here to stay');
-    await expect(page.locator('a[href="/residents/gaspar"]').first()).toBeVisible();
+    await expect(page.locator('a[href="/residents/mochi"]').first()).toBeVisible();
+    // Grumpy has passed away but still appears, wearing the memorial badge.
+    const grumpy = page.locator('a[href="/residents/grumpy"]').first();
+    await expect(grumpy).toBeVisible();
+    await expect(page.locator('.acard--memorial').first()).toContainText('In loving memory');
   });
 });

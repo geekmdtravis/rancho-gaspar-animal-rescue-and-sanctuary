@@ -143,6 +143,10 @@ const en = {
     adoptable: 'Adoptable',
     resident: 'Resident',
     residentNote: 'Permanent resident · not for adoption',
+    adopted: 'Adopted',
+    inMemoriam: 'In loving memory',
+    // CTA verb on a memorial card, rendered as "Remember {name}".
+    remember: 'Remember',
   },
   // Age is computed from each animal's date of birth at build time (see
   // i18n/age.ts), so these are just the unit words the formatter slots in.
@@ -163,6 +167,8 @@ const en = {
     searchPlaceholder: 'Search by name or breed…',
     filterLabel: 'Filter',
     species: { all: 'All', dog: 'Dogs', cat: 'Cats', bunny: 'Bunnies' },
+    // Toggle that reveals animals already adopted (hidden by default).
+    showAdopted: 'Show adopted',
     countSuffix: 'pets currently looking for homes',
     emptyFiltered: 'No pets match your search. Try clearing the filters.',
     empty: 'No adoptable animals listed right now — check back soon.',
@@ -262,6 +268,13 @@ const en = {
     similarHeading: 'More animals in our care',
     backAdopt: 'All adoptable pets',
     backResidents: 'All our residents',
+    // Shown on the profile of an animal that has been adopted.
+    adoptedTitle: 'Adopted into a loving home',
+    adoptedBody:
+      'This sweet one found their forever family. Meet the others still looking for a home.',
+    // Shown on the profile of an animal that has passed away.
+    memorialTitle: 'In loving memory',
+    memorialBody: 'Forever part of the Rancho Gaspar family. Thank you for the joy you gave us.',
   },
   comingSoon: {
     badge: 'Coming soon',
@@ -413,6 +426,9 @@ const ptBr: Dictionary = {
     adoptable: 'Para adoção',
     resident: 'Residente',
     residentNote: 'Residente permanente · não disponível para adoção',
+    adopted: 'Adotado',
+    inMemoriam: 'Em memória',
+    remember: 'Relembrar',
   },
   age: {
     year: 'ano',
@@ -429,6 +445,7 @@ const ptBr: Dictionary = {
     searchPlaceholder: 'Busque por nome ou raça…',
     filterLabel: 'Filtrar',
     species: { all: 'Todos', dog: 'Cães', cat: 'Gatos', bunny: 'Coelhos' },
+    showAdopted: 'Mostrar adotados',
     countSuffix: 'pets à procura de um lar',
     emptyFiltered: 'Nenhum pet corresponde à sua busca. Tente limpar os filtros.',
     empty: 'Nenhum animal para adoção no momento — volte em breve.',
@@ -527,6 +544,12 @@ const ptBr: Dictionary = {
     similarHeading: 'Mais animais sob nossos cuidados',
     backAdopt: 'Todos os pets para adoção',
     backResidents: 'Todos os nossos residentes',
+    adoptedTitle: 'Adotado para um lar amoroso',
+    adoptedBody:
+      'Este queridinho encontrou sua família para sempre. Conheça os outros que ainda procuram um lar.',
+    memorialTitle: 'Em memória',
+    memorialBody:
+      'Para sempre parte da família do Rancho Gaspar. Obrigado pela alegria que você nos deu.',
   },
   comingSoon: {
     badge: 'Em breve',

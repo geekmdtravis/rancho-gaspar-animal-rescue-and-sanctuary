@@ -4,6 +4,7 @@ species: cat
 sex: F
 dob: 2017-04-01
 dobEstimated: true
+dod: ''
 breed: Tricolor
 weight: ''
 status: resident
@@ -14,6 +15,7 @@ tags:
 featured: false
 order: 2
 cover: /src/assets/uploads/The+Scottish+Fold+_+Temperament+Shedding+and+Care+_+ASPCA+Pet+Insurance+_+Scottish+fold+cat+resting+on+a+multicolored+piece+of+furniture+-min.jpg
+adoptionFee: null
 quickFacts:
   - label: No rancho desde
     value: '2021'

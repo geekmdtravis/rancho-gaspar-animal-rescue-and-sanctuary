@@ -4,7 +4,7 @@ import Badge from './Badge.astro';
 import Icon from './icons/Icon.astro';
 import PhotoSlot from './PhotoSlot.astro';
 import DrawnAnimal from './DrawnAnimal.astro';
-import { listAnimals } from '../lib/animals';
+import { listAnimals, isDeceased } from '../lib/animals';
 import { t, type Lang } from '../i18n/utils';
 
 interface Props {
@@ -14,7 +14,11 @@ const { lang } = Astro.props;
 const dict = t(lang);
 const page = dict.aboutPage;
 
-const residents = await listAnimals(lang, 'resident');
+// "Current residents" means living permanent residents — exclude any in
+// memoriam so the headcount reflects who's actually at the ranch today.
+const residents = (await listAnimals(lang)).filter(
+  (a) => a.data.status === 'resident' && !isDeceased(a),
+);
 const counts = {
   cat: residents.filter((a) => a.data.species === 'cat').length,
   dog: residents.filter((a) => a.data.species === 'dog').length,

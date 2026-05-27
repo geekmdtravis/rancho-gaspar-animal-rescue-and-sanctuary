@@ -6,6 +6,7 @@ dob: 2025-11-20
 dobEstimated: true
 breed: Sem raça definida (pelo curto)
 status: adoptable
+adopted: true
 summary: Curioso, carinhoso e adora explorar.
 tags:
   - Doméstico

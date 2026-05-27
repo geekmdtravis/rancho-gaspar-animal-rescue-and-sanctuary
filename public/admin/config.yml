@@ -43,6 +43,8 @@ collections:
     view_filters:
       - { label: Adoptable, field: status, pattern: adoptable }
       - { label: Residents, field: status, pattern: resident }
+      - { label: Adopted, field: adopted, pattern: true }
+      - { label: In memoriam, field: dod, pattern: '.' }
       - { label: Featured, field: featured, pattern: true }
     fields:
       - { name: name, label: Name, widget: string, i18n: true }
@@ -66,7 +68,7 @@ collections:
           label: Date of birth,
           widget: datetime,
           required: false,
-          date_format: 'yyyy-MM-dd',
+          date_format: 'YYYY-MM-DD',
           time_format: false,
           picker_utc: true,
           i18n: duplicate,
@@ -80,6 +82,17 @@ collections:
           i18n: duplicate,
           hint: 'When on, the age shows with a "~" (e.g. ~3 years).',
         }
+      - {
+          name: dod,
+          label: Date of death,
+          widget: datetime,
+          required: false,
+          date_format: 'YYYY-MM-DD',
+          time_format: false,
+          picker_utc: true,
+          i18n: duplicate,
+          hint: 'Set only if this animal has passed away. It moves them to an "In loving memory" entry on the residents page. Leave blank for living animals.',
+        }
       - { name: breed, label: Breed, widget: string, required: false, i18n: true }
       - { name: weight, label: Weight, widget: string, required: false, i18n: duplicate }
       - {
@@ -89,6 +102,14 @@ collections:
           options: [adoptable, resident],
           i18n: duplicate,
           hint: 'Adoptable = looking for a home. Resident = lives at the sanctuary permanently (not for adoption).',
+        }
+      - {
+          name: adopted,
+          label: Adopted (found a home),
+          widget: boolean,
+          default: false,
+          i18n: duplicate,
+          hint: 'Turn on once an adoptable animal is placed. They stay on the adopt page with an "Adopted" badge but are hidden until visitors toggle "show adopted". Ignored for residents.',
         }
       - { name: summary, label: Short summary, widget: text, required: false, i18n: true }
       - { name: tags, label: Tags, widget: list, required: false, i18n: true }

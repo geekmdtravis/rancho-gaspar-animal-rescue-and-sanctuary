@@ -24,7 +24,14 @@ const dict = t(lang);
 
 const all = await getCollection('animals');
 const adoptables = all
-  .filter((e) => e.id.startsWith(`${lang}/`) && e.data.status === 'adoptable')
+  .filter(
+    (e) =>
+      e.id.startsWith(`${lang}/`) &&
+      e.data.status === 'adoptable' &&
+      // Don't feature animals already adopted or who have passed away.
+      !e.data.adopted &&
+      e.data.dod == null,
+  )
   .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.order - b.data.order)
   .slice(0, 4)
   .map((e) => ({ slug: e.id.split('/')[1], data: e.data }));

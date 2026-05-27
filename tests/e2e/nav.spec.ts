@@ -29,9 +29,11 @@ test('about page renders story and live resident counts', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
     'A family sanctuary shaped by one stray cat',
   );
-  await expect(page.getByText('2 total residents')).toBeVisible();
+  // Only living permanent residents are counted — Grumpy is in memoriam, so
+  // Mochi (a cat) is the sole current resident.
+  await expect(page.getByText('1 total residents')).toBeVisible();
   await expect(page.getByText('1 cat')).toBeVisible();
-  await expect(page.getByText('1 dog')).toBeVisible();
+  await expect(page.getByText('0 dogs')).toBeVisible();
   await expect(page.getByText('0 bunnies')).toBeVisible();
 });
 

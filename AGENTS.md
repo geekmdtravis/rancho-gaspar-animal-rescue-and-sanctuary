@@ -57,9 +57,20 @@ it.
   optimize them.
 - Do not store a hand-written animal age. Animal profiles store `dob` and
   `dobEstimated`; display age is computed at build time.
-- `status` controls routing and presentation:
-  - `adoptable` appears under `/adopt/<slug>`.
-  - `resident` appears under `/residents/<slug>` and must not show adoption CTAs.
+- `status` is the stored adoptable-vs-resident split, but the page an animal
+  lives under is _derived_ (`animalRoute()` in `src/lib/animals.ts`) from status
+  plus two lifecycle fields:
+  - `adoptable` (alive, not adopted) appears under `/adopt/<slug>`.
+  - `resident` (alive) appears under `/residents/<slug>` and must not show
+    adoption CTAs.
+  - `adopted: true` keeps the animal on the adopt page with an "Adopted" badge,
+    but it is hidden until the visitor toggles "show adopted". Adoption CTAs,
+    fee, foster note, and process steps are suppressed.
+  - `dod` (date of death) set => the animal becomes an "In loving memory" entry
+    on the residents page regardless of its `status`, with a birth–death span in
+    place of age and no adoption/sponsor CTAs. `dod` wins over `adopted`.
+  - Use `isDeceased()`, `isAdopted()`, `animalRoute()`, and `listForRoute()`
+    rather than re-deriving these rules.
 
 ## Internationalization Rules
 
@@ -76,8 +87,8 @@ Do not treat the lockfile as incidental.
   `public/admin/config.yml`; the check script reads that CMS config as the
   source of truth. These shared fields must be identical across locales.
 - Current shared animal facts include `species`, `sex`, `dob`, `dobEstimated`,
-  `weight`, `status`, `featured`, `order`, `cover`, `gallery`, and
-  `adoptionFee`.
+  `dod`, `weight`, `status`, `adopted`, `featured`, `order`, `cover`, `gallery`,
+  and `adoptionFee`.
 - Translatable fields include values such as `name`, `breed`, `summary`, `tags`,
   `coverAlt`, `quickFacts`, and the markdown body.
 - `scripts/lib/i18n-core.mjs` fingerprints translatable content using a stable

@@ -10,7 +10,7 @@ import Badge from './Badge.astro';
 import Button from './Button.astro';
 import Heart from './icons/Heart.astro';
 import Icon from './icons/Icon.astro';
-import { formatAge, type Lang } from '../i18n/utils';
+import { formatAge, formatLifespan, type Lang } from '../i18n/utils';
 
 interface Props {
   name: string;
@@ -18,11 +18,21 @@ interface Props {
   sex?: string;
   dob?: Date;
   dobEstimated?: boolean;
+  /** Date of death — when set, the card becomes a memorial. */
+  dod?: Date;
+  /** Adoptable animal that found a home (ignored when deceased). */
+  adopted?: boolean;
   lang: Lang;
   description?: string;
   status?: 'adoptable' | 'resident';
   statusLabel: string;
+  /** Badge text when adopted; falls back to statusLabel. */
+  adoptedLabel?: string;
+  /** Badge text when in memoriam; falls back to statusLabel. */
+  memorialLabel?: string;
   meetLabel: string;
+  /** CTA verb on a memorial card, e.g. "Remember"; falls back to meetLabel. */
+  rememberLabel?: string;
   tags?: string[];
   href: string;
   image?: ImageMetadata;
@@ -34,25 +44,60 @@ const {
   sex,
   dob,
   dobEstimated = true,
+  dod,
+  adopted = false,
   lang,
   description,
   status = 'adoptable',
   statusLabel,
+  adoptedLabel,
+  memorialLabel,
   meetLabel,
+  rememberLabel,
   tags = [],
   href,
   image,
   imageAlt,
 } = Astro.props;
 
+// Deceased wins over adopted: a passed-away animal is always a memorial.
+const isMemorial = dod != null;
+const isAdopted = !isMemorial && adopted;
+
 const tagVariants = ['soft', 'sage', 'sky', 'lilac'] as const;
-const meetCta = `${meetLabel} ${name}`;
+const ctaVerb = isMemorial ? (rememberLabel ?? meetLabel) : meetLabel;
+const meetCta = `${ctaVerb} ${name}`;
 const shareLabel = lang === 'pt-br' ? `Compartilhar ${name}` : `Share ${name}`;
 const copiedLabel = lang === 'pt-br' ? 'Link copiado' : 'Link copied';
-const age = formatAge(dob, dobEstimated, lang);
+// Memorials show a birth–death span instead of a current age.
+const lifespan = formatLifespan(dob, dobEstimated, dod);
+const age = isMemorial ? lifespan : formatAge(dob, dobEstimated, lang);
+
+const badgeLabel = isMemorial
+  ? (memorialLabel ?? statusLabel)
+  : isAdopted
+    ? (adoptedLabel ?? statusLabel)
+    : statusLabel;
+const badgeVariant = isMemorial
+  ? 'lilac'
+  : isAdopted
+    ? 'success'
+    : status === 'resident'
+      ? 'lilac'
+      : 'primary';
+// The share button is for animals still up for adoption; everyone else gets the
+// decorative heart in the corner.
+const showShare = !isMemorial && status === 'adoptable';
 ---
 
-<article class:list={['acard', status === 'resident' && 'acard--resident']}>
+<article
+  class:list={[
+    'acard',
+    status === 'resident' && 'acard--resident',
+    isMemorial && 'acard--memorial',
+    isAdopted && 'acard--adopted',
+  ]}
+>
   <a class="acard__media" href={href} aria-label={meetCta}>
     {
       image ? (
@@ -71,11 +116,11 @@ const age = formatAge(dob, dobEstimated, lang);
       )
     }
     <span class="acard__status">
-      <Badge variant={status === 'resident' ? 'lilac' : 'primary'} size="sm">{statusLabel}</Badge>
+      <Badge variant={badgeVariant} size="sm">{badgeLabel}</Badge>
     </span>
   </a>
   {
-    status === 'adoptable' ? (
+    showShare ? (
       <button
         class="acard__share"
         type="button"
@@ -179,6 +224,11 @@ const age = formatAge(dob, dobEstimated, lang);
   .acard__media {
     position: relative;
     display: block;
+  }
+  /* Memorial cards read a touch quieter — a gentle desaturation on the photo. */
+  .acard--memorial .acard__imgwrap :global(.acard__img),
+  .acard--memorial :global(.photo-slot) {
+    filter: grayscale(0.35) brightness(0.98);
   }
   /* The wrapper (a real element I control) enforces the square crop; the image
      just fills it. This is robust regardless of the width/height attributes
