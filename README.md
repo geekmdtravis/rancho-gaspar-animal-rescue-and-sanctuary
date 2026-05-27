@@ -52,6 +52,8 @@ brand with the warm **Lora × Nunito** type pairing.
   and a "no match" CTA.
 - **Residents listing** (`/residents`) — permanent residents, clearly framed as
   not-for-adoption.
+- **About page** (`/about`) — origin story, Brazil stray-animal context,
+  cat-focused mission, and live resident counts from the animal inventory.
 - **Animal profile** (`/adopt/<slug>`, `/residents/<slug>`) — gallery, quick
   facts, story, similar animals, and a sponsor widget. Adoptable profiles show
   an apply CTA + adoption process; resident profiles show a "permanent resident,
@@ -63,9 +65,8 @@ brand with the warm **Lora × Nunito** type pairing.
 
 ### Not yet built (natural next steps)
 
-The nav/footer still link to these routes: `/get-involved`, `/donate`,
-`/about`, `/contact`, `/stories`. All shared components needed to assemble them
-already exist.
+The nav/footer still link to these routes: `/donate`, `/contact`, `/stories`.
+All shared components needed to assemble them already exist.
 
 Impact and events pages are intentionally deferred for now; the site should lean
 on About Us instead of publishing impact/event messaging until there is a clear

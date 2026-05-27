@@ -156,7 +156,7 @@ const en = {
   adoptPage: {
     breadcrumb: 'Adopt',
     title: 'Find your new best friend',
-    body: 'All of our animals are spayed or neutered, vaccinated, and health-checked before adoption.',
+    body: 'Every adoption starts with careful preparation. By ranch policy, animals spend at least eight weeks in quarantine so we can assess temperament, understand their needs, and build a good match profile, though exceptions may exist. Each animal is vaccinated appropriately under veterinary guidance; cats receive FIV/FELV testing, dogs are spayed or neutered and receive a veterinary checkup, and bunnies receive a veterinary checkup before they are listed.',
     // {fee} is the lowest adoptionFee, rendered USD-first; the approximate BRL
     // value is fetched in-browser (see lib/fx-client.ts + FxAmount.astro).
     feesFrom: 'Adoption fees from {fee}.',
@@ -178,6 +178,52 @@ const en = {
     countSuffix: 'permanent residents',
     empty: 'No residents listed yet.',
   },
+  aboutPage: {
+    breadcrumb: 'About Us',
+    eyebrow: 'Our story',
+    title: 'A family sanctuary shaped by one stray cat',
+    intro:
+      'Around 2017, the Gaspar family brought home their first stray cat. That one rescue changed what they could see around them: cats in their part of Brazil were not just homeless, they were often misunderstood, ignored, and left without the same informal support that some street dogs receive.',
+    backgroundTitle: 'Why cats became the center of the work',
+    background:
+      'Brazil has a serious stray animal crisis, and dogs suffer from abandonment too. But cats can face a different kind of vulnerability. Myths, misinformation, and old superstitions still affect how people treat them, especially black or dark-coated cats. While some dogs may become familiar neighborhood animals, cats are often less visible, less trusted, and less likely to be fed, protected, or adopted.',
+    missionTitle: 'What Rancho Gaspar does',
+    mission:
+      'The ranch exists because we refuse to leave wonderful animals uncared for, suffering, or reproducing unchecked. We rescue, quarantine, assess temperament, provide veterinary care, spay or neuter when appropriate, and work toward the right forever home. For some animals, that means adoption into a loving family. For others, it means permanent sanctuary care at the ranch.',
+    ranchTitle: 'A family ranch with a deeper purpose',
+    ranch:
+      'The sanctuary owners live between the United States and Brazil, while the Brazil ranch is dedicated primarily to the animals. The ranch was built by Julio Gaspar over roughly twenty years before he passed away, so it carries special meaning: a monument to his care and effort for the family, and now a safe home for animals in the Mendonça region who are misunderstood, hungry, at risk, or likely to continue reproducing without help.',
+    scopeTitle: 'Cats first, but not cats only',
+    scope:
+      'Cats make up the majority of our rescue work, but dogs and bunnies are not excluded. When we can help safely and responsibly, we do. Some species or situations may not be compatible with a ranch full of cats, but we are always willing to hear what is happening and see whether we can help or point someone in the right direction.',
+    residentTitle: 'Current sanctuary residents',
+    residentBody:
+      'These counts are pulled from our resident inventory, so they reflect the animals currently marked as permanent residents on the site.',
+    residentTotalLabel: 'total residents',
+    speciesLabels: {
+      cat: { singular: 'cat', plural: 'cats' },
+      dog: { singular: 'dog', plural: 'dogs' },
+      bunny: { singular: 'bunny', plural: 'bunnies' },
+    },
+    // Monospace labels naming the photo that should fill each placeholder until
+    // a real image is uploaded (see PhotoSlot.astro).
+    photos: {
+      family: 'the Gaspar family',
+      background: 'rescued cats',
+      mission: 'vet care & recovery',
+      ranch: 'the ranch',
+      scope: 'dogs & bunnies too',
+    },
+    locationsTitle: 'Where we operate',
+    locationsBody:
+      'Our work spans two countries — the animals are cared for in Brazil, while the nonprofit is based in the United States.',
+    locationSanctuaryTitle: 'Sanctuary',
+    locationSanctuaryBody:
+      'Mendonça, São Paulo — where all of the rescue, recovery, and sanctuary care happens.',
+    locationHqTitle: 'Headquarters',
+    locationHqBody:
+      'Rancho Gaspar is a US nonprofit; its financial headquarters are in Murrieta, California.',
+  },
   profile: {
     aboutEyebrow: 'The story',
     aboutHeading: 'Meet', // rendered as "Meet {name}"
@@ -196,8 +242,8 @@ const en = {
         a: 'A short form — about 5 minutes. We just want to know about your home and lifestyle.',
       },
       {
-        q: '2. We chat (video or in person)',
-        a: "A 20-minute call to answer your questions and make sure it's the right match.",
+        q: '2. We chat by video',
+        a: "A 20-minute video call to answer your questions and make sure it's the right match.",
       },
       {
         q: '3. Meet your match',
@@ -378,7 +424,7 @@ const ptBr: Dictionary = {
   adoptPage: {
     breadcrumb: 'Adotar',
     title: 'Encontre seu novo melhor amigo',
-    body: 'Todos os nossos animais são castrados, vacinados e passam por avaliação de saúde antes da adoção.',
+    body: 'Cada adoção começa com preparação cuidadosa. Pela política do rancho, os animais passam por pelo menos oito semanas de quarentena para avaliarmos temperamento, entendermos suas necessidades e montarmos um bom perfil de compatibilidade, embora possam existir exceções. Cada animal é vacinado adequadamente sob orientação veterinária; gatos recebem testes de FIV/FELV, cães são castrados e passam por avaliação veterinária, e coelhos passam por avaliação veterinária antes de serem listados.',
     feesFrom: 'Taxas de adoção a partir de {fee}.',
     searchPlaceholder: 'Busque por nome ou raça…',
     filterLabel: 'Filtrar',
@@ -397,6 +443,50 @@ const ptBr: Dictionary = {
     body: 'Estes animais têm o Rancho Gaspar como lar para a vida toda. São residentes do santuário — não estão disponíveis para adoção. Alguns são idosos, alguns têm necessidades especiais, todos são família.',
     countSuffix: 'residentes permanentes',
     empty: 'Nenhum residente cadastrado ainda.',
+  },
+  aboutPage: {
+    breadcrumb: 'Sobre Nós',
+    eyebrow: 'Nossa história',
+    title: 'Um santuário familiar marcado por uma gata de rua',
+    intro:
+      'Por volta de 2017, a família Gaspar levou para casa sua primeira gata de rua. Aquele resgate mudou o que eles conseguiam enxergar ao redor: gatos nesta parte do Brasil não estavam apenas sem lar, muitas vezes eram mal compreendidos, ignorados e deixados sem o mesmo apoio informal que alguns cães de rua recebem.',
+    backgroundTitle: 'Por que os gatos viraram o centro do trabalho',
+    background:
+      'O Brasil enfrenta uma crise séria de animais em situação de rua, e cães também sofrem com abandono. Mas gatos podem enfrentar uma vulnerabilidade diferente. Mitos, desinformação e antigas superstições ainda afetam a forma como são tratados, especialmente gatos pretos ou de pelagem escura. Enquanto alguns cães podem se tornar animais conhecidos da vizinhança, gatos muitas vezes são menos visíveis, menos confiáveis aos olhos das pessoas e menos propensos a receber comida, proteção ou adoção.',
+    missionTitle: 'O que o Rancho Gaspar faz',
+    mission:
+      'O rancho existe porque nos recusamos a deixar animais maravilhosos sem cuidado, sofrendo ou se reproduzindo sem controle. Resgatamos, fazemos quarentena, avaliamos temperamento, oferecemos cuidados veterinários, castramos quando apropriado e buscamos o lar definitivo certo. Para alguns animais, isso significa adoção por uma família amorosa. Para outros, significa cuidado permanente no santuário.',
+    ranchTitle: 'Um rancho de família com um propósito mais profundo',
+    ranch:
+      'Os responsáveis pelo santuário vivem entre os Estados Unidos e o Brasil, enquanto o rancho no Brasil é dedicado principalmente aos animais. O rancho foi construído por Julio Gaspar ao longo de cerca de vinte anos antes de seu falecimento, por isso tem um significado especial: é um monumento ao cuidado e ao esforço dele pela família, e agora também um lar seguro para animais da região de Mendonça que são mal compreendidos, passam fome, estão em risco ou podem continuar se reproduzindo sem ajuda.',
+    scopeTitle: 'Gatos primeiro, mas não apenas gatos',
+    scope:
+      'Gatos formam a maior parte do nosso trabalho de resgate, mas cães e coelhos não são excluídos. Quando podemos ajudar com segurança e responsabilidade, ajudamos. Algumas espécies ou situações podem não ser compatíveis com um rancho cheio de gatos, mas sempre estamos dispostos a ouvir o que está acontecendo e ver se podemos ajudar ou indicar um caminho.',
+    residentTitle: 'Residentes atuais do santuário',
+    residentBody:
+      'Estes números vêm do nosso inventário de residentes, então refletem os animais atualmente marcados como residentes permanentes no site.',
+    residentTotalLabel: 'residentes no total',
+    speciesLabels: {
+      cat: { singular: 'gato', plural: 'gatos' },
+      dog: { singular: 'cão', plural: 'cães' },
+      bunny: { singular: 'coelho', plural: 'coelhos' },
+    },
+    photos: {
+      family: 'a família Gaspar',
+      background: 'gatos resgatados',
+      mission: 'cuidados veterinários',
+      ranch: 'o rancho',
+      scope: 'cães e coelhos também',
+    },
+    locationsTitle: 'Onde atuamos',
+    locationsBody:
+      'Nosso trabalho abrange dois países — os animais são cuidados no Brasil, enquanto a organização tem base nos Estados Unidos.',
+    locationSanctuaryTitle: 'Santuário',
+    locationSanctuaryBody:
+      'Mendonça, São Paulo — onde acontece todo o resgate, a recuperação e o cuidado do santuário.',
+    locationHqTitle: 'Sede',
+    locationHqBody:
+      'O Rancho Gaspar é uma organização sem fins lucrativos dos EUA; sua sede financeira fica em Murrieta, Califórnia.',
   },
   profile: {
     aboutEyebrow: 'A história',
@@ -417,8 +507,8 @@ const ptBr: Dictionary = {
         a: 'Um formulário curto — cerca de 5 minutos. Só queremos conhecer sua casa e seu estilo de vida.',
       },
       {
-        q: '2. Conversamos (vídeo ou presencial)',
-        a: 'Uma ligação de 20 minutos para tirar suas dúvidas e garantir que é o par certo.',
+        q: '2. Conversamos por vídeo',
+        a: 'Uma videochamada de 20 minutos para tirar suas dúvidas e garantir que é o par certo.',
       },
       {
         q: '3. Conheça seu novo amigo',

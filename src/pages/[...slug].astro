@@ -16,7 +16,6 @@ export async function getStaticPaths() {
   // slug → nav item to highlight + dictionary label to use as the title.
   const pending: { slug: string; active?: string; titleKey: keyof (typeof ui)['en']['nav'] }[] = [
     { slug: 'donate', titleKey: 'donate' },
-    { slug: 'about', active: 'about', titleKey: 'about' },
     { slug: 'contact', titleKey: 'contact' },
     { slug: 'stories', titleKey: 'blog' },
   ];

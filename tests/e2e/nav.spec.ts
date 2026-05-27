@@ -19,9 +19,20 @@ for (const start of ['/', '/pt-br/']) {
 }
 
 test('a placeholder route renders the coming-soon page', async ({ page }) => {
-  await page.goto('/about');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('About Us');
+  await page.goto('/contact');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Contact');
   await expect(page.getByText(/coming soon/i)).toBeVisible();
+});
+
+test('about page renders story and live resident counts', async ({ page }) => {
+  await page.goto('/about');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(
+    'A family sanctuary shaped by one stray cat',
+  );
+  await expect(page.getByText('2 total residents')).toBeVisible();
+  await expect(page.getByText('1 cat')).toBeVisible();
+  await expect(page.getByText('1 dog')).toBeVisible();
+  await expect(page.getByText('0 bunnies')).toBeVisible();
 });
 
 test('the CMS admin shell resolves with and without a trailing slash', async ({ page }) => {

@@ -1,0 +1,339 @@
+---
+import SectionLabel from './SectionLabel.astro';
+import Badge from './Badge.astro';
+import Icon from './icons/Icon.astro';
+import PhotoSlot from './PhotoSlot.astro';
+import DrawnAnimal from './DrawnAnimal.astro';
+import { listAnimals } from '../lib/animals';
+import { t, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const dict = t(lang);
+const page = dict.aboutPage;
+
+const residents = await listAnimals(lang, 'resident');
+const counts = {
+  cat: residents.filter((a) => a.data.species === 'cat').length,
+  dog: residents.filter((a) => a.data.species === 'dog').length,
+  bunny: residents.filter((a) => a.data.species === 'bunny').length,
+};
+const total = residents.length;
+const species = [
+  { key: 'cat', value: counts.cat, accent: 'sage' },
+  { key: 'dog', value: counts.dog, accent: 'sky' },
+  { key: 'bunny', value: counts.bunny, accent: 'lilac' },
+] as const;
+
+const labelFor = (key: keyof typeof counts, value: number) => {
+  const labels = page.speciesLabels[key];
+  return value === 1 ? labels.singular : labels.plural;
+};
+
+// The story reads as an alternating image/text "zig-zag": each row flips which
+// side the photo sits on. The `kind` picks which drawn animal fills the
+// placeholder so the illustrations feel intentional per section.
+const story = [
+  {
+    title: page.backgroundTitle,
+    body: page.background,
+    kind: 'cat',
+    photo: page.photos.background,
+  },
+  { title: page.missionTitle, body: page.mission, kind: 'dog', photo: page.photos.mission },
+  { title: page.ranchTitle, body: page.ranch, kind: 'cat', photo: page.photos.ranch },
+  { title: page.scopeTitle, body: page.scope, kind: 'bunny', photo: page.photos.scope },
+] as const;
+---
+
+<section class="rg-container rg-section--tight">
+  <div class="about-hero">
+    <div class="about-hero__copy">
+      <Badge variant="soft" size="lg">{page.eyebrow}</Badge>
+      <h1 class="about-title rg-display">{page.title}</h1>
+      <p class="about-intro">{page.intro}</p>
+    </div>
+    <div class="about-hero__media">
+      <PhotoSlot ratio="4 / 5" radius={24} kind="cat" label={page.photos.family} />
+    </div>
+  </div>
+</section>
+
+<section class="rg-container rg-section about-story">
+  {
+    story.map((s, i) => (
+      <article class:list={['about-row', i % 2 === 1 && 'about-row--flip']}>
+        <div class="about-row__media">
+          <PhotoSlot ratio="4 / 3" radius={20} kind={s.kind} label={s.photo} />
+        </div>
+        <div class="about-row__text">
+          <h2 class="about-row__title rg-display">{s.title}</h2>
+          <p>{s.body}</p>
+        </div>
+      </article>
+    ))
+  }
+</section>
+
+<section class="rg-container rg-section">
+  <div class="about-residents">
+    <div>
+      <SectionLabel>{page.residentTitle}</SectionLabel>
+      <h2 class="about-h2 rg-display">
+        {total}
+        {page.residentTotalLabel}
+      </h2>
+      <p class="about-copy">{page.residentBody}</p>
+    </div>
+    <div class="about-counts">
+      {
+        species.map((item) => (
+          <div class="about-count">
+            <span class:list={['about-count__icon', `about-count__icon--${item.accent}`]}>
+              <DrawnAnimal kind={item.key} size={30} color="var(--rg-primary-deep)" />
+            </span>
+            <strong>{item.value}</strong>
+            <span>{labelFor(item.key, item.value)}</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<section class="rg-container rg-section--tight">
+  <div class="about-locations">
+    <div class="about-locations__head">
+      <SectionLabel>{page.locationsTitle}</SectionLabel>
+      <p>{page.locationsBody}</p>
+    </div>
+    <div class="about-locations__cards">
+      <div class="about-loc-card">
+        <span class="about-loc-card__icon"><Icon name="pin" size={22} /></span>
+        <div>
+          <h3>{page.locationSanctuaryTitle}</h3>
+          <p>{page.locationSanctuaryBody}</p>
+        </div>
+      </div>
+      <div class="about-loc-card">
+        <span class="about-loc-card__icon"><Icon name="building" size={22} /></span>
+        <div>
+          <h3>{page.locationHqTitle}</h3>
+          <p>{page.locationHqBody}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Hero — copy beside a tall portrait, mirroring the home hero's rhythm. */
+  .about-hero {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 48px;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .about-title {
+    margin: 16px 0 16px;
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 1.04;
+  }
+  .about-intro {
+    margin: 0;
+    max-width: 560px;
+    color: var(--rg-ink-soft);
+    font-size: 18px;
+    line-height: 1.65;
+  }
+  .about-hero__media {
+    width: 100%;
+    max-width: 380px;
+    margin-left: auto;
+  }
+
+  /* Story — alternating image/text rows. */
+  .about-story {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  .about-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .about-row__media {
+    width: 100%;
+  }
+  .about-row--flip .about-row__media {
+    order: 2;
+  }
+  .about-row__title {
+    margin: 0 0 12px;
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.15;
+    color: var(--rg-ink);
+  }
+  .about-row__text p {
+    margin: 0;
+    color: var(--rg-ink-soft);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* Residents — soft band with per-species counts. */
+  .about-residents {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 28px;
+    align-items: center;
+    border-radius: 24px;
+    background: var(--rg-surface-alt);
+    padding: 36px;
+  }
+  .about-h2 {
+    margin: 8px 0 0;
+    font-size: 34px;
+  }
+  .about-copy {
+    margin: 12px 0 0;
+    color: var(--rg-ink-soft);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .about-counts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .about-count {
+    min-height: 138px;
+    border: 1px solid var(--rg-border);
+    border-radius: 16px;
+    background: var(--rg-surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .about-count__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .about-count__icon--sage {
+    background: var(--rg-accent-sage);
+  }
+  .about-count__icon--sky {
+    background: var(--rg-accent-sky);
+  }
+  .about-count__icon--lilac {
+    background: var(--rg-accent-lilac);
+  }
+  .about-count strong {
+    font-family: var(--rg-font-display);
+    font-size: 38px;
+    line-height: 1;
+    color: var(--rg-ink);
+  }
+  .about-count span:last-child {
+    color: var(--rg-ink-soft);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Locations — two side-by-side cards instead of a single afterthought row. */
+  .about-locations {
+    max-width: 960px;
+    margin: 0 auto;
+    border-top: 1px solid var(--rg-border);
+    padding-top: 36px;
+    display: grid;
+    gap: 24px;
+  }
+  .about-locations__head p {
+    margin: 8px 0 0;
+    max-width: 620px;
+    color: var(--rg-ink-soft);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .about-locations__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .about-loc-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: start;
+    padding: 20px;
+    border: 1px solid var(--rg-border);
+    border-radius: 18px;
+    background: var(--rg-surface);
+    box-shadow: var(--rg-shadow-sm);
+  }
+  .about-loc-card__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--rg-primary-faint);
+    color: var(--rg-primary-deep);
+    display: grid;
+    place-items: center;
+  }
+  .about-loc-card h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    color: var(--rg-ink);
+  }
+  .about-loc-card p {
+    margin: 0;
+    color: var(--rg-ink-soft);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 860px) {
+    .about-hero {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .about-hero__media {
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .about-row {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    /* Keep the photo on top when stacked, regardless of zig-zag side. */
+    .about-row--flip .about-row__media {
+      order: 0;
+    }
+    .about-residents {
+      grid-template-columns: 1fr;
+    }
+    .about-locations__cards {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 480px) {
+    .about-counts {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
