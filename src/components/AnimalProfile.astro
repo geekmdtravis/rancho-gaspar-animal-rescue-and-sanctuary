@@ -15,7 +15,7 @@ import DonationWidget from './DonationWidget.astro';
 import AnimalCard from './AnimalCard.astro';
 import PhotoSlot from './PhotoSlot.astro';
 import Heart from './icons/Heart.astro';
-import { t, localizePath, type Lang } from '../i18n/utils';
+import { t, localizePath, formatAge, type Lang } from '../i18n/utils';
 import { similarAnimals, animalPath, type Animal } from '../lib/animals';
 
 interface Props {
@@ -31,7 +31,8 @@ const { Content } = await render(entry);
 const similar = await similarAnimals(entry, lang);
 
 const statusLabel = isAdopt ? dict.status.adoptable : dict.status.resident;
-const meta = [d.sex === 'unknown' ? null : d.sex, d.age, d.breed, d.weight].filter(Boolean);
+const age = formatAge(d.dob, d.dobEstimated, lang);
+const meta = [d.sex === 'unknown' ? null : d.sex, age, d.breed, d.weight].filter(Boolean);
 const facts = [
   ...d.quickFacts,
   ...(isAdopt && d.adoptionFee ? [{ label: dict.profile.fee, value: d.adoptionFee }] : []),
@@ -207,7 +208,9 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
               name={e.data.name}
               kind={e.data.species}
               sex={e.data.sex === 'unknown' ? undefined : e.data.sex}
-              age={e.data.age}
+              dob={e.data.dob}
+              dobEstimated={e.data.dobEstimated}
+              lang={lang}
               description={e.data.summary}
               status={e.data.status}
               statusLabel={

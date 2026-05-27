@@ -2,7 +2,8 @@
 name: Whiskers
 species: cat
 sex: M
-age: 6 months
+dob: 2025-11-20
+dobEstimated: true
 breed: Domestic shorthair
 status: adoptable
 summary: Curious, cuddly, and loves to explore.

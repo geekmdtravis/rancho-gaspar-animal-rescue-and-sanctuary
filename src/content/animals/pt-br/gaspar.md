@@ -2,7 +2,8 @@
 name: Gaspar
 species: dog
 sex: M
-age: 7 anos
+dob: 2019-02-14
+dobEstimated: true
 breed: Vira-lata caramelo
 weight: 18kg
 status: resident

@@ -2,7 +2,8 @@
 name: Buddy
 species: dog
 sex: M
-age: 2 years
+dob: 2024-04-10
+dobEstimated: true
 breed: Labrador mix
 weight: 22kg
 status: adoptable

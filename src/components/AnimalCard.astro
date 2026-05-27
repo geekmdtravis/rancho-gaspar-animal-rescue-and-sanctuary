@@ -9,12 +9,15 @@ import PhotoSlot from './PhotoSlot.astro';
 import Badge from './Badge.astro';
 import Button from './Button.astro';
 import Heart from './icons/Heart.astro';
+import { formatAge, type Lang } from '../i18n/utils';
 
 interface Props {
   name: string;
   kind?: 'dog' | 'cat' | 'bunny';
   sex?: string;
-  age?: string;
+  dob?: Date;
+  dobEstimated?: boolean;
+  lang: Lang;
   description?: string;
   status?: 'adoptable' | 'resident';
   statusLabel: string;
@@ -28,7 +31,9 @@ const {
   name,
   kind = 'dog',
   sex,
-  age,
+  dob,
+  dobEstimated = true,
+  lang,
   description,
   status = 'adoptable',
   statusLabel,
@@ -41,6 +46,7 @@ const {
 
 const tagVariants = ['soft', 'sage', 'sky', 'lilac'] as const;
 const meetCta = `${meetLabel} ${name}`;
+const age = formatAge(dob, dobEstimated, lang);
 ---
 
 <article class:list={['acard', status === 'resident' && 'acard--resident']}>

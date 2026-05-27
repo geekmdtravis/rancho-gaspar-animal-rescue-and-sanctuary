@@ -71,7 +71,9 @@ const volunteerHref = localizePath('/get-involved', lang);
             name={a.data.name}
             kind={a.data.species}
             sex={a.data.sex === 'unknown' ? undefined : a.data.sex}
-            age={a.data.age}
+            dob={a.data.dob}
+            dobEstimated={a.data.dobEstimated}
+            lang={lang}
             description={a.data.summary}
             status={a.data.status}
             statusLabel={dict.status.adoptable}

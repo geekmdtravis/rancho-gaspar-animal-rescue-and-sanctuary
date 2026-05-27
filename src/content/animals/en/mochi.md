@@ -2,7 +2,8 @@
 name: Mochi
 species: cat
 sex: F
-age: 9 years
+dob: 2017-04-01
+dobEstimated: true
 breed: Scottish Fold
 weight: ''
 status: resident

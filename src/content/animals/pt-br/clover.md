@@ -2,7 +2,8 @@
 name: Clover
 species: cat
 sex: M
-age: 6 anos
+dob: 2020-03-01
+dobEstimated: true
 breed: ''
 weight: ''
 status: adoptable
@@ -13,7 +14,8 @@ tags:
 featured: true
 order: 3
 cover: /src/assets/uploads/Sphynx-Tripp-cropped-874x1024.webp
+coverAlt: ''
 adoptionFee: R$ 150
 ---
 
-Sphynx raivoso e psicótico procura vítima.
+# Sphynx raivoso e psicótico procura vítima.

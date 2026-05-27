@@ -65,9 +65,9 @@ function stable(value) {
 }
 
 /**
- * Fingerprint of the English "source content": every translatable frontmatter
- * field plus the markdown body. When this changes, translations derived from it
- * are potentially stale.
+ * Fingerprint of an entry's translatable content: every translatable
+ * frontmatter field plus the markdown body (shared facts are excluded — they're
+ * policed by exact-equality instead). Computed per-locale; see `pairHashes`.
  */
 export function sourceHash(entry, translatable) {
   const src = {};
@@ -80,6 +80,22 @@ export function sourceHash(entry, translatable) {
     .update(JSON.stringify(stable(src)))
     .digest('hex')
     .slice(0, 16);
+}
+
+/**
+ * Two-sided seal: fingerprint *both* locales' translatable content for a slug.
+ * The lock records both, so `i18n:check` fails if either the English source or
+ * the Portuguese translation is edited after a bless — neither side can drift
+ * silently. Returns `null` for a hash when that locale's file is missing.
+ */
+export function pairHashes(slug, translatable) {
+  const en = existsSync(entryPath('en', slug))
+    ? sourceHash(parseEntry(entryPath('en', slug)), translatable)
+    : null;
+  const pt = existsSync(entryPath('pt-br', slug))
+    ? sourceHash(parseEntry(entryPath('pt-br', slug)), translatable)
+    : null;
+  return { enHash: en, ptHash: pt };
 }
 
 export function readLock() {

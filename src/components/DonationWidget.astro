@@ -5,6 +5,7 @@
 // your processor (Pix/Stripe/etc.) when ready.
 import Heart from './icons/Heart.astro';
 import { t, type Lang } from '../i18n/utils';
+import { usdToBrl, brlApprox } from '../lib/fx';
 
 interface Props {
   lang: Lang;
@@ -21,10 +22,20 @@ const {
   donateUrl = '#donate',
 } = Astro.props;
 const dict = t(lang);
-const currency = 'R$';
+// USD is primary (most donors are in the US); BRL is shown as an approximate
+// equivalent, converted with a build-time rate. See src/lib/fx.ts.
+const currency = '$';
+const rate = await usdToBrl();
+const fxNote = dict.donate.fxNote.replace('{brl}', brlApprox(defaultAmount, rate));
 ---
 
-<div class:list={['donate', compact && 'donate--compact']} data-donation data-currency={currency}>
+<div
+  class:list={['donate', compact && 'donate--compact']}
+  data-donation
+  data-currency={currency}
+  data-rate={rate}
+  data-fx-note={dict.donate.fxNote}
+>
   <div class="donate__deco" aria-hidden="true"><Heart size={28} color="var(--rg-primary)" /></div>
   <h3 class="donate__title">{dict.donate.title}</h3>
   <p class="donate__body">{dict.donate.body}</p>
@@ -45,15 +56,18 @@ const currency = 'R$';
           data-amount={a}
           aria-pressed={a === defaultAmount ? 'true' : 'false'}
         >
-          {currency} {a}
+          {currency}
+          {a}
         </button>
       ))
     }
   </div>
 
+  <p class="donate__fx" data-donate-approx>{fxNote}</p>
+
   <a class="donate__cta" href={donateUrl} data-donate-cta data-per-month={dict.donate.perMonth}>
     <Heart size={16} color="#fff" filled />
-    <span data-donate-label>{dict.donate.cta} {currency} {defaultAmount}</span>
+    <span data-donate-label>{dict.donate.cta} {currency}{defaultAmount}</span>
   </a>
 
   <div class="donate__trust">
@@ -75,9 +89,12 @@ const currency = 'R$';
 
 <script>
   document.querySelectorAll<HTMLElement>('[data-donation]').forEach((widget) => {
-    const currency = widget.dataset.currency ?? 'R$';
+    const currency = widget.dataset.currency ?? '$';
+    const rate = Number(widget.dataset.rate ?? '0');
+    const fxNote = widget.dataset.fxNote ?? '';
     const cta = widget.querySelector<HTMLElement>('[data-donate-cta]');
     const label = widget.querySelector<HTMLElement>('[data-donate-label]');
+    const approx = widget.querySelector<HTMLElement>('[data-donate-approx]');
     const baseLabel = label?.textContent?.trim().split(/\s+/)[0] ?? 'Donate';
     const perMonth = cta?.dataset.perMonth ?? '/mo';
     let amount = Number(
@@ -85,9 +102,12 @@ const currency = 'R$';
     );
     let freq: 'one' | 'month' = 'one';
 
+    const brl = (usd: number) => `R$ ${Math.round(usd * rate).toLocaleString('pt-BR')}`;
+
     const render = () => {
       if (label)
-        label.textContent = `${baseLabel} ${currency} ${amount}${freq === 'month' ? perMonth : ''}`;
+        label.textContent = `${baseLabel} ${currency}${amount}${freq === 'month' ? perMonth : ''}`;
+      if (approx && rate > 0 && fxNote) approx.textContent = fxNote.replace('{brl}', brl(amount));
     };
 
     widget.querySelectorAll<HTMLElement>('.donate__freq-btn').forEach((btn) => {
@@ -197,6 +217,13 @@ const currency = 'R$';
     border-color: transparent;
     background: var(--rg-primary);
     color: #fff;
+  }
+  .donate__fx {
+    margin: 0 0 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--rg-ink-mute);
+    text-align: center;
   }
   .donate__cta {
     display: flex;

@@ -47,9 +47,14 @@ for (const slug of all) {
   const pt = parseEntry(entryPath('pt-br', slug));
 
   const sharedOk = [...shared].every((f) => deepEqual(en.data[f], pt.data[f]));
-  const recorded = lock[slug]?.enHash;
-  const current = sourceHash(en, translatable);
-  const fresh = !recorded ? 'unverified' : recorded === current ? 'fresh' : 'STALE';
+  const record = lock[slug];
+  const enOk = record?.enHash === sourceHash(en, translatable);
+  const ptOk = record?.ptHash === sourceHash(pt, translatable);
+  let fresh;
+  if (!record?.enHash || !record?.ptHash) fresh = 'unverified';
+  else if (enOk && ptOk) fresh = 'fresh';
+  else if (!enOk && !ptOk) fresh = 'STALE en+pt';
+  else fresh = !enOk ? 'STALE en' : 'STALE pt';
 
   rows.push({
     slug,

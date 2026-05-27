@@ -2,7 +2,8 @@
 name: Luna
 species: dog
 sex: F
-age: 4 meses
+dob: 2026-01-15
+dobEstimated: true
 breed: Vira-lata
 weight: 6kg
 status: adoptable

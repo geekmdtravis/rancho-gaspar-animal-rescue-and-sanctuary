@@ -2,7 +2,8 @@
 name: Mochi
 species: cat
 sex: F
-age: 9 anos
+dob: 2017-04-01
+dobEstimated: true
 breed: Tricolor
 weight: ''
 status: resident

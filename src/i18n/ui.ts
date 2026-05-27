@@ -68,6 +68,7 @@ const en = {
     cta: 'Donate',
     perMonth: '/mo',
     trust: 'Secure · Trusted · Tax-deductible',
+    fxNote: 'Amounts in USD · ≈ {brl} today',
   },
   impact: {
     label: 'Our impact',
@@ -145,6 +146,15 @@ const en = {
     adoptable: 'Adoptable',
     resident: 'Resident',
     residentNote: 'Permanent resident · not for adoption',
+  },
+  // Age is computed from each animal's date of birth at build time (see
+  // i18n/age.ts), so these are just the unit words the formatter slots in.
+  age: {
+    year: 'year',
+    years: 'years',
+    month: 'month',
+    months: 'months',
+    newborn: 'newborn',
   },
   adoptPage: {
     breadcrumb: 'Adopt',
@@ -287,6 +297,7 @@ const ptBr: Dictionary = {
     cta: 'Doar',
     perMonth: '/mês',
     trust: 'Seguro · Confiável · Dedutível de impostos',
+    fxNote: 'Valores em USD · ≈ {brl} hoje',
   },
   impact: {
     label: 'Nosso impacto',
@@ -364,6 +375,13 @@ const ptBr: Dictionary = {
     adoptable: 'Para adoção',
     resident: 'Residente',
     residentNote: 'Residente permanente · não disponível para adoção',
+  },
+  age: {
+    year: 'ano',
+    years: 'anos',
+    month: 'mês',
+    months: 'meses',
+    newborn: 'recém-nascido',
   },
   adoptPage: {
     breadcrumb: 'Adotar',

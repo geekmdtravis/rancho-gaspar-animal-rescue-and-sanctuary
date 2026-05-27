@@ -2,7 +2,8 @@
 name: Luna
 species: dog
 sex: F
-age: 4 months
+dob: 2026-01-15
+dobEstimated: true
 breed: Mixed breed
 weight: 6kg
 status: adoptable

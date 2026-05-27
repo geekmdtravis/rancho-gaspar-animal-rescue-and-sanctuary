@@ -13,7 +13,10 @@ const animals = defineCollection({
       name: z.string(),
       species: z.enum(['dog', 'cat', 'bunny']),
       sex: z.enum(['F', 'M', 'unknown']).default('unknown'),
-      age: z.string().optional(),
+      // Age is derived from `dob`, never stored, so it never goes stale. Most
+      // rescue birthdays are estimates — `dobEstimated` drives the "~" prefix.
+      dob: z.coerce.date().optional(),
+      dobEstimated: z.boolean().default(true),
       breed: z.string().optional(),
       weight: z.string().optional(),
       // The differentiator: an adoptable animal is looking for a home; a

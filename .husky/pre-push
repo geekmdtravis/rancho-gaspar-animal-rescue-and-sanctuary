@@ -8,5 +8,8 @@ npm run check
 echo "› Verifying EN / PT-BR parity…"
 npm run i18n:check
 
+echo "› Running unit tests…"
+npm run test:unit
+
 echo "› Running e2e against a fresh build (playwright)…"
 npm run test:e2e

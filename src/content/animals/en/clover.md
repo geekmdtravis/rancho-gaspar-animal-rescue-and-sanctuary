@@ -2,7 +2,8 @@
 name: Clover
 species: cat
 sex: M
-age: 6 year
+dob: 2020-03-01
+dobEstimated: true
 breed: ''
 weight: ''
 status: adoptable

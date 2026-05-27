@@ -17,6 +17,7 @@
     "i18n:check": "node scripts/check-i18n.mjs",
     "i18n:status": "node scripts/i18n-status.mjs",
     "i18n:bless": "node scripts/i18n-bless.mjs",
+    "test:unit": "node --test \"tests/unit/**/*.test.mjs\"",
     "test:e2e": "playwright test",
     "prepare": "husky"
   },

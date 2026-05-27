@@ -6,14 +6,13 @@
 //   2. Animal file + shared-field parity (ERRORS) — both locales exist for
 //      every slug, and every *shared* fact (species, status, cover, …, i.e.
 //      the `i18n: duplicate` fields) is byte-identical across locales.
-//   3. Translation freshness (WARNINGS) — the English source fingerprint is
-//      compared against the lockfile. A mismatch means EN changed since the
-//      translation was last confirmed in sync (run `npm run i18n:bless <slug>`
-//      after re-translating).
+//   3. Translation freshness — both locales' content fingerprints are compared
+//      against the lockfile (a two-sided seal). A mismatch on either side means
+//      that file changed since the translation was last confirmed in sync (run
+//      `npm run i18n:bless <slug>` after re-verifying).
 //
-// Errors fail the build/hook (exit 1). Staleness warns but doesn't block, so
-// you can commit an English edit before the translation lands. Pass --strict
-// (or set I18N_STRICT=1) to also fail on staleness.
+// All three layers are blocking: any failure exits 1, locally and in CI alike.
+// There is no lenient mode — a stale translation never lands.
 import {
   LOCALES,
   fieldRoles,
@@ -25,9 +24,7 @@ import {
   deepEqual,
 } from './lib/i18n-core.mjs';
 
-const strict = process.argv.includes('--strict') || process.env.I18N_STRICT === '1';
 const errors = [];
-const warnings = [];
 
 // ── 1. UI dictionary structural parity ─────────────────────────────────────
 const { ui } = await import('../src/i18n/ui.ts');
@@ -86,37 +83,37 @@ for (const slug of [...allSlugs].sort()) {
     }
   }
 
-  // Translation freshness vs the recorded English source fingerprint.
-  const current = sourceHash(en, translatable);
-  const recorded = lock[slug]?.enHash;
-  if (!recorded) {
-    warnings.push(
+  // Two-sided freshness: both the English source and the Portuguese
+  // translation are fingerprinted at bless time, so an edit to *either* side
+  // after a bless breaks the seal.
+  const record = lock[slug];
+  const enNow = sourceHash(en, translatable);
+  const ptNow = sourceHash(pt, translatable);
+  if (!record?.enHash || !record?.ptHash) {
+    errors.push(
       `animals "${slug}": no sync record — run \`npm run i18n:bless ${slug}\` once pt-br is verified`,
     );
-  } else if (recorded !== current) {
-    warnings.push(
-      `animals "${slug}": English source changed since last sync — pt-br may be stale ` +
-        `(re-translate, then \`npm run i18n:bless ${slug}\`)`,
-    );
+  } else {
+    if (record.enHash !== enNow) {
+      errors.push(
+        `animals "${slug}": English source changed since last sync — pt-br may be stale ` +
+          `(re-translate, then \`npm run i18n:bless ${slug}\`)`,
+      );
+    }
+    if (record.ptHash !== ptNow) {
+      errors.push(
+        `animals "${slug}": Portuguese translation changed since last sync — re-verify it ` +
+          `matches en, then \`npm run i18n:bless ${slug}\``,
+      );
+    }
   }
 }
 
 // ── Report ──────────────────────────────────────────────────────────────────
-if (warnings.length) {
-  console.warn(`\n⚠ i18n freshness (${warnings.length}):`);
-  for (const w of warnings) console.warn(`  • ${w}`);
-}
 if (errors.length) {
   console.error(`\n✖ i18n parity failed (${errors.length} error(s)):`);
   for (const e of errors) console.error(`  • ${e}`);
   console.error('');
   process.exit(1);
 }
-if (strict && warnings.length) {
-  console.error('\n✖ --strict: treating freshness warnings as errors.\n');
-  process.exit(1);
-}
-console.log(
-  `✓ i18n parity OK — dictionaries, shared fields, and animal files in sync` +
-    (warnings.length ? ` (${warnings.length} freshness warning(s) above)` : ''),
-);
+console.log('✓ i18n parity OK — dictionaries, shared fields, and animal files in sync');

@@ -2,7 +2,8 @@
 name: Whiskers
 species: cat
 sex: M
-age: 6 meses
+dob: 2025-11-20
+dobEstimated: true
 breed: Sem raça definida (pelo curto)
 status: adoptable
 summary: Curioso, carinhoso e adora explorar.

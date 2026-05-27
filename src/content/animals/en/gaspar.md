@@ -2,7 +2,8 @@
 name: Gaspar
 species: dog
 sex: M
-age: 7 years
+dob: 2019-02-14
+dobEstimated: true
 breed: Brown mutt
 weight: 18kg
 status: resident
