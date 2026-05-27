@@ -12,7 +12,7 @@ tags:
   - Litter trained
 featured: true
 order: 2
-adoptionFee: R$ 200
+adoptionFee: 40
 ---
 
 Whiskers is all curiosity and warm purrs. He'll inspect every box, befriend

@@ -45,8 +45,8 @@ test('two-sided seal: en and pt fingerprints are independent', () => {
 });
 
 test('pairHashes seals both locales for a real animal', () => {
-  const { translatable: roles } = fieldRoles();
-  const { enHash, ptHash } = pairHashes('luna', roles);
+  const { translatable: roles } = fieldRoles('animals');
+  const { enHash, ptHash } = pairHashes('animals', 'luna', roles);
   assert.ok(enHash, 'en hash present');
   assert.ok(ptHash, 'pt hash present');
   // Luna's EN and PT prose differ, so the two seals must differ.
@@ -54,11 +54,31 @@ test('pairHashes seals both locales for a real animal', () => {
 });
 
 test('fieldRoles classifies dob/dobEstimated as shared, not translatable', () => {
-  const { shared, translatable: trans } = fieldRoles();
+  const { shared, translatable: trans } = fieldRoles('animals');
   assert.ok(shared.has('dob'));
   assert.ok(shared.has('dobEstimated'));
   // age no longer exists as a field at all.
   assert.ok(!trans.has('age') && !shared.has('age'));
+});
+
+test('reviews: originLang is a shared fact; author/quote are translatable', () => {
+  const { shared, translatable: trans } = fieldRoles('reviews');
+  // originLang is a fact about the review (which language it was written in),
+  // so it must be identical across locales — never translated.
+  assert.ok(shared.has('originLang'));
+  assert.ok(shared.has('rating'));
+  // The actual utterance and its attribution may differ per locale.
+  assert.ok(trans.has('quote'));
+  assert.ok(trans.has('author'));
+});
+
+test('reviews: pairHashes seals both locales for a real review', () => {
+  const { translatable: roles } = fieldRoles('reviews');
+  const { enHash, ptHash } = pairHashes('reviews', 'ana-pedro', roles);
+  assert.ok(enHash, 'en hash present');
+  assert.ok(ptHash, 'pt hash present');
+  // ana-pedro's EN translation and PT original differ, so the seals differ.
+  assert.notEqual(enHash, ptHash);
 });
 
 test('deepEqual handles scalars, arrays, and nested objects order-insensitively', () => {

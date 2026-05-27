@@ -13,7 +13,7 @@ tags:
   - Boa com crianças
 featured: true
 order: 1
-adoptionFee: R$ 200
+adoptionFee: 40
 quickFacts:
   - { label: Adestrada em casa, value: Sim }
   - { label: Boa com cães, value: 'Sim · com apresentação' }

@@ -33,9 +33,34 @@ const animals = defineCollection({
       cover: image().optional(),
       coverAlt: z.string().optional(),
       gallery: z.array(image()).default([]),
-      adoptionFee: z.string().optional(),
+      // Adoption fee in USD (the canonical amount). Shown USD-first with an
+      // approximate BRL value computed at build time — see src/lib/fx.ts.
+      adoptionFee: z.number().nonnegative().optional(),
       quickFacts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
     }),
 });
 
-export const collections = { animals };
+// Visitor reviews / testimonials. Unlike an animal (a fact that genuinely
+// exists in both languages), a review is a person's *utterance* — it has one
+// true language it was written in (`originLang`). The other locale's file is a
+// translation of it, and the UI flags it as such when shown off-origin. Stored
+// per-locale like animals so the same two-sided staleness seal applies.
+const reviews = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/reviews' }),
+  schema: z.object({
+    author: z.string(),
+    // Context line under the name, e.g. "Adopted Mochi · 2024".
+    role: z.string().optional(),
+    quote: z.string(),
+    rating: z.number().min(1).max(5).default(5),
+    // Avatar illustration shown beside the quote.
+    kind: z.enum(['dog', 'cat', 'bunny']).optional(),
+    // The language the reviewer actually wrote in. A shared fact (identical in
+    // both files); drives the "Translated from …" badge on the off-origin side.
+    originLang: z.enum(['en', 'pt-br']),
+    featured: z.boolean().default(false),
+    order: z.number().default(0),
+  }),
+});
+
+export const collections = { animals, reviews };

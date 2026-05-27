@@ -12,7 +12,7 @@ tags:
   - Usa a caixa de areia
 featured: true
 order: 2
-adoptionFee: R$ 200
+adoptionFee: 40
 ---
 
 Whiskers é pura curiosidade e ronronos quentinhos. Ele inspeciona cada caixa,

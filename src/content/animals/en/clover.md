@@ -15,7 +15,7 @@ featured: true
 order: 3
 cover: /src/assets/uploads/Sphynx-Tripp-cropped-874x1024.webp
 coverAlt: ''
-adoptionFee: R$ 150
+adoptionFee: 30
 ---
 
 Angry, psychotic sphinx seeks victim.

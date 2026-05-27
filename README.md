@@ -1,7 +1,7 @@
 # Rancho Gaspar — Animal Rescue & Sanctuary
 
 A bilingual (English + Brazilian Portuguese), static Astro site for a small
-family-run dog & cat sanctuary in Mairiporã, Brazil. Built from the
+family-run dog & cat sanctuary in Mendonça, SP, Brazil. Built from the
 [Claude Design](https://claude.ai/design) handoff: the soft-pink **"Blossom"**
 brand with the warm **Lora × Nunito** type pairing.
 
@@ -28,13 +28,21 @@ brand with the warm **Lora × Nunito** type pairing.
   The USD→BRL rate is fetched once at **build time** from
   [Frankfurter](https://frankfurter.dev) (open access, no key) — no client
   request, no key to leak — and falls back to a hardcoded rate
-  (`src/lib/fx.ts`) if the API is unreachable. Adoption fees and the impact
-  stats stay in **R$**, since those are real local figures.
+  (`src/lib/fx.ts`) if the API is unreachable. **Adoption fees use the same
+  model**: each `adoptionFee` is authored in USD (a number) and rendered
+  USD-first with an approximate R$ value in parentheses, e.g. "$40 (≈ R$ 200)".
+- **Reviews**: visitor testimonials are a per-locale content collection
+  (`src/content/reviews/`), not hard-coded copy. Each review records the
+  `originLang` it was actually written in; the other locale is a _translation_
+  of it, and the card shows a "Translated from …" badge whenever it's displayed
+  off its origin language — plus a "Read original" toggle that swaps in the
+  text the reviewer actually wrote. The same two-sided staleness seal as animals
+  keeps the translation honest (`reviews-sync.lock.json`).
 
 ## What's built
 
 - The **home page** (`/`, `/pt-br/`) — hero, adoptable animals (data-driven),
-  donation widget, impact stats, get-involved, testimonials, newsletter.
+  donation widget, get-involved, testimonials, newsletter.
 - **Adopt listing** (`/adopt`) — grid with client-side species filter + search,
   and a "no match" CTA.
 - **Residents listing** (`/residents`) — permanent residents, clearly framed as
@@ -51,8 +59,12 @@ brand with the warm **Lora × Nunito** type pairing.
 ### Not yet built (natural next steps)
 
 The nav/footer still link to these routes: `/get-involved`, `/donate`,
-`/impact`, `/about`, `/contact`, `/events`, `/stories`. All shared components
-needed to assemble them already exist.
+`/about`, `/contact`, `/stories`. All shared components needed to assemble them
+already exist.
+
+Impact and events pages are intentionally deferred for now; the site should lean
+on About Us instead of publishing impact/event messaging until there is a clear
+need.
 
 ## Content workflow
 
@@ -72,15 +84,18 @@ needed to assemble them already exist.
 | `npm run lint`        | ESLint                                                        |
 | `npm run format`      | Prettier (write)                                              |
 | `npm run i18n:check`  | Verify EN/PT-BR parity (dictionary, shared fields, freshness) |
-| `npm run i18n:status` | Per-animal sync report (shared / fresh + git change dates)    |
+| `npm run i18n:status` | Per-entry sync report, animals + reviews (shared / fresh)     |
 | `npm run i18n:bless`  | Record that translations are in sync (after re-translating)   |
 | `npm run test:unit`   | Node test runner — age math + i18n hashing/seal               |
 | `npm run test:e2e`    | Playwright smoke tests (builds fresh, port 4322)              |
 
 ## Keeping translations in sync
 
-Animal profiles exist once per locale (`en` + `pt-br`). Two kinds of drift are
-tracked:
+Two per-locale content collections are sealed the same way: **animals**
+(`i18n-sync.lock.json`) and **reviews** (`reviews-sync.lock.json`). Each entry
+exists once per locale (`en` + `pt-br`), and `i18n:check` / `i18n:status` /
+`i18n:bless` all operate across both collections automatically (a collection is
+registered in `scripts/lib/i18n-core.mjs`). Two kinds of drift are tracked:
 
 - **Shared facts** — fields marked `i18n: duplicate` in the CMS config
   (`species`, `sex`, `dob`, `dobEstimated`, `weight`, `status`, `featured`,
@@ -94,6 +109,12 @@ tracked:
   English source **or** the Portuguese translation is edited after a bless, its
   fingerprint no longer matches the lock, so `i18n:check` fails and
   `i18n:status` shows `STALE en` / `STALE pt` / `STALE en+pt`.
+
+For **reviews**, the shared facts are `originLang`, `rating`, `kind`,
+`featured`, and `order`; the translatable content is `author`, `role`, and
+`quote`. `originLang` is what makes a review different from an animal: it's the
+language the person actually wrote in, so the off-origin locale is understood to
+be a translation (and labelled as one on the site) rather than an equal twin.
 
 Workflow when you change an English profile:
 
@@ -114,7 +135,8 @@ update `pt-br/<slug>.md` and run `npm run i18n:bless <slug>` to clear it.
 ## Git hooks (Husky + lint-staged)
 
 - **pre-commit** — formats & lints only staged files; runs the i18n parity check
-  _only_ when `src/i18n/` or `src/content/animals/` changed.
+  _only_ when `src/i18n/`, `src/content/animals/`, or `src/content/reviews/`
+  changed.
 - **pre-push** — full type-check, i18n parity, unit tests, and Playwright e2e
   against a fresh build.
 

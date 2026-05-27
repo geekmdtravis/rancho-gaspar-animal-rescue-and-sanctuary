@@ -17,10 +17,8 @@ export async function getStaticPaths() {
   const pending: { slug: string; active?: string; titleKey: keyof (typeof ui)['en']['nav'] }[] = [
     { slug: 'get-involved', active: 'involved', titleKey: 'involved' },
     { slug: 'donate', titleKey: 'donate' },
-    { slug: 'impact', active: 'impact', titleKey: 'impact' },
     { slug: 'about', active: 'about', titleKey: 'about' },
     { slug: 'contact', titleKey: 'contact' },
-    { slug: 'events', active: 'events', titleKey: 'events' },
     { slug: 'stories', titleKey: 'blog' },
   ];
   const langs: Lang[] = ['en', 'pt-br'];

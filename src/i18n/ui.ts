@@ -15,7 +15,7 @@ const en = {
     tagline: 'Animal Rescue',
     motto: 'Rescue. Heal. Love. Repeat.',
     description:
-      'A small family-run sanctuary in Mairiporã, Brazil, giving rescued dogs and cats a second chance at love.',
+      'A small family-run sanctuary in Mendonça, SP, giving rescued dogs and cats a second chance at love.',
   },
   nav: {
     adopt: 'Adopt',
@@ -38,16 +38,22 @@ const en = {
     eyebrow: 'Olá from Brazil 🇧🇷',
     titleLine1: 'Rescue. Heal.',
     titleEmphasis: 'Love.',
-    body: 'We rescue animals in need, provide medical care, and help them find loving forever homes. Together, we create second chances.',
+    body: 'We rescue animals in need, nurse them back to health, and help them find loving forever homes — and for those who can not be placed, this ranch is home for life. Together, we create second chances.',
     ctaAdopt: 'Adopt a Pet',
     ctaDonate: 'Donate Now',
     ctaVolunteer: 'Volunteer',
-    statValue: '500+ animals rescued',
+    statValue: '36 animals rescued',
     statSub: 'thanks to our community',
     pillars: [
-      { label: 'Rescue', desc: 'We save animals from high-kill shelters and urgent situations.' },
+      {
+        label: 'Rescue',
+        desc: 'We rescue animals from the streets, where support is scarce and cats are abandoned in high numbers.',
+      },
       { label: 'Heal', desc: 'Medical care, nourishment, and a safe place to recover.' },
-      { label: 'Love', desc: 'We match each pet with a loving family for life.' },
+      {
+        label: 'Love',
+        desc: 'A loving family for most — and a forever home here for those who can not be placed.',
+      },
     ],
     pillarFooter: 'Every heart counts',
   },
@@ -73,12 +79,11 @@ const en = {
   impact: {
     label: 'Our impact',
     title: 'Small ranch, big change',
-    body: 'Since 2019, thanks to your help.',
+    body: 'Since 2017, thanks to your help.',
     stats: [
-      { value: '500+', label: 'Rescued', sub: 'since 2019' },
-      { value: '312', label: 'Adopted', sub: 'forever homes' },
-      { value: 'R$ 84k', label: 'Vet care', sub: 'this year alone' },
-      { value: '48', label: 'Volunteers', sub: 'weekly heroes' },
+      { value: '36', label: 'Rescued', sub: 'since 2017' },
+      { value: '4', label: 'Adopted', sub: 'forever homes' },
+      { value: '2', label: 'Volunteers', sub: 'hands-on every week' },
     ],
   },
   involved: {
@@ -87,7 +92,7 @@ const en = {
     cards: [
       {
         title: 'Volunteer',
-        desc: 'Give your time. Change their lives. Help with events, socialization, transport, and more.',
+        desc: 'Give your time. Change their lives. Help with socialization, transport, daily care, and more.',
         cta: 'Sign up to volunteer',
       },
       {
@@ -102,20 +107,14 @@ const en = {
       },
     ],
   },
-  testimonials: [
-    {
-      quote:
-        'Rancho Gaspar gave our family the most amazing companion. We are so grateful for the love and care they show to every animal.',
-      author: 'The Martinez Family',
-      role: 'Adopted Mochi · 2024',
-    },
-    {
-      quote:
-        "Maria and João don't run a shelter, they run a home. You can feel it the moment you walk in.",
-      author: 'Ana & Pedro',
-      role: 'Volunteers since 2022',
-    },
-  ],
+  reviews: {
+    // Shown when a review is displayed in a locale other than the one the
+    // reviewer actually wrote in. {lang} is filled from `langNames` below.
+    translatedFrom: 'Translated from {lang}',
+    langNames: { en: 'English', 'pt-br': 'Portuguese' },
+    showOriginal: 'Read original',
+    showTranslation: 'Read translation',
+  },
   newsletter: {
     title: 'Happy tails, straight to your inbox',
     body: 'Adoption updates, rescue stories, and ways to help — once a month, never spammy.',
@@ -140,7 +139,7 @@ const en = {
     },
     madeWith: 'Made with',
     inBrazil: 'in Brazil',
-    nonprofit: '501(c)(3) Nonprofit · EIN 12-3456789',
+    nonprofit: 'US nonprofit · EIN 42-2779431',
   },
   status: {
     adoptable: 'Adoptable',
@@ -241,7 +240,7 @@ const ptBr: Dictionary = {
     tagline: 'Resgate Animal',
     motto: 'Resgatar. Curar. Amar. Repetir.',
     description:
-      'Um pequeno santuário familiar em Mairiporã, Brasil, dando a cães e gatos resgatados uma segunda chance de amar.',
+      'Um pequeno santuário familiar em Mendonça, SP, dando a cães e gatos resgatados uma segunda chance de amar.',
   },
   nav: {
     adopt: 'Adotar',
@@ -264,19 +263,25 @@ const ptBr: Dictionary = {
     eyebrow: 'Olá do Brasil 🇧🇷',
     titleLine1: 'Resgatar. Curar.',
     titleEmphasis: 'Amar.',
-    body: 'Resgatamos animais em situação de risco, oferecemos cuidados médicos e ajudamos a encontrar lares cheios de amor. Juntos, criamos segundas chances.',
+    body: 'Resgatamos animais em situação de risco, oferecemos cuidados médicos e ajudamos a encontrar lares cheios de amor — e, para os que não podem ser adotados, um lar permanente aqui. Juntos, criamos segundas chances.',
     ctaAdopt: 'Adote um Pet',
     ctaDonate: 'Doar Agora',
     ctaVolunteer: 'Seja Voluntário',
-    statValue: '500+ animais resgatados',
+    statValue: '36 animais resgatados',
     statSub: 'graças à nossa comunidade',
     pillars: [
-      { label: 'Resgatar', desc: 'Salvamos animais de abrigos lotados e situações urgentes.' },
+      {
+        label: 'Resgatar',
+        desc: 'Resgatamos animais das ruas, onde o apoio é escasso e gatos são abandonados em grande número.',
+      },
       {
         label: 'Curar',
         desc: 'Cuidados médicos, alimentação e um lugar seguro para se recuperar.',
       },
-      { label: 'Amar', desc: 'Encontramos para cada pet uma família amorosa para a vida toda.' },
+      {
+        label: 'Amar',
+        desc: 'Uma família amorosa para a maioria — e um lar para sempre aqui para os que não podem ser adotados.',
+      },
     ],
     pillarFooter: 'Cada coração conta',
   },
@@ -302,12 +307,11 @@ const ptBr: Dictionary = {
   impact: {
     label: 'Nosso impacto',
     title: 'Rancho pequeno, grande mudança',
-    body: 'Desde 2019, graças à sua ajuda.',
+    body: 'Desde 2017, graças à sua ajuda.',
     stats: [
-      { value: '500+', label: 'Resgatados', sub: 'desde 2019' },
-      { value: '312', label: 'Adotados', sub: 'lares para sempre' },
-      { value: 'R$ 84 mil', label: 'Veterinário', sub: 'só este ano' },
-      { value: '48', label: 'Voluntários', sub: 'heróis semanais' },
+      { value: '36', label: 'Resgatados', sub: 'desde 2017' },
+      { value: '4', label: 'Adotados', sub: 'lares para sempre' },
+      { value: '2', label: 'Voluntários', sub: 'presentes toda semana' },
     ],
   },
   involved: {
@@ -316,7 +320,7 @@ const ptBr: Dictionary = {
     cards: [
       {
         title: 'Voluntariar',
-        desc: 'Doe seu tempo. Mude vidas. Ajude em eventos, socialização, transporte e muito mais.',
+        desc: 'Doe seu tempo. Mude vidas. Ajude com socialização, transporte, cuidados diários e muito mais.',
         cta: 'Quero ser voluntário',
       },
       {
@@ -331,20 +335,12 @@ const ptBr: Dictionary = {
       },
     ],
   },
-  testimonials: [
-    {
-      quote:
-        'O Rancho Gaspar deu à nossa família o companheiro mais incrível. Somos muito gratos pelo amor e cuidado que dedicam a cada animal.',
-      author: 'Família Martinez',
-      role: 'Adotaram a Mochi · 2024',
-    },
-    {
-      quote:
-        'A Maria e o João não administram um abrigo, eles administram um lar. Dá para sentir no momento em que você entra.',
-      author: 'Ana & Pedro',
-      role: 'Voluntários desde 2022',
-    },
-  ],
+  reviews: {
+    translatedFrom: 'Traduzido do {lang}',
+    langNames: { en: 'inglês', 'pt-br': 'português' },
+    showOriginal: 'Ver original',
+    showTranslation: 'Ver tradução',
+  },
   newsletter: {
     title: 'Finais felizes, direto no seu e-mail',
     body: 'Novidades de adoção, histórias de resgate e formas de ajudar — uma vez por mês, sem spam.',
@@ -369,7 +365,7 @@ const ptBr: Dictionary = {
     },
     madeWith: 'Feito com',
     inBrazil: 'no Brasil',
-    nonprofit: 'Organização sem fins lucrativos · CNPJ 12.345.678/0001-90',
+    nonprofit: 'Organização sem fins lucrativos dos EUA · EIN 42-2779431',
   },
   status: {
     adoptable: 'Para adoção',

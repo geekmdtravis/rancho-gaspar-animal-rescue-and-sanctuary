@@ -13,7 +13,7 @@ tags:
   - Good with kids
 featured: true
 order: 1
-adoptionFee: R$ 200
+adoptionFee: 40
 quickFacts:
   - { label: House trained, value: Yes }
   - { label: Good with dogs, value: 'Yes · with intros' }

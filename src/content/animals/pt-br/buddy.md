@@ -14,7 +14,7 @@ tags:
 featured: true
 order: 4
 cover: /src/assets/uploads/Golden-Retriever-1536x1024.jpg
-adoptionFee: R$ 200
+adoptionFee: 40
 quickFacts:
   - label: Adestrado em casa
     value: Sim

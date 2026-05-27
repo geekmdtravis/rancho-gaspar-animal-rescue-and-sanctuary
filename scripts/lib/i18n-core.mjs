@@ -13,9 +13,31 @@ import YAML from 'yaml';
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const LOCALES = ['en', 'pt-br'];
-export const ANIMALS_DIR = resolve(ROOT, 'src/content/animals');
 export const CONFIG_PATH = resolve(ROOT, 'public/admin/config.yml');
-export const LOCK_PATH = resolve(ROOT, 'i18n-sync.lock.json');
+
+// Every per-locale content collection that participates in the i18n seal. Each
+// has its own content dir + lockfile so their sync histories stay independent.
+// Adding a collection here wires it into check / status / bless automatically.
+export const COLLECTIONS = {
+  animals: {
+    dir: resolve(ROOT, 'src/content/animals'),
+    lock: resolve(ROOT, 'i18n-sync.lock.json'),
+  },
+  reviews: {
+    dir: resolve(ROOT, 'src/content/reviews'),
+    lock: resolve(ROOT, 'reviews-sync.lock.json'),
+  },
+};
+
+export function collectionNames() {
+  return Object.keys(COLLECTIONS);
+}
+
+function collection(name) {
+  const c = COLLECTIONS[name];
+  if (!c) throw new Error(`Unknown collection "${name}" — known: ${collectionNames().join(', ')}`);
+  return c;
+}
 
 /** Split a markdown file into parsed frontmatter `data` and trimmed `body`. */
 export function parseEntry(filePath) {
@@ -25,11 +47,11 @@ export function parseEntry(filePath) {
   return { data: YAML.parse(m[1]) ?? {}, body: m[2].trim() };
 }
 
-/** Classify the animals collection's fields from the CMS config. */
-export function fieldRoles() {
+/** Classify a collection's fields from the CMS config (which is the source of truth). */
+export function fieldRoles(name) {
   const cfg = YAML.parse(readFileSync(CONFIG_PATH, 'utf8'));
-  const coll = (cfg.collections ?? []).find((c) => c.name === 'animals');
-  if (!coll) throw new Error(`Could not find the "animals" collection in ${CONFIG_PATH}`);
+  const coll = (cfg.collections ?? []).find((c) => c.name === name);
+  if (!coll) throw new Error(`Could not find the "${name}" collection in ${CONFIG_PATH}`);
   const shared = new Set();
   const translatable = new Set();
   for (const f of coll.fields ?? []) {
@@ -39,16 +61,16 @@ export function fieldRoles() {
   return { shared, translatable };
 }
 
-export function listSlugs(locale) {
-  const dir = resolve(ANIMALS_DIR, locale);
+export function listSlugs(name, locale) {
+  const dir = resolve(collection(name).dir, locale);
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
     .filter((f) => f.endsWith('.md'))
     .map((f) => f.replace(/\.md$/, ''));
 }
 
-export function entryPath(locale, slug) {
-  return resolve(ANIMALS_DIR, locale, `${slug}.md`);
+export function entryPath(name, locale, slug) {
+  return resolve(collection(name).dir, locale, `${slug}.md`);
 }
 
 // Deterministic stringify (sorted keys) so hashes are stable across key order.
@@ -88,20 +110,25 @@ export function sourceHash(entry, translatable) {
  * the Portuguese translation is edited after a bless — neither side can drift
  * silently. Returns `null` for a hash when that locale's file is missing.
  */
-export function pairHashes(slug, translatable) {
-  const en = existsSync(entryPath('en', slug))
-    ? sourceHash(parseEntry(entryPath('en', slug)), translatable)
+export function pairHashes(name, slug, translatable) {
+  const en = existsSync(entryPath(name, 'en', slug))
+    ? sourceHash(parseEntry(entryPath(name, 'en', slug)), translatable)
     : null;
-  const pt = existsSync(entryPath('pt-br', slug))
-    ? sourceHash(parseEntry(entryPath('pt-br', slug)), translatable)
+  const pt = existsSync(entryPath(name, 'pt-br', slug))
+    ? sourceHash(parseEntry(entryPath(name, 'pt-br', slug)), translatable)
     : null;
   return { enHash: en, ptHash: pt };
 }
 
-export function readLock() {
-  if (!existsSync(LOCK_PATH)) return {};
+export function lockPath(name) {
+  return collection(name).lock;
+}
+
+export function readLock(name) {
+  const path = collection(name).lock;
+  if (!existsSync(path)) return {};
   try {
-    return JSON.parse(readFileSync(LOCK_PATH, 'utf8'));
+    return JSON.parse(readFileSync(path, 'utf8'));
   } catch {
     return {};
   }

@@ -27,3 +27,8 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Agent guidance files are intentionally committed even if a global gitignore
+# ignores them.
+!AGENTS.md
+!CLAUDE.md

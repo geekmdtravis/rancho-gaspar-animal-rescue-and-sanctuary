@@ -8,13 +8,12 @@ import SectionLabel from './SectionLabel.astro';
 import Button from './Button.astro';
 import DonationWidget from './DonationWidget.astro';
 import AnimalCard from './AnimalCard.astro';
-import StatBlock from './StatBlock.astro';
 import GetInvolvedCard from './GetInvolvedCard.astro';
 import TestimonialCard from './TestimonialCard.astro';
 import NewsletterBlock from './NewsletterBlock.astro';
 import Heart from './icons/Heart.astro';
-import Paw from './icons/Paw.astro';
 import Icon from './icons/Icon.astro';
+import { listReviews, findReview, isTranslated, reviewSlug } from '../lib/reviews';
 import { t, localizePath, type Lang } from '../i18n/utils';
 
 interface Props {
@@ -32,7 +31,16 @@ const adoptables = all
 
 const involvedAccents = ['sage', 'sky', 'lilac'] as const;
 const involvedPaths = ['/get-involved#volunteer', '/get-involved#foster', '/get-involved#share'];
-const testimonialKinds = ['dog', 'cat'] as const;
+// For translated reviews, also pull the origin-language version so the card can
+// offer a "read original" toggle.
+const reviewCards = await Promise.all(
+  (await listReviews(lang)).map(async (r) => {
+    const original = isTranslated(r, lang)
+      ? await findReview(r.data.originLang, reviewSlug(r))
+      : undefined;
+    return { r, original };
+  }),
+);
 const adoptHref = localizePath('/adopt', lang);
 const donateHref = localizePath('/donate', lang);
 const volunteerHref = localizePath('/get-involved', lang);
@@ -91,29 +99,6 @@ const volunteerHref = localizePath('/get-involved', lang);
   }
 </section>
 
-<!-- Impact -->
-<section class="rg-container rg-section">
-  <div class="hp-impact">
-    <div class="hp-center">
-      <SectionLabel>{dict.impact.label}</SectionLabel>
-      <h2 class="hp-h2">{dict.impact.title}</h2>
-      <p class="hp-lead hp-lead--center">{dict.impact.body}</p>
-    </div>
-    <div class="hp-grid hp-grid--4 hp-stats">
-      {
-        dict.impact.stats.map((s, i) => (
-          <StatBlock value={s.value} label={s.label} sub={s.sub}>
-            {i === 0 && <Paw slot="icon" size={22} color="currentColor" />}
-            {i === 1 && <Heart slot="icon" size={22} color="currentColor" filled />}
-            {i === 2 && <Icon slot="icon" name="gift" size={22} />}
-            {i === 3 && <Icon slot="icon" name="users" size={22} />}
-          </StatBlock>
-        ))
-      }
-    </div>
-  </div>
-</section>
-
 <!-- Get involved -->
 <section class="rg-container rg-section">
   <div class="hp-center hp-center--mb">
@@ -143,12 +128,32 @@ const volunteerHref = localizePath('/get-involved', lang);
 <section class="rg-container rg-section">
   <div class="hp-grid hp-grid--2">
     {
-      dict.testimonials.map((tm, i) => (
+      reviewCards.map(({ r, original }) => (
         <TestimonialCard
-          quote={tm.quote}
-          author={tm.author}
-          role={tm.role}
-          kind={testimonialKinds[i]}
+          quote={r.data.quote}
+          author={r.data.author}
+          role={r.data.role}
+          rating={r.data.rating}
+          kind={r.data.kind}
+          translatedFrom={
+            original
+              ? dict.reviews.translatedFrom.replace(
+                  '{lang}',
+                  dict.reviews.langNames[r.data.originLang],
+                )
+              : undefined
+          }
+          original={
+            original
+              ? {
+                  quote: original.data.quote,
+                  author: original.data.author,
+                  role: original.data.role,
+                }
+              : undefined
+          }
+          showOriginalLabel={dict.reviews.showOriginal}
+          showTranslationLabel={dict.reviews.showTranslation}
         />
       ))
     }
@@ -228,14 +233,6 @@ const volunteerHref = localizePath('/get-involved', lang);
     border: 1px dashed var(--rg-border-strong);
     border-radius: 18px;
   }
-  .hp-impact {
-    background: var(--rg-primary-faint);
-    border-radius: 24px;
-    padding: 48px 40px;
-  }
-  .hp-stats {
-    gap: 24px;
-  }
   .hp-center {
     text-align: center;
   }
@@ -256,9 +253,6 @@ const volunteerHref = localizePath('/get-involved', lang);
     .hp-grid--3,
     .hp-grid--2 {
       grid-template-columns: 1fr;
-    }
-    .hp-impact {
-      padding: 32px 20px;
     }
   }
   @media (max-width: 520px) {

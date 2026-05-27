@@ -17,6 +17,7 @@ import PhotoSlot from './PhotoSlot.astro';
 import Heart from './icons/Heart.astro';
 import { t, localizePath, formatAge, type Lang } from '../i18n/utils';
 import { similarAnimals, animalPath, type Animal } from '../lib/animals';
+import { usdToBrl, usdWithApprox } from '../lib/fx';
 
 interface Props {
   lang: Lang;
@@ -33,9 +34,14 @@ const similar = await similarAnimals(entry, lang);
 const statusLabel = isAdopt ? dict.status.adoptable : dict.status.resident;
 const age = formatAge(d.dob, d.dobEstimated, lang);
 const meta = [d.sex === 'unknown' ? null : d.sex, age, d.breed, d.weight].filter(Boolean);
+// Adoption fee is authored in USD; show it USD-first with an approximate BRL
+// value, using the same build-time rate as the donation widget.
+const rate = await usdToBrl();
 const facts = [
   ...d.quickFacts,
-  ...(isAdopt && d.adoptionFee ? [{ label: dict.profile.fee, value: d.adoptionFee }] : []),
+  ...(isAdopt && d.adoptionFee
+    ? [{ label: dict.profile.fee, value: usdWithApprox(d.adoptionFee, rate) }]
+    : []),
 ];
 
 const crumbs = [
@@ -49,7 +55,7 @@ const crumbs = [
 
 const applyLabel = `${dict.profile.apply} ${d.name}`;
 const aboutHeading = `${dict.profile.aboutHeading} ${d.name}`;
-const applyHref = `mailto:hello@ranchogaspar.org?subject=${encodeURIComponent(applyLabel)}`;
+const applyHref = `mailto:ranchogasparsanctuary@gmail.com?subject=${encodeURIComponent(applyLabel)}`;
 const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
 ---
 
@@ -147,7 +153,7 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
         }
         <a
           class="ap-icon-btn"
-          href={`mailto:hello@ranchogaspar.org`}
+          href={`mailto:ranchogasparsanctuary@gmail.com`}
           aria-label={dict.profile.save}
         >
           <Heart size={18} color="var(--rg-primary)" />

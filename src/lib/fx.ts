@@ -42,3 +42,12 @@ export function brlApprox(usd: number, rate: number): string {
   const value = Math.round(usd * rate);
   return `R$ ${value.toLocaleString('pt-BR')}`;
 }
+
+/**
+ * Format a USD amount USD-first with its approximate BRL value in parentheses,
+ * e.g. "$40 (≈ R$ 200)". USD is the canonical figure; the BRL is a build-time
+ * estimate, so it's marked approximate. Used for adoption fees.
+ */
+export function usdWithApprox(usd: number, rate: number): string {
+  return `$${usd.toLocaleString('en-US')} (≈ ${brlApprox(usd, rate)})`;
+}

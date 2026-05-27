@@ -9,15 +9,44 @@ interface Props {
   role?: string;
   rating?: number;
   kind?: 'dog' | 'cat' | 'bunny';
+  // Pre-formatted "Translated from X" label, set only when the review is shown
+  // off its origin language. Undefined = original language, no badge.
+  translatedFrom?: string;
+  // The review's original-language content, supplied only for translated cards
+  // so the reader can toggle to what the person actually wrote.
+  original?: { quote: string; author: string; role?: string };
+  showOriginalLabel?: string;
+  showTranslationLabel?: string;
 }
-const { quote, author, role, rating = 5, kind = 'dog' } = Astro.props;
+const {
+  quote,
+  author,
+  role,
+  rating = 5,
+  kind = 'dog',
+  translatedFrom,
+  original,
+  showOriginalLabel,
+  showTranslationLabel,
+} = Astro.props;
 const stars = Array.from({ length: 5 }, (_, i) => i < rating);
+// Only offer the toggle when we actually have an original to switch to.
+const canToggle = Boolean(original && showOriginalLabel && showTranslationLabel);
 ---
 
-<figure class="tcard">
+<figure
+  class="tcard"
+  data-tcard
+  data-trans-quote={canToggle ? quote : undefined}
+  data-orig-quote={canToggle ? original!.quote : undefined}
+  data-trans-author={canToggle ? author : undefined}
+  data-orig-author={canToggle ? original!.author : undefined}
+  data-trans-role={canToggle ? (role ?? '') : undefined}
+  data-orig-role={canToggle ? (original!.role ?? '') : undefined}
+>
   <div class="tcard__body">
     <div class="tcard__mark" aria-hidden="true">&ldquo;</div>
-    <blockquote class="tcard__quote">{quote}</blockquote>
+    <blockquote class="tcard__quote" data-tcard-quote>{quote}</blockquote>
     <div class="tcard__stars" aria-label={`${rating} out of 5`}>
       {
         stars.map((filled) => (
@@ -37,12 +66,82 @@ const stars = Array.from({ length: 5 }, (_, i) => i < rating);
       }
     </div>
     <figcaption>
-      <div class="tcard__author">{author}</div>
-      {role && <div class="tcard__role">{role}</div>}
+      <div class="tcard__author" data-tcard-author>{author}</div>
+      {
+        role && (
+          <div class="tcard__role" data-tcard-role>
+            {role}
+          </div>
+        )
+      }
+      {
+        translatedFrom && (
+          <div class="tcard__meta">
+            <div class="tcard__translated" title={translatedFrom}>
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2 4h7M5.5 2.5V4M7 4c0 3-2.2 5.5-5 6.5M3.5 7.5c.5 1.5 2 2.8 3.5 3.3" />
+                <path d="M9 14l3-7 3 7M10 11.5h4" />
+              </svg>
+              <span>{translatedFrom}</span>
+            </div>
+            {canToggle && (
+              <button
+                type="button"
+                class="tcard__toggle"
+                data-tcard-toggle
+                data-label-original={showOriginalLabel}
+                data-label-translation={showTranslationLabel}
+                aria-pressed="false"
+              >
+                {showOriginalLabel}
+              </button>
+            )}
+          </div>
+        )
+      }
     </figcaption>
   </div>
   <Avatar kind={kind} size={64} ring />
 </figure>
+
+<script>
+  // Translated cards can flip between the on-screen translation and the original
+  // text the reviewer wrote. Both strings ride along in data attributes, so the
+  // swap is a no-framework text replace — and the translation still renders with
+  // JS off (progressive enhancement).
+  document.querySelectorAll<HTMLElement>('[data-tcard]').forEach((card) => {
+    const btn = card.querySelector<HTMLButtonElement>('[data-tcard-toggle]');
+    if (!btn) return;
+    const quoteEl = card.querySelector<HTMLElement>('[data-tcard-quote]');
+    const authorEl = card.querySelector<HTMLElement>('[data-tcard-author]');
+    const roleEl = card.querySelector<HTMLElement>('[data-tcard-role]');
+    const d = card.dataset;
+    let showingOriginal = false;
+
+    btn.addEventListener('click', () => {
+      showingOriginal = !showingOriginal;
+      if (quoteEl)
+        quoteEl.textContent = showingOriginal ? (d.origQuote ?? '') : (d.transQuote ?? '');
+      if (authorEl)
+        authorEl.textContent = showingOriginal ? (d.origAuthor ?? '') : (d.transAuthor ?? '');
+      if (roleEl) roleEl.textContent = showingOriginal ? (d.origRole ?? '') : (d.transRole ?? '');
+      btn.textContent = showingOriginal
+        ? (btn.dataset.labelTranslation ?? '')
+        : (btn.dataset.labelOriginal ?? '');
+      btn.setAttribute('aria-pressed', String(showingOriginal));
+    });
+  });
+</script>
 
 <style>
   .tcard {
@@ -89,5 +188,42 @@ const stars = Array.from({ length: 5 }, (_, i) => i < rating);
   .tcard__role {
     font-size: 12px;
     color: var(--rg-ink-mute);
+  }
+  .tcard__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .tcard__translated {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--rg-primary-faint);
+    color: var(--rg-primary-deep);
+    font-size: 11px;
+    font-weight: 600;
+    font-style: normal;
+  }
+  .tcard__translated svg {
+    flex-shrink: 0;
+  }
+  .tcard__toggle {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--rg-primary-deep);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .tcard__toggle:hover {
+    color: var(--rg-primary);
   }
 </style>
