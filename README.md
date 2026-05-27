@@ -52,16 +52,45 @@ needed to assemble them already exist.
 
 ## Commands
 
-| Command              | Action                                              |
-| :------------------- | :-------------------------------------------------- |
-| `npm run dev`        | Dev server at `localhost:4321`                      |
-| `npm run build`      | Build static site to `./dist/`                      |
-| `npm run preview`    | Preview the production build                        |
-| `npm run check`      | `astro check` (TypeScript / template type-checking) |
-| `npm run lint`       | ESLint                                              |
-| `npm run format`     | Prettier (write)                                    |
-| `npm run i18n:check` | Verify EN/PT-BR dictionary + content parity         |
-| `npm run test:e2e`   | Playwright smoke tests (builds fresh, port 4322)    |
+| Command               | Action                                                        |
+| :-------------------- | :------------------------------------------------------------ |
+| `npm run dev`         | Dev server at `localhost:4321`                                |
+| `npm run build`       | Build static site to `./dist/`                                |
+| `npm run preview`     | Preview the production build                                  |
+| `npm run check`       | `astro check` (TypeScript / template type-checking)           |
+| `npm run lint`        | ESLint                                                        |
+| `npm run format`      | Prettier (write)                                              |
+| `npm run i18n:check`  | Verify EN/PT-BR parity (dictionary, shared fields, freshness) |
+| `npm run i18n:status` | Per-animal sync report (shared / fresh + git change dates)    |
+| `npm run i18n:bless`  | Record that translations are in sync (after re-translating)   |
+| `npm run test:e2e`    | Playwright smoke tests (builds fresh, port 4322)              |
+
+## Keeping translations in sync
+
+Animal profiles exist once per locale (`en` + `pt-br`). Two kinds of drift are
+tracked:
+
+- **Shared facts** — fields marked `i18n: duplicate` in the CMS config
+  (`species`, `sex`, `status`, `weight`, `featured`, `order`, `cover`,
+  `gallery`, `adoptionFee`). These are facts, not translations, and **must be
+  identical** across locales. `i18n:check` fails (errors) if they differ.
+- **Translatable content** (`name`, `age`, `breed`, `summary`, `tags`,
+  `quickFacts`, body) may differ by language. To know when a translation has
+  gone **stale**, we fingerprint the English source and store it in
+  `i18n-sync.lock.json`. When English later changes, its fingerprint no longer
+  matches the lock, so `i18n:check` warns and `i18n:status` shows `STALE`.
+
+Workflow when you change an English profile:
+
+1. Edit `en/<slug>.md` (e.g. via Sveltia). `i18n:status` now shows `STALE` /
+   `unverified` for that animal.
+2. Update `pt-br/<slug>.md` to match.
+3. `npm run i18n:bless <slug>` to stamp the new fingerprint — back to `fresh`.
+
+`i18n:status` also prints each locale's last git-commit date, so you can see
+**what changed when**. The lockfile is committed, so its git history is an audit
+trail of every sync checkpoint. (Shared-field drift blocks commits; staleness
+only warns — pass `--strict` to `i18n:check` to make staleness blocking too.)
 
 ## Git hooks (Husky + lint-staged)
 

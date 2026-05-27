@@ -15,6 +15,19 @@ test.describe('Adopt listing', () => {
     await expect(luna).toBeHidden();
   });
 
+  test('a real cover photo is cropped square, not rendered full-height', async ({ page }) => {
+    await page.goto('/adopt');
+    const img = page.locator('a[href="/adopt/buddy"] img').first();
+    await expect(img).toBeVisible();
+    const box = await img.boundingBox();
+    expect(box, 'cover image should have a layout box').not.toBeNull();
+    if (box) {
+      const ratio = box.width / box.height;
+      expect(ratio, `cover aspect ratio was ${ratio.toFixed(2)}`).toBeGreaterThan(0.8);
+      expect(ratio, `cover aspect ratio was ${ratio.toFixed(2)}`).toBeLessThan(1.25);
+    }
+  });
+
   test('Portuguese adopt listing is translated', async ({ page }) => {
     await page.goto('/pt-br/adopt');
     await expect(page.getByRole('heading', { level: 1 })).toContainText(

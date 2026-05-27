@@ -3,7 +3,7 @@
 // same files. The `status` field is the core resident-vs-adoptable
 // distinction; the loader id encodes the locale ("en/luna", "pt-br/luna").
 import { defineCollection } from 'astro:content';
-import { z } from 'astro:schema';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const animals = defineCollection({

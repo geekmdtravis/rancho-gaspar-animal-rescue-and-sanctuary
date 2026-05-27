@@ -60,13 +60,15 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     <div class="ap-gallery">
       {
         d.cover ? (
-          <Image
-            src={d.cover}
-            alt={d.coverAlt ?? d.name}
-            widths={[480, 768, 1024]}
-            sizes="(max-width: 980px) 92vw, 560px"
-            class="ap-hero-img"
-          />
+          <span class="ap-hero">
+            <Image
+              src={d.cover}
+              alt={d.coverAlt ?? d.name}
+              widths={[480, 768, 1024]}
+              sizes="(max-width: 980px) 92vw, 560px"
+              class="ap-hero-img"
+            />
+          </span>
         ) : (
           <PhotoSlot ratio="4 / 3" radius={20} kind={d.species} label={`${d.name} · photo`} />
         )
@@ -75,13 +77,15 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
         d.gallery.length > 0 && (
           <div class="ap-thumbs">
             {d.gallery.slice(0, 4).map((img, i) => (
-              <Image
-                src={img}
-                alt={`${d.name} ${i + 1}`}
-                widths={[120, 240]}
-                sizes="120px"
-                class="ap-thumb"
-              />
+              <span class="ap-thumb">
+                <Image
+                  src={img}
+                  alt={`${d.name} ${i + 1}`}
+                  widths={[120, 240]}
+                  sizes="120px"
+                  class="ap-thumb-img"
+                />
+              </span>
             ))}
           </div>
         )
@@ -233,11 +237,19 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     grid-template-columns: 1.1fr 1fr;
     gap: 36px;
   }
-  .ap-hero-img {
-    width: 100%;
+  /* Wrapper elements (which I control) enforce the crop ratio; the <Image>
+     just fills them. Robust regardless of the width/height Astro emits. */
+  .ap-hero {
+    display: block;
     aspect-ratio: 4 / 3;
-    object-fit: cover;
+    overflow: hidden;
     border-radius: 20px;
+  }
+  .ap-hero :global(.ap-hero-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .ap-thumbs {
     margin-top: 12px;
@@ -246,10 +258,16 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     gap: 8px;
   }
   .ap-thumb {
-    width: 100%;
+    display: block;
     aspect-ratio: 1 / 1;
-    object-fit: cover;
+    overflow: hidden;
     border-radius: 10px;
+  }
+  .ap-thumb :global(.ap-thumb-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .ap-badges {
     display: flex;

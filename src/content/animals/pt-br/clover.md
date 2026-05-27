@@ -1,19 +1,19 @@
 ---
 name: Clover
-species: bunny
-sex: F
-age: 1 ano
+species: cat
+sex: M
+age: 6 anos
+breed: ''
+weight: ''
 status: adoptable
-summary: Coelhinha doce e gentil em busca de um lar tranquilo.
+summary: Sphynx raivoso e psicótico procura vítima.
 tags:
   - Castrada
   - Usa a caixa de areia
 featured: true
 order: 3
+cover: /src/assets/uploads/Sphynx-Tripp-cropped-874x1024.webp
 adoptionFee: R$ 150
 ---
 
-Clover é uma coelhinha gentil e quietinha que adora folhas fresquinhas e um
-cantinho aconchegante. É castrada, usa a caixa de areia e se daria muito bem
-em uma casa calma que entenda que coelhos precisam de espaço para pular e
-explorar.
+Sphynx raivoso e psicótico procura vítima.

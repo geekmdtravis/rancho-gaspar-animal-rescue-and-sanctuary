@@ -1,91 +1,122 @@
 #!/usr/bin/env node
-// i18n parity check — fails (exit 1) when English and Brazilian Portuguese
-// drift apart. It verifies two things:
+// i18n parity check. Three layers, fastest/cheapest first:
 //
-//   1. UI dictionary parity — every key path (and array length) in the EN
-//      dictionary exists in PT-BR and vice versa. Catches a translator adding
-//      an EN string but forgetting the PT-BR counterpart.
-//   2. Content parity — every animal profile slug exists in both
-//      src/content/animals/en and .../pt-br.
+//   1. UI dictionary parity — every key path + array length in the EN
+//      dictionary exists in PT-BR and vice versa.
+//   2. Animal file + shared-field parity (ERRORS) — both locales exist for
+//      every slug, and every *shared* fact (species, status, cover, …, i.e.
+//      the `i18n: duplicate` fields) is byte-identical across locales.
+//   3. Translation freshness (WARNINGS) — the English source fingerprint is
+//      compared against the lockfile. A mismatch means EN changed since the
+//      translation was last confirmed in sync (run `npm run i18n:bless <slug>`
+//      after re-translating).
 //
-// This is a *whole-project* invariant (it's inherently cross-file), so it
-// always inspects the current tree — never a stale snapshot. It's fast, so the
-// pre-commit hook runs it unconditionally.
-//
-// Relies on Node's built-in TypeScript type-stripping (Node ≥ 22.18 / 24) to
-// import the .ts dictionary directly.
-import { readdirSync, existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+// Errors fail the build/hook (exit 1). Staleness warns but doesn't block, so
+// you can commit an English edit before the translation lands. Pass --strict
+// (or set I18N_STRICT=1) to also fail on staleness.
+import {
+  LOCALES,
+  fieldRoles,
+  listSlugs,
+  entryPath,
+  parseEntry,
+  sourceHash,
+  readLock,
+  deepEqual,
+} from './lib/i18n-core.mjs';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const LOCALES = ['en', 'pt-br'];
-const problems = [];
+const strict = process.argv.includes('--strict') || process.env.I18N_STRICT === '1';
+const errors = [];
+const warnings = [];
 
-// ── 1. Dictionary structural parity ───────────────────────────────────────
-const { ui } = await import(resolve(root, 'src/i18n/ui.ts'));
-
+// ── 1. UI dictionary structural parity ─────────────────────────────────────
+const { ui } = await import('../src/i18n/ui.ts');
 const kind = (v) => (Array.isArray(v) ? 'array' : v === null ? 'null' : typeof v);
 
-function diff(a, b, path) {
+function diffUi(a, b, path) {
   const ta = kind(a);
   const tb = kind(b);
   if (ta !== tb) {
-    problems.push(`ui ${path}: ${ta} in en vs ${tb} in pt-br`);
+    errors.push(`ui ${path}: ${ta} in en vs ${tb} in pt-br`);
     return;
   }
   if (ta === 'object') {
     for (const k of Object.keys(a)) {
-      if (!(k in b)) problems.push(`ui ${path}.${k}: missing in pt-br`);
-      else diff(a[k], b[k], `${path}.${k}`);
+      if (!(k in b)) errors.push(`ui ${path}.${k}: missing in pt-br`);
+      else diffUi(a[k], b[k], `${path}.${k}`);
     }
-    for (const k of Object.keys(b)) {
-      if (!(k in a)) problems.push(`ui ${path}.${k}: missing in en`);
-    }
+    for (const k of Object.keys(b)) if (!(k in a)) errors.push(`ui ${path}.${k}: missing in en`);
   } else if (ta === 'array') {
     if (a.length !== b.length) {
-      problems.push(`ui ${path}: length ${a.length} in en vs ${b.length} in pt-br`);
+      errors.push(`ui ${path}: length ${a.length} in en vs ${b.length} in pt-br`);
     }
-    for (let i = 0; i < Math.min(a.length, b.length); i++) {
-      diff(a[i], b[i], `${path}[${i}]`);
+    for (let i = 0; i < Math.min(a.length, b.length); i++) diffUi(a[i], b[i], `${path}[${i}]`);
+  }
+}
+diffUi(ui.en, ui['pt-br'], '');
+
+// ── 2 & 3. Animal content parity ───────────────────────────────────────────
+const { shared, translatable } = fieldRoles();
+const slugs = Object.fromEntries(LOCALES.map((loc) => [loc, new Set(listSlugs(loc))]));
+const lock = readLock();
+
+const allSlugs = new Set([...slugs.en, ...slugs['pt-br']]);
+for (const slug of [...allSlugs].sort()) {
+  const inEn = slugs.en.has(slug);
+  const inPt = slugs['pt-br'].has(slug);
+  if (!inEn) {
+    errors.push(`animals: "${slug}" exists in pt-br/ but not en/`);
+    continue;
+  }
+  if (!inPt) {
+    errors.push(`animals: "${slug}" exists in en/ but not pt-br/`);
+    continue;
+  }
+
+  const en = parseEntry(entryPath('en', slug));
+  const pt = parseEntry(entryPath('pt-br', slug));
+
+  // Shared facts must match exactly.
+  for (const field of shared) {
+    if (!deepEqual(en.data[field], pt.data[field])) {
+      errors.push(
+        `animals "${slug}": shared field "${field}" differs — ` +
+          `en=${JSON.stringify(en.data[field] ?? null)} vs pt-br=${JSON.stringify(pt.data[field] ?? null)}`,
+      );
     }
   }
-  // primitives: values are expected to differ between locales — that's fine.
-}
 
-diff(ui.en, ui['pt-br'], '');
-
-// ── 2. Animal content parity ───────────────────────────────────────────────
-const animalsDir = resolve(root, 'src/content/animals');
-const slugsByLocale = Object.fromEntries(
-  LOCALES.map((loc) => {
-    const dir = resolve(animalsDir, loc);
-    const slugs = existsSync(dir)
-      ? readdirSync(dir)
-          .filter((f) => f.endsWith('.md'))
-          .map((f) => f.replace(/\.md$/, ''))
-      : [];
-    return [loc, new Set(slugs)];
-  }),
-);
-
-for (const slug of slugsByLocale.en) {
-  if (!slugsByLocale['pt-br'].has(slug)) {
-    problems.push(`animals: "${slug}" exists in en/ but not pt-br/`);
-  }
-}
-for (const slug of slugsByLocale['pt-br']) {
-  if (!slugsByLocale.en.has(slug)) {
-    problems.push(`animals: "${slug}" exists in pt-br/ but not en/`);
+  // Translation freshness vs the recorded English source fingerprint.
+  const current = sourceHash(en, translatable);
+  const recorded = lock[slug]?.enHash;
+  if (!recorded) {
+    warnings.push(
+      `animals "${slug}": no sync record — run \`npm run i18n:bless ${slug}\` once pt-br is verified`,
+    );
+  } else if (recorded !== current) {
+    warnings.push(
+      `animals "${slug}": English source changed since last sync — pt-br may be stale ` +
+        `(re-translate, then \`npm run i18n:bless ${slug}\`)`,
+    );
   }
 }
 
-// ── Report ─────────────────────────────────────────────────────────────────
-if (problems.length > 0) {
-  console.error(`\n✖ i18n parity check failed (${problems.length} issue(s)):\n`);
-  for (const p of problems) console.error(`  • ${p}`);
-  console.error('\nAdd the missing translations so EN and PT-BR stay in sync.\n');
+// ── Report ──────────────────────────────────────────────────────────────────
+if (warnings.length) {
+  console.warn(`\n⚠ i18n freshness (${warnings.length}):`);
+  for (const w of warnings) console.warn(`  • ${w}`);
+}
+if (errors.length) {
+  console.error(`\n✖ i18n parity failed (${errors.length} error(s)):`);
+  for (const e of errors) console.error(`  • ${e}`);
+  console.error('');
   process.exit(1);
 }
-
-console.log('✓ i18n parity OK — EN and PT-BR dictionaries and animal content are in sync.');
+if (strict && warnings.length) {
+  console.error('\n✖ --strict: treating freshness warnings as errors.\n');
+  process.exit(1);
+}
+console.log(
+  `✓ i18n parity OK — dictionaries, shared fields, and animal files in sync` +
+    (warnings.length ? ` (${warnings.length} freshness warning(s) above)` : ''),
+);

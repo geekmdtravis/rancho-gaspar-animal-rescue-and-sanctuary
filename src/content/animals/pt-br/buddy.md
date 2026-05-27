@@ -12,11 +12,15 @@ tags:
   - Bom com cães
 featured: true
 order: 4
+cover: /src/assets/uploads/Golden-Retriever-1536x1024.jpg
 adoptionFee: R$ 200
 quickFacts:
-  - { label: Adestrado em casa, value: Sim }
-  - { label: Bom com cães, value: Sim }
-  - { label: Nível de energia, value: 'Médio–alto' }
+  - label: Adestrado em casa
+    value: Sim
+  - label: Bom com cães
+    value: Sim
+  - label: Nível de energia
+    value: Médio–alto
 ---
 
 Buddy é o amigo que todos querem — equilibrado, leal e sempre feliz em ver

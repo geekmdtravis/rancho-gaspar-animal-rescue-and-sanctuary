@@ -47,14 +47,16 @@ const meetCta = `${meetLabel} ${name}`;
   <a class="acard__media" href={href} aria-label={meetCta}>
     {
       image ? (
-        <Image
-          src={image}
-          alt={imageAlt ?? name}
-          widths={[180, 320, 480, 640]}
-          sizes="(max-width: 640px) 90vw, 300px"
-          class="acard__img"
-          loading="lazy"
-        />
+        <span class="acard__imgwrap">
+          <Image
+            src={image}
+            alt={imageAlt ?? name}
+            widths={[180, 320, 480, 640]}
+            sizes="(max-width: 640px) 90vw, 300px"
+            class="acard__img"
+            loading="lazy"
+          />
+        </span>
       ) : (
         <PhotoSlot ratio="1 / 1" radius={0} kind={kind} label={`${name} photo`} />
       )
@@ -108,10 +110,18 @@ const meetCta = `${meetLabel} ${name}`;
     position: relative;
     display: block;
   }
-  .acard__img {
+  /* The wrapper (a real element I control) enforces the square crop; the image
+     just fills it. This is robust regardless of the width/height attributes
+     Astro's <Image> emits. :global reaches the <img> inside the component. */
+  .acard__imgwrap {
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+  .acard__imgwrap :global(.acard__img) {
     display: block;
     width: 100%;
-    aspect-ratio: 1 / 1;
+    height: 100%;
     object-fit: cover;
   }
   .acard__status {

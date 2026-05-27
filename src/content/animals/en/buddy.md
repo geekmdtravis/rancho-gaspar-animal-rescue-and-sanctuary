@@ -12,11 +12,16 @@ tags:
   - Good with dogs
 featured: true
 order: 4
+cover: /src/assets/uploads/Golden-Retriever-1536x1024.jpg
+coverAlt: ''
 adoptionFee: R$ 200
 quickFacts:
-  - { label: House trained, value: Yes }
-  - { label: Good with dogs, value: Yes }
-  - { label: Energy level, value: 'Medium–high' }
+  - label: House trained
+    value: Yes
+  - label: Good with dogs
+    value: Yes
+  - label: Energy level
+    value: Medium–high
 ---
 
 Buddy is the friend everyone wants — steady, loyal, and endlessly happy to see

@@ -1,0 +1,31 @@
+---
+// Sveltia CMS admin shell. Served as an Astro *page* (not a public/ file) so
+// that BOTH /admin and /admin/ resolve — a static file would only answer the
+// trailing-slash form. The editing UI loads from the Sveltia CDN; the
+// collection schema lives in /admin/config.yml (a static file in public/).
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Rancho Gaspar — Content</title>
+    <!--
+      Absolute config URL so Sveltia finds the schema regardless of whether the
+      page was opened at /admin or /admin/. Without this it would resolve
+      config.yml relative to the current path and break on the no-slash form.
+    -->
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+  </head>
+  <body>
+    <!--
+      Local editing: open this page and choose "Work with Local Repository"
+      (Chromium browsers, via the File System Access API — no proxy server).
+      Production editing uses the GitHub backend in /admin/config.yml.
+      `is:inline` keeps Astro from trying to bundle the external CDN script.
+    -->
+    <script is:inline src="https://unpkg.com/@sveltia/cms@0/dist/sveltia-cms.js"></script>
+  </body>
+</html>

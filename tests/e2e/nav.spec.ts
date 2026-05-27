@@ -23,3 +23,11 @@ test('a placeholder route renders the coming-soon page', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toContainText('About Us');
   await expect(page.getByText(/coming soon/i)).toBeVisible();
 });
+
+test('the CMS admin shell resolves with and without a trailing slash', async ({ page }) => {
+  for (const path of ['/admin', '/admin/']) {
+    const res = await page.request.get(path);
+    expect(res.status(), `admin path: ${path}`).toBeLessThan(400);
+    expect(await res.text()).toContain('sveltia-cms.js');
+  }
+});

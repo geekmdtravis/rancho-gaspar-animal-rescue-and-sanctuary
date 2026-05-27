@@ -4,6 +4,7 @@ species: cat
 sex: F
 age: 9 anos
 breed: Tricolor
+weight: ''
 status: resident
 summary: Nossa aquecedora de colo oficial, com três patas e zero preocupações.
 tags:
@@ -11,10 +12,15 @@ tags:
   - Residente permanente
 featured: false
 order: 2
+cover: /src/assets/uploads/The+Scottish+Fold+_+Temperament+Shedding+and+Care+_+ASPCA+Pet+Insurance+_+Scottish+fold+cat+resting+on+a+multicolored+piece+of+furniture+-min.jpg
+adoptionFee: ''
 quickFacts:
-  - { label: No rancho desde, value: '2021' }
-  - { label: Lugar favorito, value: O parapeito da clínica }
-  - { label: Superpoder, value: Acalmar recém-chegados nervosos }
+  - label: No rancho desde
+    value: '2021'
+  - label: Lugar favorito
+    value: O parapeito da clínica
+  - label: Superpoder
+    value: Acalmar recém-chegados nervosos
 ---
 
 Mochi perdeu uma pata antes de chegar até nós e nunca perdeu nem um pingo de

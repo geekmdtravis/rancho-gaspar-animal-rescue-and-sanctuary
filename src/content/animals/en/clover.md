@@ -1,18 +1,20 @@
 ---
 name: Clover
-species: bunny
-sex: F
-age: 1 year
+species: cat
+sex: M
+age: 6 year
+breed: ''
+weight: ''
 status: adoptable
-summary: Sweet and gentle bunny seeking a calm home.
+summary: Angry, psychotic sphinx seeks victim.
 tags:
   - Spayed
   - Litter trained
 featured: true
 order: 3
+cover: /src/assets/uploads/Sphynx-Tripp-cropped-874x1024.webp
+coverAlt: ''
 adoptionFee: R$ 150
 ---
 
-Clover is a gentle, quiet bunny who loves fresh greens and a cozy corner. She's
-spayed, litter-trained, and would thrive in a calm household that understands
-rabbits need space to hop and explore.
+Angry, psychotic sphinx seeks victim.
