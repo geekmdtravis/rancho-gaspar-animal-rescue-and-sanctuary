@@ -1,0 +1,14 @@
+---
+// Get involved — intentionally simple contact page.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GetInvolvedPage from '../../components/GetInvolvedPage.astro';
+import { t } from '../../i18n/utils';
+
+const lang = 'pt-br';
+const dict = t(lang);
+const title = dict.involved.title;
+---
+
+<BaseLayout lang={lang} active="involved" title={title} description={dict.involved.body}>
+  <GetInvolvedPage lang={lang} />
+</BaseLayout>

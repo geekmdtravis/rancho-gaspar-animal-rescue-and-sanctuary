@@ -1,0 +1,97 @@
+---
+// GetInvolvedPage — simple /get-involved body aligned with the listing pages.
+import Breadcrumbs from './Breadcrumbs.astro';
+import SectionLabel from './SectionLabel.astro';
+import Button from './Button.astro';
+import Icon from './icons/Icon.astro';
+import { t, localizePath, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const dict = t(lang);
+const subject = lang === 'pt-br' ? 'Participar' : 'Getting involved';
+const emailHref = `mailto:ranchogasparsanctuary@gmail.com?subject=${encodeURIComponent(subject)}`;
+const crumbs = [
+  { label: dict.nav.home, href: localizePath('/', lang) },
+  { label: dict.nav.involved },
+];
+---
+
+<section class="rg-container rg-section--tight">
+  <Breadcrumbs items={crumbs} />
+
+  <header class="gi-head">
+    <SectionLabel>{dict.involved.label}</SectionLabel>
+    <h1 class="gi-title rg-display">{dict.involved.title}</h1>
+    <p class="gi-lead">{dict.involved.body}</p>
+  </header>
+
+  <div class="gi-contact">
+    <div>
+      <h2 class="gi-contact__title">{dict.involved.contactTitle}</h2>
+      <p class="gi-contact__body">{dict.involved.contactBody}</p>
+    </div>
+    <Button href={emailHref} variant="primary">
+      {dict.involved.cta}
+      <Icon slot="iconRight" name="mail" />
+    </Button>
+  </div>
+</section>
+
+<style>
+  .gi-head {
+    margin: 24px 0 28px;
+  }
+
+  .gi-title {
+    font-size: 48px;
+    margin: 4px 0 8px;
+    line-height: 1.1;
+  }
+
+  .gi-lead {
+    font-size: 18px;
+    color: var(--rg-ink-soft);
+    margin: 0;
+    max-width: 620px;
+    line-height: 1.55;
+  }
+
+  .gi-contact {
+    margin-top: 32px;
+    background: var(--rg-primary-soft);
+    border-radius: 20px;
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .gi-contact__title {
+    font-family: var(--rg-font-display);
+    font-style: italic;
+    font-size: 24px;
+    color: var(--rg-ink);
+    margin: 0;
+  }
+
+  .gi-contact__body {
+    font-size: 16px;
+    color: var(--rg-ink-soft);
+    margin: 6px 0 0;
+  }
+
+  @media (max-width: 980px) {
+    .gi-title {
+      font-size: 36px;
+    }
+
+    .gi-contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

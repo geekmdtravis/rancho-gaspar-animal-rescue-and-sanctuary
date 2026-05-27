@@ -5,7 +5,6 @@
 // your processor (Pix/Stripe/etc.) when ready.
 import Heart from './icons/Heart.astro';
 import { t, type Lang } from '../i18n/utils';
-import { usdToBrl, brlApprox } from '../lib/fx';
 
 interface Props {
   lang: Lang;
@@ -23,18 +22,18 @@ const {
 } = Astro.props;
 const dict = t(lang);
 // USD is primary (most donors are in the US); BRL is shown as an approximate
-// equivalent, converted with a build-time rate. See src/lib/fx.ts.
+// equivalent, with the rate fetched in the visitor's browser on load (see
+// lib/fx-client.ts). There's no build-time rate: the note renders "unavailable"
+// until/unless the fetch resolves, so a blocked/offline fetch is honest.
 const currency = '$';
-const rate = await usdToBrl();
-const fxNote = dict.donate.fxNote.replace('{brl}', brlApprox(defaultAmount, rate));
 ---
 
 <div
   class:list={['donate', compact && 'donate--compact']}
   data-donation
   data-currency={currency}
-  data-rate={rate}
   data-fx-note={dict.donate.fxNote}
+  data-fx-note-unavailable={dict.donate.fxNoteUnavailable}
 >
   <div class="donate__deco" aria-hidden="true"><Heart size={28} color="var(--rg-primary)" /></div>
   <h3 class="donate__title">{dict.donate.title}</h3>
@@ -63,7 +62,7 @@ const fxNote = dict.donate.fxNote.replace('{brl}', brlApprox(defaultAmount, rate
     }
   </div>
 
-  <p class="donate__fx" data-donate-approx>{fxNote}</p>
+  <p class="donate__fx" data-donate-approx>{dict.donate.fxNoteUnavailable}</p>
 
   <a class="donate__cta" href={donateUrl} data-donate-cta data-per-month={dict.donate.perMonth}>
     <Heart size={16} color="#fff" filled />
@@ -88,10 +87,12 @@ const fxNote = dict.donate.fxNote.replace('{brl}', brlApprox(defaultAmount, rate
 </div>
 
 <script>
+  import { usdToBrl, brl } from '../lib/fx-client';
+
   document.querySelectorAll<HTMLElement>('[data-donation]').forEach((widget) => {
     const currency = widget.dataset.currency ?? '$';
-    const rate = Number(widget.dataset.rate ?? '0');
     const fxNote = widget.dataset.fxNote ?? '';
+    const fxNoteUnavailable = widget.dataset.fxNoteUnavailable ?? '';
     const cta = widget.querySelector<HTMLElement>('[data-donate-cta]');
     const label = widget.querySelector<HTMLElement>('[data-donate-label]');
     const approx = widget.querySelector<HTMLElement>('[data-donate-approx]');
@@ -101,13 +102,15 @@ const fxNote = dict.donate.fxNote.replace('{brl}', brlApprox(defaultAmount, rate
       widget.querySelector<HTMLElement>('.donate__amount.is-active')?.dataset.amount ?? '50',
     );
     let freq: 'one' | 'month' = 'one';
-
-    const brl = (usd: number) => `R$ ${Math.round(usd * rate).toLocaleString('pt-BR')}`;
+    // Filled once the in-browser rate fetch resolves; null until then / on fail.
+    let rate: number | null = null;
 
     const render = () => {
       if (label)
         label.textContent = `${baseLabel} ${currency}${amount}${freq === 'month' ? perMonth : ''}`;
-      if (approx && rate > 0 && fxNote) approx.textContent = fxNote.replace('{brl}', brl(amount));
+      if (approx)
+        approx.textContent =
+          rate != null && fxNote ? fxNote.replace('{brl}', brl(amount, rate)) : fxNoteUnavailable;
     };
 
     widget.querySelectorAll<HTMLElement>('.donate__freq-btn').forEach((btn) => {
@@ -133,6 +136,12 @@ const fxNote = dict.donate.fxNote.replace('{brl}', brlApprox(defaultAmount, rate
     });
 
     render();
+    // Pull the live rate, then re-render so the BRL note fills in (or stays
+    // "unavailable" if the fetch failed).
+    usdToBrl().then((r) => {
+      rate = r;
+      render();
+    });
   });
 </script>
 

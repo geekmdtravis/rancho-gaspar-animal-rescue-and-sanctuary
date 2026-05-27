@@ -34,7 +34,7 @@ const animals = defineCollection({
       coverAlt: z.string().optional(),
       gallery: z.array(image()).default([]),
       // Adoption fee in USD (the canonical amount). Shown USD-first with an
-      // approximate BRL value computed at build time — see src/lib/fx.ts.
+      // approximate BRL value fetched in-browser — see src/lib/fx-client.ts.
       adoptionFee: z.number().nonnegative().optional(),
       quickFacts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
     }),

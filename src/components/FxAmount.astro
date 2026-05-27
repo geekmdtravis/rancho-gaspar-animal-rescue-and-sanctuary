@@ -1,0 +1,40 @@
+---
+// FxAmount — a USD figure shown USD-first ("$30") with an approximate BRL value
+// in parentheses. USD is the canonical, server-rendered number; the BRL is
+// fetched in the browser on load (see lib/fx-client.ts) and slotted in. The
+// server-rendered baseline is the localized "unavailable" label, so with JS off
+// or the fetch failing the reader still sees the USD and an honest note rather
+// than a stale rate — e.g. "$30 (R$ unavailable)" → "$30 (≈ R$ 151)".
+//
+// The span is the last node on purpose: it's frequently inlined mid-sentence,
+// so any trailing whitespace would render as a stray space before following
+// punctuation. The <script> is hoisted by Astro, so its position is cosmetic.
+interface Props {
+  usd: number;
+  // Localized fallback shown inside the parentheses until/unless the rate loads.
+  unavailable: string;
+}
+const { usd, unavailable } = Astro.props;
+const usdLabel = `$${usd.toLocaleString('en-US')}`;
+---
+
+<script>
+  import { usdToBrl, brl } from '../lib/fx-client';
+
+  const amounts = document.querySelectorAll<HTMLElement>('[data-fx-amount]');
+  if (amounts.length) {
+    // One shared fetch fills every amount on the page; on failure we leave the
+    // server-rendered "unavailable" label untouched.
+    usdToBrl().then((rate) => {
+      if (rate == null) return;
+      amounts.forEach((el) => {
+        const out = el.querySelector<HTMLElement>('[data-fx-brl]');
+        const usd = Number(el.dataset.fxUsd);
+        if (out && Number.isFinite(usd)) out.textContent = `≈ ${brl(usd, rate)}`;
+      });
+    });
+  }
+</script>
+<span class="fx-amount" data-fx-amount data-fx-usd={usd}
+  >{usdLabel} (<span data-fx-brl>{unavailable}</span>)<slot /></span
+>

@@ -1,8 +1,8 @@
 ---
-// GetInvolvedCard — centered card with a big icon medallion, title, blurb,
-// and a CTA. Ported from components-blocks.jsx GetInvolvedCard.
+// GetInvolvedCard — simple centered card with an icon medallion, short note,
+// and one CTA.
 import Button from './Button.astro';
-import Icon from './icons/Icon.astro';
+import Icon, { type IconName } from './icons/Icon.astro';
 
 interface Props {
   title: string;
@@ -10,8 +10,9 @@ interface Props {
   cta: string;
   href: string;
   accent?: 'pink' | 'sage' | 'sky' | 'lilac';
+  ctaIcon?: IconName;
 }
-const { title, description, cta, href, accent = 'pink' } = Astro.props;
+const { title, description, cta, href, accent = 'pink', ctaIcon = 'arrow-right' } = Astro.props;
 const bg = { pink: 'var(--rg-primary-soft)', sage: '#DCE9D5', sky: '#D5E8F2', lilac: '#E2D5EE' }[
   accent
 ];
@@ -28,7 +29,7 @@ const btnVar = accent === 'pink' ? 'primary' : 'soft';
   <div class="gicard__icon" style={{ background: bg, color: fg }}><slot name="icon" /></div>
   <h3 class="gicard__title">{title}</h3>
   <p class="gicard__desc">{description}</p>
-  <Button href={href} variant={btnVar}>{cta}<Icon slot="iconRight" name="arrow-right" /></Button>
+  <Button href={href} variant={btnVar}>{cta}<Icon slot="iconRight" name={ctaIcon} /></Button>
 </div>
 
 <style>

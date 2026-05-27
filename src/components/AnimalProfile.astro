@@ -18,7 +18,7 @@ import Heart from './icons/Heart.astro';
 import Icon from './icons/Icon.astro';
 import { t, localizePath, formatAge, type Lang } from '../i18n/utils';
 import { similarAnimals, animalPath, type Animal } from '../lib/animals';
-import { usdToBrl, usdWithApprox } from '../lib/fx';
+import FxAmount from './FxAmount.astro';
 
 interface Props {
   lang: Lang;
@@ -35,15 +35,11 @@ const similar = await similarAnimals(entry, lang);
 const statusLabel = isAdopt ? dict.status.adoptable : dict.status.resident;
 const age = formatAge(d.dob, d.dobEstimated, lang);
 const meta = [d.sex === 'unknown' ? null : d.sex, age, d.breed, d.weight].filter(Boolean);
-// Adoption fee is authored in USD; show it USD-first with an approximate BRL
-// value, using the same build-time rate as the donation widget.
-const rate = await usdToBrl();
-const facts = [
-  ...d.quickFacts,
-  ...(isAdopt && d.adoptionFee
-    ? [{ label: dict.profile.fee, value: usdWithApprox(d.adoptionFee, rate) }]
-    : []),
-];
+// Adoption fee is authored in USD; shown USD-first with an approximate BRL
+// value fetched in-browser (see FxAmount). Kept out of the plain-text quick
+// facts so its BRL slot can be a live component rather than a baked string.
+const facts = d.quickFacts;
+const feeUsd = isAdopt && d.adoptionFee ? d.adoptionFee : null;
 
 const crumbs = [
   { label: dict.nav.home, href: localizePath('/', lang) },
@@ -125,7 +121,7 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
       }
 
       {
-        facts.length > 0 && (
+        (facts.length > 0 || feeUsd != null) && (
           <div class="ap-facts">
             <SectionLabel>{dict.profile.quickFacts}</SectionLabel>
             <dl>
@@ -135,6 +131,14 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
                   <dd>{f.value}</dd>
                 </div>
               ))}
+              {feeUsd != null && (
+                <div class="ap-fact">
+                  <dt>{dict.profile.fee}</dt>
+                  <dd>
+                    <FxAmount usd={feeUsd} unavailable={dict.fx.unavailable} />
+                  </dd>
+                </div>
+              )}
             </dl>
           </div>
         )
@@ -412,11 +416,13 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     position: relative;
     width: 52px;
     flex-shrink: 0;
+    padding: 0;
     display: inline-grid;
     place-items: center;
     background: var(--rg-surface);
     border: 1.5px solid var(--rg-border);
     border-radius: 999px;
+    appearance: none;
     color: var(--rg-primary);
     cursor: pointer;
   }

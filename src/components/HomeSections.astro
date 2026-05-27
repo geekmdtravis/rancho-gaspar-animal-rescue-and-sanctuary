@@ -29,8 +29,6 @@ const adoptables = all
   .slice(0, 4)
   .map((e) => ({ slug: e.id.split('/')[1], data: e.data }));
 
-const involvedAccents = ['sage', 'sky', 'lilac'] as const;
-const involvedPaths = ['/get-involved#volunteer', '/get-involved#foster', '/get-involved#share'];
 // For translated reviews, also pull the origin-language version so the card can
 // offer a "read original" toggle.
 const reviewCards = await Promise.all(
@@ -44,6 +42,10 @@ const reviewCards = await Promise.all(
 const adoptHref = localizePath('/adopt', lang);
 const donateHref = localizePath('/donate', lang);
 const volunteerHref = localizePath('/get-involved', lang);
+const getInvolvedEmailSubject = lang === 'pt-br' ? 'Participar' : 'Getting involved';
+const getInvolvedEmailHref = `mailto:ranchogasparsanctuary@gmail.com?subject=${encodeURIComponent(
+  getInvolvedEmailSubject,
+)}`;
 ---
 
 <!-- Hero -->
@@ -103,24 +105,18 @@ const volunteerHref = localizePath('/get-involved', lang);
 <section class="rg-container rg-section">
   <div class="hp-center hp-center--mb">
     <SectionLabel>{dict.involved.label}</SectionLabel>
-    <h2 class="hp-h2">{dict.involved.title}</h2>
   </div>
-  <div class="hp-grid hp-grid--3">
-    {
-      dict.involved.cards.map((c, i) => (
-        <GetInvolvedCard
-          title={c.title}
-          description={c.desc}
-          cta={c.cta}
-          href={localizePath(involvedPaths[i], lang)}
-          accent={involvedAccents[i]}
-        >
-          {i === 0 && <Icon slot="icon" name="hand" size={32} />}
-          {i === 1 && <Icon slot="icon" name="home" size={32} />}
-          {i === 2 && <Icon slot="icon" name="share" size={32} />}
-        </GetInvolvedCard>
-      ))
-    }
+  <div class="hp-involved-simple">
+    <GetInvolvedCard
+      title={dict.involved.title}
+      description={dict.involved.body}
+      cta={dict.involved.cta}
+      href={getInvolvedEmailHref}
+      accent="pink"
+      ctaIcon="mail"
+    >
+      <Icon slot="icon" name="mail" size={32} />
+    </GetInvolvedCard>
   </div>
 </section>
 
@@ -241,6 +237,10 @@ const volunteerHref = localizePath('/get-involved', lang);
   }
   .hp-center .hp-h2 {
     margin-top: 4px;
+  }
+  .hp-involved-simple {
+    max-width: 560px;
+    margin: 0 auto;
   }
 
   @media (max-width: 980px) {

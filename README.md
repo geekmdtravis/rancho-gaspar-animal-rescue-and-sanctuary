@@ -24,13 +24,18 @@ brand with the warm **Lora × Nunito** type pairing.
   displayed age is computed at build time (`src/i18n/age.ts`), so it never goes
   stale and no one edits "3 years" → "4 years" every birthday.
 - **Currency**: the sanctuary is in Brazil, but most donations come from the US,
-  so the donation widget is **USD-first** with an approximate BRL equivalent.
-  The USD→BRL rate is fetched once at **build time** from
-  [Frankfurter](https://frankfurter.dev) (open access, no key) — no client
-  request, no key to leak — and falls back to a hardcoded rate
-  (`src/lib/fx.ts`) if the API is unreachable. **Adoption fees use the same
-  model**: each `adoptionFee` is authored in USD (a number) and rendered
-  USD-first with an approximate R$ value in parentheses, e.g. "$40 (≈ R$ 200)".
+  so amounts are **USD-first** with an approximate BRL equivalent. The USD→BRL
+  rate is fetched **in the visitor's browser on load** from
+  [Frankfurter](https://frankfurter.dev), which is open-access (no key) and
+  CORS-enabled — so it's current per visit with no backend. There is **no
+  hardcoded fallback rate**: USD (the canonical figure) always renders, and if
+  the fetch fails the BRL shows an explicit "R$ unavailable" rather than a stale
+  guess (`src/lib/fx-client.ts`, `src/components/FxAmount.astro`). **Adoption
+  fees use the same model**: each `adoptionFee` is authored in USD (a number)
+  and rendered USD-first with the R$ value filled in client-side, e.g.
+  "$40 (≈ R$ 200)". The `/adopt` "Adoption fees from …" line derives its figure
+  from the lowest actual `adoptionFee`, so it can't drift from the per-animal
+  fees.
 - **Reviews**: visitor testimonials are a per-locale content collection
   (`src/content/reviews/`), not hard-coded copy. Each review records the
   `originLang` it was actually written in; the other locale is a _translation_

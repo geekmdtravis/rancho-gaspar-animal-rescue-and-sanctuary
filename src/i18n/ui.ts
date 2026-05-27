@@ -11,7 +11,7 @@ export const defaultLang = 'en';
 const en = {
   site: {
     name: 'Rancho Gaspar',
-    org: 'Rancho Gaspar Animal Rescue',
+    org: 'Rancho Gaspar Animal Sanctuary & Rescue',
     tagline: 'Animal Rescue',
     motto: 'Rescue. Heal. Love. Repeat.',
     description:
@@ -75,6 +75,13 @@ const en = {
     perMonth: '/mo',
     trust: 'Secure · Trusted · Tax-deductible',
     fxNote: 'Amounts in USD · ≈ {brl} today',
+    // Shown when the in-browser rate fetch fails (see lib/fx-client.ts).
+    fxNoteUnavailable: 'Amounts in USD · R$ unavailable',
+  },
+  // Shared currency strings. `unavailable` fills a BRL parenthetical when the
+  // in-browser rate fetch fails (see lib/fx-client.ts + FxAmount.astro).
+  fx: {
+    unavailable: 'R$ unavailable',
   },
   impact: {
     label: 'Our impact',
@@ -88,24 +95,11 @@ const en = {
   },
   involved: {
     label: 'Get involved',
-    title: "There's more than one way to help",
-    cards: [
-      {
-        title: 'Volunteer',
-        desc: 'Give your time. Change their lives. Help with socialization, transport, daily care, and more.',
-        cta: 'Sign up to volunteer',
-      },
-      {
-        title: 'Foster',
-        desc: 'Open your home. Save a life. Provide a temporary home and help pets heal.',
-        cta: 'Become a foster',
-      },
-      {
-        title: 'Spread the Word',
-        desc: 'Share our mission and help us reach more animals in need. Every share counts.',
-        cta: 'Share our mission',
-      },
-    ],
+    title: 'Interested in getting involved?',
+    body: 'Send us an email and tell us how you would like to help. We will get back to you with the best next step.',
+    contactTitle: 'Start with an email',
+    contactBody: 'Tell us a little about yourself and the kind of help you have in mind.',
+    cta: 'Email us',
   },
   reviews: {
     // Shown when a review is displayed in a locale other than the one the
@@ -137,6 +131,10 @@ const en = {
       stories: 'Stories',
       contact: 'Contact',
     },
+    locations: {
+      sanctuary: 'Sanctuary: Mendonça, SP · Brazil',
+      financialHq: 'Headquarters: Murrieta, CA · USA',
+    },
     madeWith: 'Made with',
     inBrazil: 'in Brazil',
     nonprofit: 'US nonprofit · EIN 42-2779431',
@@ -159,8 +157,8 @@ const en = {
     breadcrumb: 'Adopt',
     title: 'Find your new best friend',
     body: 'All of our animals are spayed or neutered, vaccinated, and health-checked before adoption.',
-    // {fee} is filled at build time from the lowest adoptionFee, USD-first
-    // with an approximate BRL value (see src/lib/fx.ts).
+    // {fee} is the lowest adoptionFee, rendered USD-first; the approximate BRL
+    // value is fetched in-browser (see lib/fx-client.ts + FxAmount.astro).
     feesFrom: 'Adoption fees from {fee}.',
     searchPlaceholder: 'Search by name or breed…',
     filterLabel: 'Filter',
@@ -239,7 +237,7 @@ export type Dictionary = typeof en;
 const ptBr: Dictionary = {
   site: {
     name: 'Rancho Gaspar',
-    org: 'Resgate Animal Rancho Gaspar',
+    org: 'Rancho Gaspar Animal Sanctuary & Rescue',
     tagline: 'Resgate Animal',
     motto: 'Resgatar. Curar. Amar. Repetir.',
     description:
@@ -306,6 +304,10 @@ const ptBr: Dictionary = {
     perMonth: '/mês',
     trust: 'Seguro · Confiável · Dedutível de impostos',
     fxNote: 'Valores em USD · ≈ {brl} hoje',
+    fxNoteUnavailable: 'Valores em USD · R$ indisponível',
+  },
+  fx: {
+    unavailable: 'R$ indisponível',
   },
   impact: {
     label: 'Nosso impacto',
@@ -319,24 +321,11 @@ const ptBr: Dictionary = {
   },
   involved: {
     label: 'Participe',
-    title: 'Há mais de uma forma de ajudar',
-    cards: [
-      {
-        title: 'Voluntariar',
-        desc: 'Doe seu tempo. Mude vidas. Ajude com socialização, transporte, cuidados diários e muito mais.',
-        cta: 'Quero ser voluntário',
-      },
-      {
-        title: 'Lar Temporário',
-        desc: 'Abra sua casa. Salve uma vida. Ofereça um lar temporário e ajude os pets a se recuperarem.',
-        cta: 'Seja um lar temporário',
-      },
-      {
-        title: 'Divulgar',
-        desc: 'Compartilhe nossa missão e ajude a alcançar mais animais necessitados. Cada compartilhamento conta.',
-        cta: 'Compartilhe nossa missão',
-      },
-    ],
+    title: 'Quer participar?',
+    body: 'Envie um e-mail contando como gostaria de ajudar. Retornaremos com o melhor próximo passo.',
+    contactTitle: 'Comece com um e-mail',
+    contactBody: 'Conte um pouco sobre você e o tipo de ajuda que tem em mente.',
+    cta: 'Envie um e-mail',
   },
   reviews: {
     translatedFrom: 'Traduzido do {lang}',
@@ -365,6 +354,10 @@ const ptBr: Dictionary = {
       residents: 'Nossos Residentes',
       stories: 'Histórias',
       contact: 'Contato',
+    },
+    locations: {
+      sanctuary: 'Santuário: Mendonça, SP · Brasil',
+      financialHq: 'Sede financeira: Murrieta, CA · EUA',
     },
     madeWith: 'Feito com',
     inBrazil: 'no Brasil',
