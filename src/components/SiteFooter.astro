@@ -25,7 +25,12 @@ const about = [
   { label: dict.footer.links.stories, path: '/stories' },
   { label: dict.footer.links.contact, path: '/contact' },
 ];
-const social = ['Instagram', 'Facebook', 'TikTok', 'YouTube'];
+const social = [
+  { label: 'Instagram', icon: 'instagram' },
+  { label: 'Facebook', icon: 'facebook' },
+  { label: 'TikTok', icon: 'tiktok' },
+  { label: 'YouTube', icon: 'youtube' },
+] as const;
 ---
 
 <footer class="foot">
@@ -86,8 +91,8 @@ const social = ['Instagram', 'Facebook', 'TikTok', 'YouTube'];
       <div class="foot__social">
         {
           social.map((s) => (
-            <span class="foot__social-dot" title={s} aria-label={s}>
-              {s[0]}
+            <span class="foot__social-dot" title={s.label} aria-label={s.label}>
+              <Icon name={s.icon} size={16} />
             </span>
           ))
         }
@@ -209,8 +214,6 @@ const social = ['Instagram', 'Facebook', 'TikTok', 'YouTube'];
     align-items: center;
     justify-content: center;
     color: var(--rg-primary-deep);
-    font-size: 11px;
-    font-weight: 700;
   }
   .foot__stay {
     font-size: 13px;

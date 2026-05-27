@@ -9,6 +9,7 @@ import PhotoSlot from './PhotoSlot.astro';
 import Badge from './Badge.astro';
 import Button from './Button.astro';
 import Heart from './icons/Heart.astro';
+import Icon from './icons/Icon.astro';
 import { formatAge, type Lang } from '../i18n/utils';
 
 interface Props {
@@ -46,6 +47,8 @@ const {
 
 const tagVariants = ['soft', 'sage', 'sky', 'lilac'] as const;
 const meetCta = `${meetLabel} ${name}`;
+const shareLabel = lang === 'pt-br' ? `Compartilhar ${name}` : `Share ${name}`;
+const copiedLabel = lang === 'pt-br' ? 'Link copiado' : 'Link copied';
 const age = formatAge(dob, dobEstimated, lang);
 ---
 
@@ -70,10 +73,35 @@ const age = formatAge(dob, dobEstimated, lang);
     <span class="acard__status">
       <Badge variant={status === 'resident' ? 'lilac' : 'primary'} size="sm">{statusLabel}</Badge>
     </span>
-    <span class="acard__heart" aria-hidden="true"
-      ><Heart size={16} color="var(--rg-primary)" /></span
-    >
   </a>
+  {
+    status === 'adoptable' ? (
+      <button
+        class="acard__share"
+        type="button"
+        aria-label={shareLabel}
+        title={shareLabel}
+        data-share-url={href}
+        data-share-title={meetCta}
+        data-share-text={description ?? meetCta}
+        data-share-copied={copiedLabel}
+      >
+        <span class="acard__share-icon acard__share-icon--share">
+          <Icon name="share" size={16} />
+        </span>
+        <span class="acard__share-icon acard__share-icon--check">
+          <Icon name="check" size={16} />
+        </span>
+        <span class="acard__share-feedback" aria-hidden="true">
+          {copiedLabel}
+        </span>
+      </button>
+    ) : (
+      <span class="acard__heart" aria-hidden="true">
+        <Heart size={16} color="var(--rg-primary)" />
+      </span>
+    )
+  }
   <div class="acard__body">
     <div class="acard__head">
       <h3 class="acard__name">{name}</h3>
@@ -95,8 +123,44 @@ const age = formatAge(dob, dobEstimated, lang);
   </div>
 </article>
 
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-share-url]').forEach((button) => {
+    if (button.dataset.shareReady === 'true') return;
+    button.dataset.shareReady = 'true';
+
+    button.addEventListener('click', async () => {
+      const url = new URL(button.dataset.shareUrl ?? '/', window.location.href).toString();
+      const title = button.dataset.shareTitle ?? document.title;
+      const text = button.dataset.shareText;
+      const payload = { title, text, url };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(payload);
+          return;
+        }
+        if (!navigator.clipboard) return;
+        await navigator.clipboard.writeText(url);
+        const originalLabel = button.getAttribute('aria-label') ?? title;
+        const copiedLabel = button.dataset.shareCopied ?? 'Link copied';
+        button.classList.add('is-copied');
+        button.setAttribute('aria-label', copiedLabel);
+        button.setAttribute('title', copiedLabel);
+        window.setTimeout(() => {
+          button.classList.remove('is-copied');
+          button.setAttribute('aria-label', originalLabel);
+          button.setAttribute('title', originalLabel);
+        }, 1800);
+      } catch {
+        // User cancellation or unavailable clipboard: leave the page unchanged.
+      }
+    });
+  });
+</script>
+
 <style>
   .acard {
+    position: relative;
     background: var(--rg-surface);
     border-radius: 18px;
     border: 1px solid var(--rg-border);
@@ -143,10 +207,78 @@ const age = formatAge(dob, dobEstimated, lang);
     height: 34px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.9);
+    display: grid;
+    place-items: center;
+    backdrop-filter: blur(8px);
+  }
+  .acard__share {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--rg-primary-deep);
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
     backdrop-filter: blur(8px);
+    transition:
+      background 0.15s,
+      color 0.15s,
+      transform 0.15s;
+  }
+  .acard__share-feedback {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    border-radius: 999px;
+    background: var(--rg-ink);
+    color: #fff;
+    padding: 5px 9px;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(-3px);
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+  }
+  .acard__share-icon {
+    display: inline-flex;
+    grid-area: 1 / 1;
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+  }
+  .acard__share-icon--check {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  .acard__share:hover,
+  .acard__share.is-copied {
+    background: var(--rg-primary);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .acard__share.is-copied .acard__share-icon--share {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  .acard__share.is-copied .acard__share-icon--check {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .acard__share.is-copied .acard__share-feedback {
+    opacity: 1;
+    transform: translateY(0);
   }
   .acard__body {
     padding: 16px;

@@ -158,7 +158,10 @@ const en = {
   adoptPage: {
     breadcrumb: 'Adopt',
     title: 'Find your new best friend',
-    body: 'All of our animals are spayed or neutered, vaccinated, and health-checked before adoption. Adoption fees from R$ 150.',
+    body: 'All of our animals are spayed or neutered, vaccinated, and health-checked before adoption.',
+    // {fee} is filled at build time from the lowest adoptionFee, USD-first
+    // with an approximate BRL value (see src/lib/fx.ts).
+    feesFrom: 'Adoption fees from {fee}.',
     searchPlaceholder: 'Search by name or breed…',
     filterLabel: 'Filter',
     species: { all: 'All', dog: 'Dogs', cat: 'Cats', bunny: 'Bunnies' },
@@ -382,7 +385,8 @@ const ptBr: Dictionary = {
   adoptPage: {
     breadcrumb: 'Adotar',
     title: 'Encontre seu novo melhor amigo',
-    body: 'Todos os nossos animais são castrados, vacinados e passam por avaliação de saúde antes da adoção. Taxas de adoção a partir de R$ 150.',
+    body: 'Todos os nossos animais são castrados, vacinados e passam por avaliação de saúde antes da adoção.',
+    feesFrom: 'Taxas de adoção a partir de {fee}.',
     searchPlaceholder: 'Busque por nome ou raça…',
     filterLabel: 'Filtrar',
     species: { all: 'Todos', dog: 'Cães', cat: 'Gatos', bunny: 'Coelhos' },

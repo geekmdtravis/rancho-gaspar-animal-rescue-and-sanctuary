@@ -9,6 +9,7 @@ test.describe('Adopt listing', () => {
 
     const luna = page.locator('a[href="/adopt/luna"]').first();
     await expect(luna).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Share Luna' }).first()).toBeVisible();
 
     // Filter to cats only — Luna (a dog) should be hidden.
     await page.getByRole('button', { name: 'Cats' }).click();
@@ -42,6 +43,23 @@ test.describe('Animal profiles', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Luna');
     await expect(page.getByRole('heading', { name: /Meet Luna/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /Apply to adopt Luna/i }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Share Luna' })).toBeVisible();
+  });
+
+  test('share fallback confirms when the link is copied', async ({ page }) => {
+    await page.goto('/adopt/luna');
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: async () => undefined },
+        configurable: true,
+      });
+    });
+
+    const share = page.getByRole('button', { name: 'Share Luna' });
+    await share.click();
+    await expect(page.getByRole('button', { name: 'Link copied' })).toBeVisible();
+    await expect(share.locator('.ap-share-feedback')).toBeVisible();
   });
 
   test('resident profile is clearly not for adoption', async ({ page }) => {

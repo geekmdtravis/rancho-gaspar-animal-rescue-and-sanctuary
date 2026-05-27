@@ -15,6 +15,7 @@ import DonationWidget from './DonationWidget.astro';
 import AnimalCard from './AnimalCard.astro';
 import PhotoSlot from './PhotoSlot.astro';
 import Heart from './icons/Heart.astro';
+import Icon from './icons/Icon.astro';
 import { t, localizePath, formatAge, type Lang } from '../i18n/utils';
 import { similarAnimals, animalPath, type Animal } from '../lib/animals';
 import { usdToBrl, usdWithApprox } from '../lib/fx';
@@ -55,6 +56,8 @@ const crumbs = [
 
 const applyLabel = `${dict.profile.apply} ${d.name}`;
 const aboutHeading = `${dict.profile.aboutHeading} ${d.name}`;
+const shareLabel = `${dict.profile.share} ${d.name}`;
+const copiedLabel = lang === 'pt-br' ? 'Link copiado' : 'Link copied';
 const applyHref = `mailto:ranchogasparsanctuary@gmail.com?subject=${encodeURIComponent(applyLabel)}`;
 const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
 ---
@@ -151,13 +154,38 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
             </Button>
           )
         }
-        <a
-          class="ap-icon-btn"
-          href={`mailto:ranchogasparsanctuary@gmail.com`}
-          aria-label={dict.profile.save}
-        >
-          <Heart size={18} color="var(--rg-primary)" />
-        </a>
+        {
+          isAdopt ? (
+            <button
+              class="ap-icon-btn"
+              type="button"
+              aria-label={shareLabel}
+              title={shareLabel}
+              data-share-url={Astro.url.pathname}
+              data-share-title={aboutHeading}
+              data-share-text={d.summary ?? aboutHeading}
+              data-share-copied={copiedLabel}
+            >
+              <span class="ap-share-icon ap-share-icon--share">
+                <Icon name="share" size={18} />
+              </span>
+              <span class="ap-share-icon ap-share-icon--check">
+                <Icon name="check" size={18} />
+              </span>
+              <span class="ap-share-feedback" aria-hidden="true">
+                {copiedLabel}
+              </span>
+            </button>
+          ) : (
+            <a
+              class="ap-icon-btn"
+              href={`mailto:ranchogasparsanctuary@gmail.com`}
+              aria-label={dict.profile.save}
+            >
+              <Heart size={18} color="var(--rg-primary)" />
+            </a>
+          )
+        }
       </div>
 
       {
@@ -238,6 +266,41 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     <a href={backHref}>← {isAdopt ? dict.profile.backAdopt : dict.profile.backResidents}</a>
   </p>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-share-url]').forEach((button) => {
+    if (button.dataset.shareReady === 'true') return;
+    button.dataset.shareReady = 'true';
+
+    button.addEventListener('click', async () => {
+      const url = new URL(button.dataset.shareUrl ?? '/', window.location.href).toString();
+      const title = button.dataset.shareTitle ?? document.title;
+      const text = button.dataset.shareText;
+      const payload = { title, text, url };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(payload);
+          return;
+        }
+        if (!navigator.clipboard) return;
+        await navigator.clipboard.writeText(url);
+        const originalLabel = button.getAttribute('aria-label') ?? title;
+        const copiedLabel = button.dataset.shareCopied ?? 'Link copied';
+        button.classList.add('is-copied');
+        button.setAttribute('aria-label', copiedLabel);
+        button.setAttribute('title', copiedLabel);
+        window.setTimeout(() => {
+          button.classList.remove('is-copied');
+          button.setAttribute('aria-label', originalLabel);
+          button.setAttribute('title', originalLabel);
+        }, 1800);
+      } catch {
+        // User cancellation or unavailable clipboard: leave the page unchanged.
+      }
+    });
+  });
+</script>
 
 <style>
   .ap-top {
@@ -346,17 +409,62 @@ const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
     align-items: stretch;
   }
   .ap-icon-btn {
+    position: relative;
     width: 52px;
     flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid;
+    place-items: center;
     background: var(--rg-surface);
     border: 1.5px solid var(--rg-border);
     border-radius: 999px;
+    color: var(--rg-primary);
+    cursor: pointer;
   }
-  .ap-icon-btn:hover {
+  .ap-icon-btn:hover,
+  .ap-icon-btn.is-copied {
     background: var(--rg-primary-faint);
+  }
+  .ap-share-feedback {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    border-radius: 999px;
+    background: var(--rg-ink);
+    color: #fff;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(-3px);
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+  }
+  .ap-share-icon {
+    display: inline-flex;
+    grid-area: 1 / 1;
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+  }
+  .ap-share-icon--check {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  .ap-icon-btn.is-copied .ap-share-icon--share {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  .ap-icon-btn.is-copied .ap-share-icon--check {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .ap-icon-btn.is-copied .ap-share-feedback {
+    opacity: 1;
+    transform: translateY(0);
   }
   .ap-foster {
     margin-top: 16px;

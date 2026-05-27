@@ -9,6 +9,7 @@ import Button from './Button.astro';
 import Icon from './icons/Icon.astro';
 import { t, localizePath, type Lang } from '../i18n/utils';
 import { listAnimals, animalPath, type AnimalStatus } from '../lib/animals';
+import { usdToBrl, usdWithApprox } from '../lib/fx';
 
 interface Props {
   lang: Lang;
@@ -21,6 +22,17 @@ const page = isAdopt ? dict.adoptPage : dict.residentsPage;
 const statusLabel = isAdopt ? dict.status.adoptable : dict.status.resident;
 
 const animals = await listAnimals(lang, status);
+
+// "Adoption fees from {fee}" is derived from the lowest actual adoptionFee
+// (USD-first with an approximate BRL value) rather than hardcoded, so it can
+// never drift from the per-animal fees. Omitted if no adoptable animal has one.
+const fees = isAdopt
+  ? animals.map((a) => a.data.adoptionFee).filter((f): f is number => typeof f === 'number')
+  : [];
+const feesLine =
+  fees.length > 0
+    ? dict.adoptPage.feesFrom.replace('{fee}', usdWithApprox(Math.min(...fees), await usdToBrl()))
+    : '';
 
 const crumbs = [
   { label: dict.nav.home, href: localizePath('/', lang) },
@@ -41,7 +53,7 @@ const speciesChips = [
   <header class="al-head">
     <SectionLabel>{page.breadcrumb}</SectionLabel>
     <h1 class="al-title rg-display">{page.title}</h1>
-    <p class="al-lead">{page.body}</p>
+    <p class="al-lead">{[page.body, feesLine].filter(Boolean).join(' ')}</p>
   </header>
 
   {
