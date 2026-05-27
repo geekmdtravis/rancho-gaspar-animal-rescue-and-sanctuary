@@ -1,0 +1,83 @@
+/* tokens.css — Rancho Gaspar design tokens
+ * Ported from the design handoff (src/tokens.jsx). The canonical brand is the
+ * "Blossom" palette (soft pinks + cream) with the "warm" type pairing
+ * (Lora × Nunito). Dark mode is the "Dusk" palette, applied via
+ * [data-theme="dusk"] on <html>. All components consume these custom props.
+ */
+
+:root {
+  /* ── Blossom palette (canonical brand) ── */
+  --rg-primary: #ef8ea8;
+  --rg-primary-deep: #d96b86;
+  --rg-primary-soft: #fbdde3;
+  --rg-primary-faint: #fdf0f3;
+  --rg-cream: #fff9f4;
+  --rg-bg: #fffcfa;
+  --rg-surface: #ffffff;
+  --rg-surface-alt: #fbf3f2;
+  --rg-border: #f1e0e3;
+  --rg-border-strong: #e5c9ce;
+  --rg-ink: #2d2a38;
+  --rg-ink-soft: #56505f;
+  --rg-ink-mute: #8c8694;
+  --rg-accent-sage: #b7cea9;
+  --rg-accent-sky: #a9cde4;
+  --rg-accent-lilac: #cfbdde;
+  --rg-accent-sand: #f4e4c7;
+  --rg-success: #5bae7f;
+  --rg-warning: #e5a24a;
+  --rg-danger: #d9645e;
+  --rg-info: #7fa9d2;
+
+  /* ── Type (warm pairing) ── */
+  --rg-font-display: 'Lora', Georgia, serif;
+  --rg-font-body: 'Nunito', system-ui, sans-serif;
+  --rg-font-accent: 'Caveat', 'Marker Felt', cursive;
+  --rg-display-style: italic; /* warm pairing uses italic display */
+
+  /* ── Shape ── */
+  --rg-btn-radius: 999px; /* "pill" button shape */
+
+  /* ── Radii ── */
+  --rg-radius-sm: 6px;
+  --rg-radius-md: 10px;
+  --rg-radius-lg: 16px;
+  --rg-radius-xl: 24px;
+  --rg-radius-2xl: 32px;
+
+  /* ── Shadows ── */
+  --rg-shadow-sm: 0 1px 2px rgba(199, 92, 121, 0.06), 0 1px 1px rgba(0, 0, 0, 0.03);
+  --rg-shadow-md: 0 4px 12px rgba(199, 92, 121, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --rg-shadow-lg: 0 12px 32px rgba(199, 92, 121, 0.1), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --rg-shadow-xl: 0 24px 60px rgba(199, 92, 121, 0.14), 0 8px 20px rgba(0, 0, 0, 0.05);
+  --rg-shadow-card-hover: 0 12px 28px rgba(199, 92, 121, 0.14);
+
+  /* layout */
+  --rg-maxw: 1280px;
+  --rg-maxw-prose: 760px;
+}
+
+/* ── Dusk (dark) palette ── */
+[data-theme='dusk'] {
+  --rg-primary: #f4a5b8;
+  --rg-primary-deep: #ef8ea8;
+  --rg-primary-soft: #3a2a33;
+  --rg-primary-faint: #2a2128;
+  --rg-cream: #1f1a23;
+  --rg-bg: #16131b;
+  --rg-surface: #211b27;
+  --rg-surface-alt: #2a2330;
+  --rg-border: #332c3a;
+  --rg-border-strong: #4a4154;
+  --rg-ink: #f5f0f4;
+  --rg-ink-soft: #c7bfc9;
+  --rg-ink-mute: #8a8194;
+  --rg-accent-sage: #a8c09d;
+  --rg-accent-sky: #92b8d2;
+  --rg-accent-lilac: #bca7cd;
+  --rg-accent-sand: #dfcba8;
+  --rg-success: #7bc79a;
+  --rg-warning: #efb76a;
+  --rg-danger: #e7847e;
+  --rg-info: #9bbfe0;
+}

@@ -1,0 +1,311 @@
+---
+// AnimalListing — the /adopt and /residents listing body. Branches on `status`
+// for copy and framing: adoptable gets a client-side species filter + search
+// and a "no match" CTA; residents get a calmer, clearly-not-for-adoption frame.
+import Breadcrumbs from './Breadcrumbs.astro';
+import SectionLabel from './SectionLabel.astro';
+import AnimalCard from './AnimalCard.astro';
+import Button from './Button.astro';
+import Icon from './icons/Icon.astro';
+import { t, localizePath, type Lang } from '../i18n/utils';
+import { listAnimals, animalPath, type AnimalStatus } from '../lib/animals';
+
+interface Props {
+  lang: Lang;
+  status: AnimalStatus;
+}
+const { lang, status } = Astro.props;
+const dict = t(lang);
+const isAdopt = status === 'adoptable';
+const page = isAdopt ? dict.adoptPage : dict.residentsPage;
+const statusLabel = isAdopt ? dict.status.adoptable : dict.status.resident;
+
+const animals = await listAnimals(lang, status);
+
+const crumbs = [
+  { label: dict.nav.home, href: localizePath('/', lang) },
+  { label: page.breadcrumb },
+];
+
+const speciesChips = [
+  { key: 'all', label: dict.adoptPage.species.all },
+  { key: 'dog', label: dict.adoptPage.species.dog },
+  { key: 'cat', label: dict.adoptPage.species.cat },
+  { key: 'bunny', label: dict.adoptPage.species.bunny },
+];
+---
+
+<section class="rg-container rg-section--tight">
+  <Breadcrumbs items={crumbs} />
+
+  <header class="al-head">
+    <SectionLabel>{page.breadcrumb}</SectionLabel>
+    <h1 class="al-title rg-display">{page.title}</h1>
+    <p class="al-lead">{page.body}</p>
+  </header>
+
+  {
+    isAdopt && animals.length > 0 && (
+      <div class="al-controls">
+        <div class="al-search">
+          <Icon name="search" />
+          <input
+            id="al-search"
+            type="search"
+            placeholder={dict.adoptPage.searchPlaceholder}
+            aria-label={dict.adoptPage.searchPlaceholder}
+          />
+        </div>
+        <div class="al-filter">
+          <Icon name="filter" />
+          <span class="al-filter__label">{dict.adoptPage.filterLabel}</span>
+          {speciesChips.map((c) => (
+            <button
+              type="button"
+              class:list={['chip', c.key === 'all' && 'is-active']}
+              data-species-filter={c.key}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    animals.length > 0 && (
+      <p class="al-count">
+        <strong>{animals.length}</strong> {page.countSuffix}
+      </p>
+    )
+  }
+
+  {
+    animals.length === 0 ? (
+      <p class="al-empty">{page.empty}</p>
+    ) : (
+      <>
+        <div class="al-grid" data-animal-grid>
+          {animals.map((e) => (
+            <div
+              class="al-item"
+              data-species={e.data.species}
+              data-name={e.data.name.toLowerCase()}
+            >
+              <AnimalCard
+                name={e.data.name}
+                kind={e.data.species}
+                sex={e.data.sex === 'unknown' ? undefined : e.data.sex}
+                age={e.data.age}
+                description={e.data.summary}
+                status={e.data.status}
+                statusLabel={statusLabel}
+                meetLabel={dict.adoptables.meet}
+                tags={e.data.tags}
+                href={localizePath(animalPath(e), lang)}
+                image={e.data.cover}
+                imageAlt={e.data.coverAlt}
+              />
+            </div>
+          ))}
+        </div>
+        {isAdopt && (
+          <p class="al-empty al-empty--filtered" data-empty-filtered hidden>
+            {dict.adoptPage.emptyFiltered}
+          </p>
+        )}
+      </>
+    )
+  }
+
+  {
+    isAdopt && (
+      <div class="al-nomatch">
+        <div>
+          <h2 class="al-nomatch__title">{dict.adoptPage.noMatchTitle}</h2>
+          <p class="al-nomatch__body">{dict.adoptPage.noMatchBody}</p>
+        </div>
+        <Button href="mailto:hello@ranchogaspar.org" variant="primary">
+          {dict.adoptPage.noMatchCta}
+          <Icon slot="iconRight" name="arrow-right" />
+        </Button>
+      </div>
+    )
+  }
+</section>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('[data-animal-grid]');
+  if (grid) {
+    const items = Array.from(grid.querySelectorAll<HTMLElement>('.al-item'));
+    const search = document.querySelector<HTMLInputElement>('#al-search');
+    const chips = Array.from(document.querySelectorAll<HTMLElement>('[data-species-filter]'));
+    const emptyMsg = document.querySelector<HTMLElement>('[data-empty-filtered]');
+    let species = 'all';
+    let term = '';
+
+    const apply = () => {
+      let visible = 0;
+      for (const item of items) {
+        const okSpecies = species === 'all' || item.dataset.species === species;
+        const okTerm = !term || (item.dataset.name ?? '').includes(term);
+        const show = okSpecies && okTerm;
+        item.hidden = !show;
+        if (show) visible++;
+      }
+      if (emptyMsg) emptyMsg.hidden = visible !== 0;
+    };
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        species = chip.dataset.speciesFilter ?? 'all';
+        chips.forEach((c) => c.classList.toggle('is-active', c === chip));
+        apply();
+      });
+    });
+    search?.addEventListener('input', () => {
+      term = search.value.trim().toLowerCase();
+      apply();
+    });
+  }
+</script>
+
+<style>
+  .al-head {
+    margin: 24px 0 28px;
+  }
+  .al-title {
+    font-size: 48px;
+    margin: 4px 0 8px;
+    line-height: 1.1;
+  }
+  .al-lead {
+    font-size: 18px;
+    color: var(--rg-ink-soft);
+    margin: 0;
+    max-width: 620px;
+    line-height: 1.55;
+  }
+  .al-controls {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .al-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--rg-surface);
+    border: 1.5px solid var(--rg-border);
+    border-radius: 999px;
+    color: var(--rg-ink-mute);
+    flex: 1;
+    min-width: 240px;
+    max-width: 420px;
+  }
+  .al-search input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--rg-ink);
+    outline: none;
+  }
+  .al-filter {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    color: var(--rg-ink-mute);
+  }
+  .al-filter__label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--rg-ink);
+  }
+  .chip {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--rg-primary-soft);
+    color: var(--rg-primary-deep);
+    border: none;
+    cursor: pointer;
+    font-family: var(--rg-font-body);
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .chip.is-active {
+    background: var(--rg-primary);
+    color: #fff;
+  }
+  .al-count {
+    font-size: 13px;
+    color: var(--rg-ink-soft);
+    margin: 0 0 16px;
+  }
+  .al-count strong {
+    color: var(--rg-ink);
+  }
+  .al-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .al-empty {
+    text-align: center;
+    color: var(--rg-ink-soft);
+    padding: 40px;
+    background: var(--rg-surface);
+    border: 1px dashed var(--rg-border-strong);
+    border-radius: 18px;
+  }
+  .al-empty--filtered {
+    margin-top: 16px;
+  }
+  .al-nomatch {
+    margin-top: 32px;
+    background: var(--rg-primary-soft);
+    border-radius: 20px;
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+  }
+  .al-nomatch__title {
+    font-family: var(--rg-font-display);
+    font-style: italic;
+    font-size: 24px;
+    color: var(--rg-ink);
+    margin: 0;
+  }
+  .al-nomatch__body {
+    font-size: 16px;
+    color: var(--rg-ink-soft);
+    margin: 6px 0 0;
+  }
+
+  @media (max-width: 980px) {
+    .al-title {
+      font-size: 36px;
+    }
+    .al-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .al-nomatch {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .al-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

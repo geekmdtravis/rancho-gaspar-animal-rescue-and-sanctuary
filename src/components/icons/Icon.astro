@@ -1,0 +1,63 @@
+---
+// Generic single-weight line icon set ported from the design's `Icon` map.
+// All paths are drawn on a 16×16 grid with currentColor stroke.
+const ICONS = {
+  search: '<circle cx="7" cy="7" r="5" /><path d="M11 11l3 3" />',
+  mail: '<rect x="1.5" y="3" width="13" height="10" rx="2" /><path d="M1.5 4l6.5 5L14.5 4" />',
+  phone:
+    '<path d="M3 2h3l1.5 4-2 1c1 2 3 4 5 5l1-2 4 1.5v3c0 .8-.7 1.5-1.5 1.5C8 16 0 8 0 3.5 0 2.7.7 2 1.5 2H3z" />',
+  pin: '<path d="M8 1c3 0 5 2 5 5 0 4-5 9-5 9S3 10 3 6c0-3 2-5 5-5z" /><circle cx="8" cy="6" r="2" />',
+  'arrow-right': '<path d="M2 8h12M9 3l5 5-5 5" />',
+  'arrow-left': '<path d="M14 8H2M7 3L2 8l5 5" />',
+  check: '<path d="M3 8.5l3.5 3.5L13 4.5" />',
+  plus: '<path d="M8 2v12M2 8h12" />',
+  home: '<path d="M2 8l6-5 6 5v6a1 1 0 01-1 1h-3v-4H6v4H3a1 1 0 01-1-1V8z" />',
+  calendar:
+    '<rect x="2" y="3" width="12" height="11" rx="2" /><path d="M2 6h12M5 1.5v3M11 1.5v3" />',
+  users:
+    '<circle cx="6" cy="6" r="2.5" /><path d="M1.5 14c0-2.5 2-4.5 4.5-4.5S10.5 11.5 10.5 14" /><circle cx="11.5" cy="6.5" r="2" /><path d="M14.5 13c0-1.8-1.2-3-3-3" />',
+  hand: '<path d="M3 8V4a1 1 0 012 0v4M5 8V3a1 1 0 012 0v5M7 8V3.5a1 1 0 012 0V8M9 8V5a1 1 0 012 0v7c0 2-1.5 3.5-3.5 3.5S4 14 4 12v-2" />',
+  share:
+    '<circle cx="3.5" cy="8" r="1.5" /><circle cx="12.5" cy="3.5" r="1.5" /><circle cx="12.5" cy="12.5" r="1.5" /><path d="M5 7.2l6-3M5 8.8l6 3" />',
+  filter: '<path d="M1.5 3h13l-5 6v5l-3-1.5V9z" />',
+  globe:
+    '<circle cx="8" cy="8" r="6.5" /><ellipse cx="8" cy="8" rx="3" ry="6.5" /><path d="M1.5 8h13" />',
+  info: '<circle cx="8" cy="8" r="6.5" /><path d="M8 7v5M8 4.5v.5" />',
+  clock: '<circle cx="8" cy="8" r="6.5" /><path d="M8 4v4l3 2" />',
+  gift: '<rect x="2" y="6" width="12" height="8" rx="1" /><path d="M2 6h12M8 6v8M5 6c0-1.7 1-3 2-3M11 6c0-1.7-1-3-2-3M5.5 3a1.5 1.5 0 113 0M10.5 3a1.5 1.5 0 11-3 0" />',
+  'chevron-down': '<path d="M3 5l5 5 5-5" />',
+} as const;
+
+export type IconName = keyof typeof ICONS;
+
+interface Props {
+  name: IconName;
+  size?: number;
+  color?: string;
+  strokeWidth?: number;
+  class?: string;
+}
+const {
+  name,
+  size = 16,
+  color = 'currentColor',
+  strokeWidth = 1.6,
+  class: className,
+} = Astro.props;
+const paths = ICONS[name];
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 16 16"
+  fill="none"
+  stroke={color}
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class={className}
+  aria-hidden="true"
+  xmlns="http://www.w3.org/2000/svg"
+  set:html={paths}
+/>

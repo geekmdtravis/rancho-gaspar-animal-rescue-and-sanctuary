@@ -1,0 +1,41 @@
+---
+// Catch-all that generates a branded "coming soon" page for every route that
+// the nav/footer link to but that isn't built yet — in both locales. This
+// keeps the site's navigation honest (no 404s) until the real pages land; to
+// promote one, create its real route and remove it from the list below.
+//
+// Note: getStaticPaths() is hoisted and runs in its own scope, so everything
+// it needs is declared *inside* it.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ComingSoon from '../components/ComingSoon.astro';
+import { type Lang } from '../i18n/utils';
+
+export async function getStaticPaths() {
+  const { ui } = await import('../i18n/ui');
+
+  // slug → nav item to highlight + dictionary label to use as the title.
+  const pending: { slug: string; active?: string; titleKey: keyof (typeof ui)['en']['nav'] }[] = [
+    { slug: 'get-involved', active: 'involved', titleKey: 'involved' },
+    { slug: 'donate', titleKey: 'donate' },
+    { slug: 'impact', active: 'impact', titleKey: 'impact' },
+    { slug: 'about', active: 'about', titleKey: 'about' },
+    { slug: 'contact', titleKey: 'contact' },
+    { slug: 'events', active: 'events', titleKey: 'events' },
+    { slug: 'stories', titleKey: 'blog' },
+  ];
+  const langs: Lang[] = ['en', 'pt-br'];
+
+  return langs.flatMap((lang) =>
+    pending.map((p) => ({
+      params: { slug: lang === 'en' ? p.slug : `pt-br/${p.slug}` },
+      props: { lang, title: ui[lang].nav[p.titleKey], active: p.active },
+    })),
+  );
+}
+
+const { lang, title, active } = Astro.props;
+---
+
+<BaseLayout lang={lang} active={active} title={title}>
+  <ComingSoon lang={lang} title={title} />
+</BaseLayout>

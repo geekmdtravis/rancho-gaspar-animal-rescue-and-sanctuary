@@ -1,0 +1,104 @@
+---
+// NewsletterBlock — soft pink banner with a heading and an email signup.
+// Ported from components-blocks.jsx NewsletterBlock. The form posts nowhere by
+// default (static site); wire `action` to your provider when ready.
+import Button from './Button.astro';
+import Heart from './icons/Heart.astro';
+import { t, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  action?: string;
+}
+const { lang, action } = Astro.props;
+const dict = t(lang);
+---
+
+<div class="news">
+  <div class="news__deco" aria-hidden="true">
+    <Heart size={120} color="var(--rg-primary)" filled />
+  </div>
+  <div class="news__copy">
+    <h3 class="news__title">{dict.newsletter.title}</h3>
+    <p class="news__body">{dict.newsletter.body}</p>
+  </div>
+  <form class="news__form" action={action} method="post">
+    <label class="news__sr" for="news-email">{dict.newsletter.placeholder}</label>
+    <input
+      id="news-email"
+      class="news__input"
+      type="email"
+      name="email"
+      placeholder={dict.newsletter.placeholder}
+      required
+    />
+    <Button type="submit" variant="primary">{dict.newsletter.cta}</Button>
+  </form>
+</div>
+
+<style>
+  .news {
+    background: var(--rg-primary-soft);
+    border-radius: 24px;
+    padding: 36px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    position: relative;
+    overflow: hidden;
+    font-family: var(--rg-font-body);
+    flex-wrap: wrap;
+  }
+  .news__deco {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    opacity: 0.4;
+  }
+  .news__copy {
+    flex: 1;
+    min-width: 260px;
+    position: relative;
+  }
+  .news__title {
+    margin: 0;
+    font-family: var(--rg-font-display);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--rg-ink);
+  }
+  .news__body {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: var(--rg-ink-soft);
+  }
+  .news__form {
+    display: flex;
+    gap: 8px;
+    position: relative;
+  }
+  .news__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .news__input {
+    width: 240px;
+    max-width: 60vw;
+    padding: 12px 16px;
+    border: 1.5px solid var(--rg-border);
+    background: var(--rg-surface);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--rg-ink);
+    outline: none;
+  }
+  .news__input:focus {
+    border-color: var(--rg-primary);
+    box-shadow: 0 0 0 4px var(--rg-primary-faint);
+  }
+</style>

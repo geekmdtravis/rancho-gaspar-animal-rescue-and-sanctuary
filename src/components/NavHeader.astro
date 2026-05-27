@@ -1,0 +1,191 @@
+---
+// NavHeader — sticky top bar with logo, primary nav, language switcher, and a
+// Donate CTA. Collapses to a toggle menu on small screens. Ported/adapted from
+// components-blocks.jsx NavHeader.
+import Logo from './Logo.astro';
+import Button from './Button.astro';
+import Heart from './icons/Heart.astro';
+import Icon from './icons/Icon.astro';
+import { t, localizePath, stripLocale, languages, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  active?: string;
+}
+const { lang, active } = Astro.props;
+const dict = t(lang);
+
+const links = [
+  { id: 'adopt', label: dict.nav.adopt, path: '/adopt' },
+  { id: 'residents', label: dict.nav.residents, path: '/residents' },
+  { id: 'involved', label: dict.nav.involved, path: '/get-involved' },
+  { id: 'impact', label: dict.nav.impact, path: '/impact' },
+  { id: 'about', label: dict.nav.about, path: '/about' },
+  { id: 'events', label: dict.nav.events, path: '/events' },
+];
+
+// Language switcher: same page, other locale.
+const basePath = stripLocale(Astro.url.pathname);
+const otherLang: Lang = lang === 'en' ? 'pt-br' : 'en';
+const switchHref = localizePath(basePath, otherLang);
+---
+
+<header class="nav">
+  <div class="nav__inner">
+    <Logo
+      href={localizePath('/', lang)}
+      size="sm"
+      tagline={dict.site.tagline}
+      ariaLabel={dict.site.org}
+    />
+
+    <input type="checkbox" id="nav-toggle" class="nav__checkbox" aria-hidden="true" />
+    <label for="nav-toggle" class="nav__burger" aria-label={dict.nav.openMenu}>
+      <span></span><span></span><span></span>
+    </label>
+
+    <nav class="nav__links" aria-label={dict.site.org}>
+      {
+        links.map((l) => (
+          <a
+            href={localizePath(l.path, lang)}
+            class:list={['nav__link', active === l.id && 'is-active']}
+            aria-current={active === l.id ? 'page' : undefined}
+          >
+            {l.label}
+          </a>
+        ))
+      }
+      <div class="nav__actions">
+        <a class="nav__lang" href={switchHref} hreflang={otherLang} aria-label={dict.nav.language}>
+          <Icon name="globe" size={15} />
+          {languages[otherLang].split(' ')[0]}
+        </a>
+        <Button href={localizePath('/donate', lang)} variant="primary">
+          <Heart slot="icon" size={14} color="#fff" filled />
+          {dict.nav.donate}
+        </Button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--rg-surface) 88%, transparent);
+    border-bottom: 1px solid var(--rg-border);
+    backdrop-filter: blur(8px);
+  }
+  .nav__inner {
+    max-width: var(--rg-maxw);
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .nav__checkbox,
+  .nav__burger {
+    display: none;
+  }
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    justify-content: center;
+  }
+  .nav__link {
+    padding: 8px 14px;
+    border-radius: 999px;
+    color: var(--rg-ink);
+    font-size: 14px;
+    font-weight: 600;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .nav__link:hover {
+    background: var(--rg-primary-faint);
+  }
+  .nav__link.is-active {
+    color: var(--rg-primary);
+    background: var(--rg-primary-faint);
+  }
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+  .nav__lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--rg-ink-soft);
+    border: 1.5px solid var(--rg-border);
+  }
+  .nav__lang:hover {
+    background: var(--rg-primary-faint);
+    color: var(--rg-primary-deep);
+  }
+
+  @media (max-width: 980px) {
+    .nav__inner {
+      padding: 12px 20px;
+      flex-wrap: wrap;
+    }
+    .nav__burger {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-left: auto;
+      padding: 8px;
+      cursor: pointer;
+    }
+    .nav__burger span {
+      width: 22px;
+      height: 2px;
+      background: var(--rg-ink);
+      border-radius: 2px;
+      transition:
+        transform 0.2s,
+        opacity 0.2s;
+    }
+    .nav__links {
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      gap: 4px;
+      padding-top: 12px;
+    }
+    .nav__checkbox:checked ~ .nav__links {
+      display: flex;
+    }
+    .nav__checkbox:checked ~ .nav__burger span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+    .nav__checkbox:checked ~ .nav__burger span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav__checkbox:checked ~ .nav__burger span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+    .nav__link {
+      padding: 12px 14px;
+    }
+    .nav__actions {
+      margin: 8px 0 0;
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

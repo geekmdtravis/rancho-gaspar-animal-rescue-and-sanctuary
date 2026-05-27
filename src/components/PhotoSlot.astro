@@ -1,0 +1,79 @@
+---
+// Photo placeholder — soft pink box with diagonal stripes + a drawn animal +
+// a monospace label naming what should go here. Used wherever a real photo
+// will eventually live but hasn't been uploaded yet. Once an animal/page has
+// an optimized image, components render <Image> instead of this.
+import DrawnAnimal from './DrawnAnimal.astro';
+
+interface Props {
+  label?: string;
+  kind?: 'dog' | 'cat' | 'bunny';
+  /** CSS aspect-ratio string, e.g. "4 / 5". Overrides `height`. */
+  ratio?: string;
+  height?: number;
+  radius?: number;
+  class?: string;
+}
+const {
+  label = 'animal photo',
+  kind = 'dog',
+  ratio,
+  height = 200,
+  radius = 16,
+  class: className,
+} = Astro.props;
+
+const drawnSize = Math.min(typeof height === 'number' ? height : 120, 140);
+---
+
+<div
+  class:list={['photo-slot', className]}
+  style={{
+    aspectRatio: ratio || undefined,
+    height: ratio ? undefined : `${height}px`,
+    borderRadius: `${radius}px`,
+  }}
+  aria-label={`${label} placeholder`}
+>
+  <div class="photo-slot__art">
+    <DrawnAnimal kind={kind} size={drawnSize} />
+  </div>
+  <span class="photo-slot__label">{label}</span>
+</div>
+
+<style>
+  .photo-slot {
+    width: 100%;
+    background: var(--rg-primary-soft);
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 14px,
+      rgba(255, 255, 255, 0.45) 14px 15px
+    );
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--rg-primary-deep);
+    flex-shrink: 0;
+  }
+  .photo-slot__art {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.55;
+  }
+  .photo-slot__label {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    opacity: 0.75;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+// Decorative scattered paws / hearts / flowers / sparkles behind hero & CTA
+// blocks. Deterministic placement (no hydration needed) — ported from
+// illustrations.jsx Confetti.
+import Paw from './icons/Paw.astro';
+import Heart from './icons/Heart.astro';
+
+interface Props {
+  density?: 'low' | 'med' | 'high';
+}
+const { density = 'med' } = Astro.props;
+const count = density === 'high' ? 14 : density === 'low' ? 5 : 9;
+
+const items = Array.from({ length: count }, (_, i) => ({
+  type: i % 4,
+  top: `${(i * 37 + 7) % 92}%`,
+  left: `${(i * 53 + 11) % 92}%`,
+  size: 12 + (i % 4) * 4,
+  rotate: (i * 47) % 360,
+  opacity: 0.35 + ((i * 7) % 4) * 0.05,
+}));
+---
+
+<div class="confetti" aria-hidden="true">
+  {
+    items.map((it) => (
+      <div
+        class="confetti__item"
+        style={{
+          top: it.top,
+          left: it.left,
+          transform: `rotate(${it.rotate}deg)`,
+          opacity: it.opacity,
+        }}
+      >
+        {it.type === 0 && <Paw size={it.size} color="var(--rg-primary)" />}
+        {it.type === 1 && <Heart size={it.size} color="var(--rg-primary)" />}
+        {it.type === 2 && (
+          <svg
+            width={it.size}
+            height={it.size}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g fill="var(--rg-accent-sage)">
+              <circle cx="12" cy="6" r="2.4" />
+              <circle cx="17.5" cy="9" r="2.4" />
+              <circle cx="15.5" cy="16" r="2.4" />
+              <circle cx="8.5" cy="16" r="2.4" />
+              <circle cx="6.5" cy="9" r="2.4" />
+            </g>
+            <circle cx="12" cy="11" r="2.16" fill="var(--rg-accent-sand)" />
+          </svg>
+        )}
+        {it.type === 3 && (
+          <svg
+            width={it.size * 0.7}
+            height={it.size * 0.7}
+            viewBox="0 0 24 24"
+            fill="var(--rg-primary)"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12 1 L 14 10 L 23 12 L 14 14 L 12 23 L 10 14 L 1 12 L 10 10 Z" />
+          </svg>
+        )}
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .confetti__item {
+    position: absolute;
+  }
+</style>

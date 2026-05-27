@@ -1,0 +1,266 @@
+---
+// Hero — the home page banner. Ported from components-blocks.jsx HeroBlock:
+// copy + CTAs on the left, an illustrated dog+cat-in-a-heart in the middle,
+// and a "Rescue / Heal / Love" pillar card on the right.
+import Confetti from './Confetti.astro';
+import Badge from './Badge.astro';
+import Button from './Button.astro';
+import Heart from './icons/Heart.astro';
+import Paw from './icons/Paw.astro';
+import Icon from './icons/Icon.astro';
+import Avatar from './Avatar.astro';
+import DrawnAnimal from './DrawnAnimal.astro';
+import { t, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  adoptHref: string;
+  donateHref: string;
+  volunteerHref: string;
+}
+const { lang, adoptHref, donateHref, volunteerHref } = Astro.props;
+const h = t(lang).hero;
+const avatarKinds = ['dog', 'cat', 'bunny'] as const;
+---
+
+<section class="hero">
+  <Confetti density="high" />
+  <div class="hero__grid">
+    <div class="hero__copy">
+      <Badge variant="soft" size="md">
+        <Heart slot="icon" size={11} color="var(--rg-primary)" filled />
+        {h.eyebrow}
+      </Badge>
+      <h1 class="hero__title">
+        {h.titleLine1}<br />
+        <span class="hero__emph">{h.titleEmphasis}</span>
+        <span class="hero__title-heart"><Heart size={28} color="var(--rg-primary)" filled /></span>
+      </h1>
+      <p class="hero__body">{h.body}</p>
+      <div class="hero__ctas">
+        <Button href={adoptHref} size="lg" variant="primary"
+          ><Paw slot="icon" size={16} color="#fff" />{h.ctaAdopt}</Button
+        >
+        <Button href={donateHref} size="lg" variant="secondary"
+          ><Heart slot="icon" size={16} color="var(--rg-primary-deep)" filled />{
+            h.ctaDonate
+          }</Button
+        >
+        <Button href={volunteerHref} size="lg" variant="outline">{h.ctaVolunteer}</Button>
+      </div>
+      <div class="hero__social">
+        <div class="hero__avatars">
+          {
+            avatarKinds.map((k) => (
+              <span class="hero__avatar">
+                <Avatar kind={k} size={36} />
+              </span>
+            ))
+          }
+        </div>
+        <div class="hero__social-text">
+          <strong>{h.statValue}</strong><br />{h.statSub}
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__art" aria-hidden="true">
+      <svg width="100%" viewBox="0 0 400 380" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M200 350 C 60 250, 40 130, 120 80 C 160 55, 200 75, 200 120 C 200 75, 240 55, 280 80 C 360 130, 340 250, 200 350 Z"
+          stroke="var(--rg-primary)"
+          stroke-width="3"
+          fill="var(--rg-primary-soft)"
+          fill-opacity="0.45"
+          stroke-linejoin="round"></path>
+      </svg>
+      <div class="hero__art-animals">
+        <DrawnAnimal kind="dog" size={150} color="var(--rg-primary-deep)" />
+        <DrawnAnimal kind="cat" size={130} color="var(--rg-primary-deep)" />
+      </div>
+    </div>
+
+    <div class="hero__pillars">
+      {
+        h.pillars.map((p, i) => (
+          <div class="hero__pillar">
+            <div
+              class="hero__pillar-icon"
+              style={{
+                background:
+                  i === 1
+                    ? '#D5E8F2'
+                    : i === 0
+                      ? 'var(--rg-primary-soft)'
+                      : 'var(--rg-primary-faint)',
+                color: i === 1 ? 'var(--rg-accent-sky)' : 'var(--rg-primary)',
+              }}
+            >
+              {i === 0 && <Paw size={16} color="var(--rg-primary)" />}
+              {i === 1 && <Heart size={16} color="var(--rg-accent-sky)" filled />}
+              {i === 2 && <Icon name="home" size={16} />}
+            </div>
+            <div>
+              <div class="hero__pillar-label">{p.label}</div>
+              <div class="hero__pillar-desc">{p.desc}</div>
+            </div>
+          </div>
+        ))
+      }
+      <div class="hero__pillar-footer">
+        {h.pillarFooter}
+        <Heart size={14} color="var(--rg-primary)" filled />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    background: var(--rg-primary-faint);
+    padding: 56px 40px;
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    font-family: var(--rg-font-body);
+  }
+  .hero__grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 0.7fr;
+    gap: 36px;
+    align-items: center;
+  }
+  .hero__title {
+    margin: 16px 0 0;
+    font-family: var(--rg-font-display);
+    font-size: 56px;
+    font-weight: 600;
+    line-height: 1.05;
+    color: var(--rg-ink);
+    letter-spacing: -0.5px;
+    font-style: italic;
+  }
+  .hero__emph {
+    color: var(--rg-primary);
+  }
+  .hero__title-heart {
+    display: inline-block;
+    margin-left: 12px;
+  }
+  .hero__body {
+    margin: 16px 0 24px;
+    font-size: 17px;
+    color: var(--rg-ink-soft);
+    line-height: 1.55;
+    max-width: 440px;
+    font-style: normal;
+  }
+  .hero__ctas {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .hero__social {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero__avatars {
+    display: flex;
+  }
+  .hero__avatar {
+    border: 3px solid var(--rg-primary-faint);
+    border-radius: 999px;
+    background: var(--rg-surface);
+    display: inline-flex;
+  }
+  .hero__avatar:not(:first-child) {
+    margin-left: -10px;
+  }
+  .hero__social-text {
+    font-size: 13px;
+    color: var(--rg-ink-soft);
+  }
+  .hero__social-text strong {
+    color: var(--rg-ink);
+  }
+  .hero__art {
+    position: relative;
+  }
+  .hero__art-animals {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .hero__pillars {
+    background: var(--rg-surface);
+    border-radius: 18px;
+    padding: 22px;
+    border: 1px solid var(--rg-border);
+    box-shadow: var(--rg-shadow-sm);
+  }
+  .hero__pillar {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rg-border);
+  }
+  .hero__pillar:nth-of-type(3) {
+    border-bottom: none;
+  }
+  .hero__pillar-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero__pillar-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--rg-ink);
+  }
+  .hero__pillar-desc {
+    font-size: 12px;
+    color: var(--rg-ink-soft);
+    line-height: 1.45;
+  }
+  .hero__pillar-footer {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--rg-border-strong);
+    font-family: var(--rg-font-accent);
+    font-size: 17px;
+    color: var(--rg-primary);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  @media (max-width: 980px) {
+    .hero {
+      padding: 36px 22px;
+    }
+    .hero__grid {
+      grid-template-columns: 1fr;
+    }
+    .hero__art {
+      max-width: 360px;
+      margin: 0 auto;
+    }
+    .hero__title {
+      font-size: 44px;
+    }
+  }
+</style>

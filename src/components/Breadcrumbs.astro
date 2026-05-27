@@ -1,0 +1,77 @@
+---
+// Breadcrumbs — ported from components-core.jsx Breadcrumbs. Last item is the
+// current page (no link).
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  items: Crumb[];
+  class?: string;
+}
+const { items, class: className } = Astro.props;
+---
+
+<nav class:list={['crumbs', className]} aria-label="Breadcrumb">
+  <ol>
+    {
+      items.map((it, i) => (
+        <li>
+          {i > 0 && (
+            <svg
+              class="crumbs__sep"
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M3.5 2l3 3-3 3" />
+            </svg>
+          )}
+          {it.href && i < items.length - 1 ? (
+            <a href={it.href}>{it.label}</a>
+          ) : (
+            <span aria-current="page">{it.label}</span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .crumbs ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-family: var(--rg-font-body);
+    font-size: 13px;
+  }
+  .crumbs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .crumbs__sep {
+    color: var(--rg-ink-mute);
+  }
+  .crumbs a {
+    color: var(--rg-ink-mute);
+    font-weight: 500;
+  }
+  .crumbs a:hover {
+    color: var(--rg-primary-deep);
+  }
+  .crumbs [aria-current='page'] {
+    color: var(--rg-ink);
+    font-weight: 600;
+  }
+</style>

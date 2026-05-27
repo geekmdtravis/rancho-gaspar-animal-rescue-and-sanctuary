@@ -1,0 +1,98 @@
+---
+// ComingSoon — branded placeholder for routes that are linked in the nav/footer
+// but not built yet. Keeps the site's information architecture intact (no dead
+// 404 links) while honestly signalling the page is in progress, and funnels
+// visitors to things that do work (adopt, email).
+import Confetti from './Confetti.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import Badge from './Badge.astro';
+import Button from './Button.astro';
+import Icon from './icons/Icon.astro';
+import Heart from './icons/Heart.astro';
+import { t, localizePath, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  title: string;
+}
+const { lang, title } = Astro.props;
+const dict = t(lang);
+---
+
+<section class="rg-container rg-section--tight">
+  <Breadcrumbs
+    items={[{ label: dict.nav.home, href: localizePath('/', lang) }, { label: title }]}
+  />
+
+  <div class="cs">
+    <Confetti density="med" />
+    <div class="cs__inner">
+      <Badge variant="soft" size="md">
+        <Heart slot="icon" size={11} color="var(--rg-primary)" filled />
+        {dict.comingSoon.badge}
+      </Badge>
+      <h1 class="cs__title rg-display">{title}</h1>
+      <p class="cs__heading">{dict.comingSoon.heading}</p>
+      <p class="cs__body">{dict.comingSoon.body}</p>
+      <div class="cs__ctas">
+        <Button href={localizePath('/adopt', lang)} variant="primary">
+          <Heart slot="icon" size={16} color="#fff" filled />
+          {dict.comingSoon.ctaAnimals}
+        </Button>
+        <Button href="mailto:hello@ranchogaspar.org" variant="outline">
+          {dict.comingSoon.ctaContact}
+          <Icon slot="iconRight" name="mail" />
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cs {
+    margin-top: 24px;
+    background: var(--rg-primary-faint);
+    border-radius: 24px;
+    padding: 64px 32px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .cs__inner {
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .cs__title {
+    font-size: 48px;
+    margin: 16px 0 8px;
+    line-height: 1.1;
+  }
+  .cs__heading {
+    font-family: var(--rg-font-accent);
+    font-size: 24px;
+    color: var(--rg-primary);
+    margin: 0;
+  }
+  .cs__body {
+    font-size: 17px;
+    color: var(--rg-ink-soft);
+    line-height: 1.6;
+    margin: 16px auto 24px;
+  }
+  .cs__ctas {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 980px) {
+    .cs {
+      padding: 48px 20px;
+    }
+    .cs__title {
+      font-size: 36px;
+    }
+  }
+</style>

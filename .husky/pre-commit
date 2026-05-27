@@ -1,0 +1,9 @@
+# Format + lint only the staged files (never the whole, possibly stale, tree).
+npx lint-staged
+
+# i18n parity is a cross-file invariant. Only run it when this commit actually
+# touches the dictionaries or animal content — no point re-checking otherwise.
+if git diff --cached --name-only | grep -qE '^src/i18n/|^src/content/animals/'; then
+  echo "› Checking EN / PT-BR parity…"
+  npm run i18n:check
+fi

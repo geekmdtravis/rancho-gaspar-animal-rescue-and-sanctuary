@@ -1,0 +1,31 @@
+// Flat ESLint config: TypeScript + Astro. Kept lean — Prettier owns
+// formatting, so style rules stay off here.
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import astro from 'eslint-plugin-astro';
+
+export default [
+  { ignores: ['dist/', '.astro/', 'node_modules/', 'playwright-report/', 'test-results/'] },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...astro.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
+  },
+  {
+    // The donation widget's inline <script> runs in the browser.
+    files: ['**/*.astro'],
+    languageOptions: {
+      globals: { document: 'readonly', window: 'readonly' },
+    },
+  },
+  {
+    // Node-run tooling: build scripts and config files.
+    files: ['scripts/**/*.{js,mjs}', '*.config.{js,mjs,ts}', 'eslint.config.js'],
+    languageOptions: {
+      globals: { console: 'readonly', process: 'readonly', URL: 'readonly' },
+    },
+  },
+];

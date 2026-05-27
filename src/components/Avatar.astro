@@ -1,0 +1,45 @@
+---
+// Avatar — circular. Shows a drawn animal when `kind` is given, otherwise the
+// initials of `name`. Ported from components-core.jsx Avatar.
+import DrawnAnimal from './DrawnAnimal.astro';
+
+interface Props {
+  name?: string;
+  size?: number;
+  kind?: 'dog' | 'cat' | 'bunny';
+  ring?: boolean;
+  class?: string;
+}
+const { name = '?', size = 40, kind, ring = false, class: className } = Astro.props;
+const initials = String(name)
+  .split(' ')
+  .map((p) => p[0])
+  .join('')
+  .slice(0, 2)
+  .toUpperCase();
+---
+
+<div
+  class:list={['avatar', ring && 'avatar--ring', className]}
+  style={{ width: `${size}px`, height: `${size}px`, fontSize: `${size * 0.4}px` }}
+>
+  {kind ? <DrawnAnimal kind={kind} size={size * 0.85} /> : initials}
+</div>
+
+<style>
+  .avatar {
+    border-radius: 999px;
+    background: var(--rg-primary-soft);
+    color: var(--rg-primary-deep);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--rg-font-body);
+    font-weight: 700;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .avatar--ring {
+    border: 2px solid var(--rg-primary);
+  }
+</style>

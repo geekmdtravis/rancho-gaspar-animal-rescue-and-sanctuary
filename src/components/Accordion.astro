@@ -1,0 +1,83 @@
+---
+// Accordion — native <details>/<summary> (accessible, no JS). First item open
+// by default. Used for the adoption-process steps.
+interface Item {
+  q: string;
+  a: string;
+}
+interface Props {
+  items: Item[];
+  class?: string;
+}
+const { items, class: className } = Astro.props;
+---
+
+<div class:list={['acc', className]}>
+  {
+    items.map((it, i) => (
+      <details class="acc__item" open={i === 0}>
+        <summary class="acc__q">
+          <span>{it.q}</span>
+          <svg
+            class="acc__chevron"
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M3 5l4 4 4-4" />
+          </svg>
+        </summary>
+        <div class="acc__a">{it.a}</div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .acc {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: var(--rg-font-body);
+  }
+  .acc__item {
+    background: var(--rg-surface);
+    border: 1px solid var(--rg-border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .acc__q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--rg-ink);
+    list-style: none;
+  }
+  .acc__q::-webkit-details-marker {
+    display: none;
+  }
+  .acc__chevron {
+    color: var(--rg-primary);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .acc__item[open] .acc__chevron {
+    transform: rotate(180deg);
+  }
+  .acc__a {
+    padding: 0 18px 18px;
+    font-size: 14px;
+    color: var(--rg-ink-soft);
+    line-height: 1.6;
+  }
+</style>

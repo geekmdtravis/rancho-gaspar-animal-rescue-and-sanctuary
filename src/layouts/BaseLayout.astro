@@ -1,0 +1,84 @@
+---
+// BaseLayout — html shell shared by every page: fonts, meta, global styles,
+// the sticky nav, and the footer. Pages provide their <main> via the slot.
+import '../styles/global.css';
+import NavHeader from '../components/NavHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { t, localizePath, stripLocale, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  active?: string;
+}
+const { lang, title, description, active } = Astro.props;
+const dict = t(lang);
+
+const htmlLang = lang === 'pt-br' ? 'pt-BR' : 'en';
+const pageTitle = title
+  ? `${title} · ${dict.site.name}`
+  : `${dict.site.name} — ${dict.site.tagline}`;
+const pageDesc = description ?? dict.site.description;
+
+// hreflang alternates for the same page in both locales.
+const basePath = stripLocale(Astro.url.pathname);
+const enHref = new URL(localizePath(basePath, 'en'), Astro.site ?? Astro.url).toString();
+const ptHref = new URL(localizePath(basePath, 'pt-br'), Astro.site ?? Astro.url).toString();
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString();
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="pt-BR" href={ptHref} />
+    <link rel="alternate" hreflang="x-default" href={enHref} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={dict.site.org} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:locale" content={htmlLang === 'pt-BR' ? 'pt_BR' : 'en_US'} />
+
+    <!-- Fonts: warm pairing (Lora display × Nunito body, Caveat accent) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700;800&family=Caveat:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{dict.nav.skipToContent}</a>
+    <NavHeader lang={lang} active={active} />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter lang={lang} />
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: -999px;
+        top: 8px;
+        z-index: 100;
+        background: var(--rg-surface);
+        color: var(--rg-ink);
+        padding: 10px 16px;
+        border-radius: 999px;
+        box-shadow: var(--rg-shadow-md);
+      }
+      .skip-link:focus {
+        left: 8px;
+      }
+    </style>
+  </body>
+</html>

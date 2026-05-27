@@ -1,0 +1,12 @@
+# Whole-project gates before sharing work. These intentionally run against the
+# full tree and a fresh build (not staged diffs), since a type error or broken
+# page can come from a file you didn't touch in the last commit.
+
+echo "› Type-checking (astro check)…"
+npm run check
+
+echo "› Verifying EN / PT-BR parity…"
+npm run i18n:check
+
+echo "› Running e2e against a fresh build (playwright)…"
+npm run test:e2e

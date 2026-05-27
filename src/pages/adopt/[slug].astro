@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AnimalProfile from '../../components/AnimalProfile.astro';
+import { listAnimals, animalSlug } from '../../lib/animals';
+
+export async function getStaticPaths() {
+  const animals = await listAnimals('en', 'adoptable');
+  return animals.map((entry) => ({ params: { slug: animalSlug(entry) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+---
+
+<BaseLayout lang="en" active="adopt" title={entry.data.name} description={entry.data.summary}>
+  <AnimalProfile lang="en" entry={entry} />
+</BaseLayout>

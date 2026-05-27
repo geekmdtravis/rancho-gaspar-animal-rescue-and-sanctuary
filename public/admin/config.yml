@@ -1,0 +1,111 @@
+# Sveltia CMS configuration (Decap-compatible).
+# Edits are committed straight to the repo — there is no backend server. Pair
+# with the local-first workflow: edit here, then refine i18n/markup with Claude
+# Code or Codex, then open a pull request.
+
+backend:
+  name: github
+  repo: geekmdtravis/rancho-gaspar-animal-rescue-and-sanctuary
+  branch: main
+
+# Enables "Work with Local Repository" when served from localhost (Sveltia uses
+# the File System Access API — no proxy needed). Remove for production-only.
+local_backend: true
+
+# Uploaded media lands under src/ so Astro's image pipeline can optimize it
+# (responsive widths, avif/webp, blur-up). Adjust per-collection if you prefer
+# entry-relative storage.
+media_folder: src/assets/uploads
+public_folder: /src/assets/uploads
+
+# Brazilian Portuguese mirrors English. `multiple_folders` writes one file per
+# locale at <folder>/<locale>/<slug>.md — exactly the layout the Astro content
+# collection's glob loader expects.
+i18n:
+  structure: multiple_folders
+  locales: [en, pt-br]
+  default_locale: en
+
+collections:
+  - name: animals
+    label: Animals
+    label_singular: Animal
+    description: Resident and adoptable dogs, cats, and bunnies.
+    folder: src/content/animals
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    extension: md
+    format: frontmatter
+    i18n: true
+    summary: '{{fields.name}} · {{fields.status}}'
+    sortable_fields: [order, name, status]
+    view_filters:
+      - { label: Adoptable, field: status, pattern: adoptable }
+      - { label: Residents, field: status, pattern: resident }
+      - { label: Featured, field: featured, pattern: true }
+    fields:
+      - { name: name, label: Name, widget: string, i18n: true }
+      - {
+          name: species,
+          label: Species,
+          widget: select,
+          options: [dog, cat, bunny],
+          i18n: duplicate,
+        }
+      - {
+          name: sex,
+          label: Sex,
+          widget: select,
+          options: [F, M, unknown],
+          default: unknown,
+          i18n: duplicate,
+        }
+      - { name: age, label: Age, widget: string, required: false, i18n: true }
+      - { name: breed, label: Breed, widget: string, required: false, i18n: true }
+      - { name: weight, label: Weight, widget: string, required: false, i18n: duplicate }
+      - {
+          name: status,
+          label: Status,
+          widget: select,
+          options: [adoptable, resident],
+          i18n: duplicate,
+          hint: 'Adoptable = looking for a home. Resident = lives at the sanctuary permanently (not for adoption).',
+        }
+      - { name: summary, label: Short summary, widget: text, required: false, i18n: true }
+      - { name: tags, label: Tags, widget: list, required: false, i18n: true }
+      - {
+          name: featured,
+          label: Feature on home page,
+          widget: boolean,
+          default: false,
+          i18n: duplicate,
+        }
+      - {
+          name: order,
+          label: Sort order,
+          widget: number,
+          default: 0,
+          value_type: int,
+          i18n: duplicate,
+        }
+      - { name: cover, label: Cover photo, widget: image, required: false, i18n: duplicate }
+      - { name: coverAlt, label: Cover alt text, widget: string, required: false, i18n: true }
+      - {
+          name: gallery,
+          label: Gallery,
+          widget: list,
+          required: false,
+          i18n: duplicate,
+          field: { name: image, label: Photo, widget: image },
+        }
+      - { name: adoptionFee, label: Adoption fee, widget: string, required: false, i18n: duplicate }
+      - name: quickFacts
+        label: Quick facts
+        widget: list
+        required: false
+        i18n: true
+        fields:
+          - { name: label, label: Label, widget: string }
+          - { name: value, label: Value, widget: string }
+      - { name: body, label: Story, widget: markdown, i18n: true }

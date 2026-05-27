@@ -1,0 +1,190 @@
+---
+// Rancho Gaspar logo lockup — illustrated dog + cat in a heart (the default
+// brand mark) plus the wordmark. Ported from logo.jsx. The "Animal Rescue"
+// sub-line and optional motto are passed in translated; "Rancho Gaspar" is
+// the brand name and stays constant.
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  tagline: string;
+  motto?: string;
+  href?: string;
+  ariaLabel?: string;
+  class?: string;
+}
+const { size = 'md', tagline, motto, href, ariaLabel, class: className } = Astro.props;
+
+const sizes = {
+  sm: { mark: 36, wordmark: 18, sub: 9, gap: 8, spacing: 0.18 },
+  md: { mark: 56, wordmark: 26, sub: 11, gap: 12, spacing: 0.22 },
+  lg: { mark: 80, wordmark: 38, sub: 14, gap: 16, spacing: 0.26 },
+};
+const sz = sizes[size];
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag
+  href={href}
+  class:list={['logo', className]}
+  aria-label={ariaLabel}
+  style={{ gap: `${sz.gap}px` }}
+>
+  <svg
+    width={sz.mark}
+    height={sz.mark * 0.92}
+    viewBox="0 0 100 92"
+    fill="none"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M50 80 C 16 60, 8 36, 22 22 C 32 12, 44 14, 50 26 C 56 14, 68 12, 78 22 C 92 36, 84 60, 50 80 Z"
+      stroke="var(--rg-primary)"
+      stroke-width="2.2"
+      fill="var(--rg-primary-soft)"
+      fill-opacity="0.35"
+      stroke-linejoin="round"></path>
+    <g transform="translate(28 32)">
+      <ellipse
+        cx="11"
+        cy="14"
+        rx="11"
+        ry="9"
+        fill="#FFFFFF"
+        stroke="var(--rg-primary)"
+        stroke-width="1.6"></ellipse>
+      <path d="M3 10 C 2 4, 4 2, 7 4 L 8 11 Z" fill="var(--rg-primary)" fill-opacity="0.85"></path>
+      <path d="M19 10 C 20 4, 17 2, 15 4 L 14 11 Z" fill="var(--rg-primary)" fill-opacity="0.4"
+      ></path>
+      <path
+        d="M7 13 Q 9 14.6 11 13"
+        stroke="var(--rg-primary)"
+        stroke-width="1.4"
+        stroke-linecap="round"
+        fill="none"></path>
+      <ellipse cx="6.5" cy="15.5" rx="1.6" ry="1.2" fill="var(--rg-primary)"></ellipse>
+      <path
+        d="M6.5 17 Q 6.5 18.5 8 18.2"
+        stroke="var(--rg-primary)"
+        stroke-width="1.1"
+        stroke-linecap="round"
+        fill="none"></path>
+      <circle cx="10" cy="17" r="1.4" fill="var(--rg-primary)" fill-opacity="0.18"></circle>
+    </g>
+    <g transform="translate(50 34)">
+      <ellipse
+        cx="11"
+        cy="13"
+        rx="10"
+        ry="8.5"
+        fill="#FFFFFF"
+        stroke="var(--rg-primary)"
+        stroke-width="1.6"></ellipse>
+      <path
+        d="M3 8 L 5 1 L 8 7 Z"
+        fill="#FFFFFF"
+        stroke="var(--rg-primary)"
+        stroke-width="1.4"
+        stroke-linejoin="round"></path>
+      <path
+        d="M14 7 L 17 1 L 19 8 Z"
+        fill="#FFFFFF"
+        stroke="var(--rg-primary)"
+        stroke-width="1.4"
+        stroke-linejoin="round"></path>
+      <path d="M5.2 5 L 6 2.5 L 7 5 Z" fill="var(--rg-primary)" fill-opacity="0.4"></path>
+      <path d="M15.5 5 L 16.5 2.5 L 17.3 5 Z" fill="var(--rg-primary)" fill-opacity="0.4"></path>
+      <circle cx="7.5" cy="12" r="1" fill="var(--rg-primary)"></circle>
+      <circle cx="14" cy="12" r="1" fill="var(--rg-primary)"></circle>
+      <path d="M10.2 14.3 L 11 15.1 L 11.8 14.3 Z" fill="var(--rg-primary)"></path>
+      <path
+        d="M4 14 L 7 14.5 M 4 15.5 L 7 15.3"
+        stroke="var(--rg-primary)"
+        stroke-width="0.7"
+        stroke-linecap="round"></path>
+      <path
+        d="M18 14 L 15 14.5 M 18 15.5 L 15 15.3"
+        stroke="var(--rg-primary)"
+        stroke-width="0.7"
+        stroke-linecap="round"></path>
+      <path
+        d="M9 16 Q 11 17.5 13 16"
+        stroke="var(--rg-primary)"
+        stroke-width="1.1"
+        stroke-linecap="round"
+        fill="none"></path>
+    </g>
+    <g transform="translate(28 70)">
+      <circle cx="0" cy="-3" r="2" fill="var(--rg-primary)" fill-opacity="0.6"></circle>
+      <circle cx="3" cy="0" r="2" fill="var(--rg-primary)" fill-opacity="0.6"></circle>
+      <circle cx="-3" cy="0" r="2" fill="var(--rg-primary)" fill-opacity="0.6"></circle>
+      <circle cx="0" cy="3" r="2" fill="var(--rg-primary)" fill-opacity="0.6"></circle>
+      <circle cx="0" cy="0" r="1.4" fill="var(--rg-accent-sage)"></circle>
+    </g>
+    <path d="M65 72 Q 72 70 76 76 Q 70 76 65 72 Z" fill="var(--rg-accent-sage)" opacity="0.7"
+    ></path>
+    <path d="M62 76 Q 64 80 60 82 Q 58 78 62 76 Z" fill="var(--rg-accent-sage)" opacity="0.6"
+    ></path>
+    <path
+      d="M75 18 C 73 16 70 17 70 19.5 C 70 21.5 73 23 75 24.5 C 77 23 80 21.5 80 19.5 C 80 17 77 16 75 18 Z"
+      fill="var(--rg-primary)"
+      fill-opacity="0.4"></path>
+  </svg>
+
+  <span class="logo__text">
+    <span class="logo__wordmark" style={{ fontSize: `${sz.wordmark}px` }}>Rancho Gaspar</span>
+    <span
+      class="logo__sub"
+      style={{
+        fontSize: `${sz.sub}px`,
+        letterSpacing: `${sz.spacing}em`,
+        marginTop: `${sz.gap * 0.25}px`,
+      }}>{tagline}</span
+    >
+    {
+      motto && (
+        <span
+          class="logo__motto"
+          style={{ fontSize: `${sz.sub * 1.4}px`, marginTop: `${sz.gap * 0.35}px` }}
+        >
+          {motto}
+        </span>
+      )
+    }
+  </span>
+</Tag>
+
+<style>
+  .logo {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    color: inherit;
+  }
+  .logo__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+  }
+  .logo__wordmark {
+    font-family: var(--rg-font-display);
+    font-weight: 600;
+    font-style: italic;
+    color: var(--rg-ink);
+    letter-spacing: -0.4px;
+    line-height: 1;
+  }
+  .logo__sub {
+    font-family: var(--rg-font-body);
+    font-weight: 700;
+    color: var(--rg-primary);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .logo__motto {
+    font-family: var(--rg-font-accent);
+    font-weight: 500;
+    color: var(--rg-primary);
+    line-height: 1;
+  }
+</style>

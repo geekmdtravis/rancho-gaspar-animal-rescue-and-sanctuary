@@ -1,0 +1,97 @@
+---
+// Hand-drawn animal stand-ins (dog / cat / bunny) used inside photo
+// placeholders and as decorative avatars. Ported from illustrations.jsx.
+interface Props {
+  kind?: 'dog' | 'cat' | 'bunny';
+  size?: number;
+  color?: string;
+  class?: string;
+}
+const {
+  kind = 'dog',
+  size = 100,
+  color = 'var(--rg-primary-deep)',
+  class: className,
+} = Astro.props;
+---
+
+{
+  kind === 'cat' && (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      stroke={color}
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class={className}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M20 38 L 28 18 L 38 38" />
+      <path d="M62 38 L 72 18 L 80 38" />
+      <ellipse cx="50" cy="58" rx="32" ry="28" fill="#FFFFFF" fill-opacity="0.6" />
+      <circle cx="38" cy="55" r="2.5" fill={color} />
+      <circle cx="62" cy="55" r="2.5" fill={color} />
+      <path d="M48 63 L 50 67 L 52 63 Z" fill={color} />
+      <path d="M44 70 Q 50 75 56 70" />
+      <path d="M18 60 L 30 62 M 18 66 L 30 65" stroke-width="1" />
+      <path d="M82 60 L 70 62 M 82 66 L 70 65" stroke-width="1" />
+    </svg>
+  )
+}
+{
+  kind === 'bunny' && (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      stroke={color}
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class={className}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <ellipse cx="35" cy="22" rx="7" ry="18" fill="#FFFFFF" fill-opacity="0.6" />
+      <ellipse cx="65" cy="22" rx="7" ry="18" fill="#FFFFFF" fill-opacity="0.6" />
+      <ellipse cx="35" cy="22" rx="3.5" ry="12" fill={color} fill-opacity="0.3" stroke="none" />
+      <ellipse cx="65" cy="22" rx="3.5" ry="12" fill={color} fill-opacity="0.3" stroke="none" />
+      <ellipse cx="50" cy="62" rx="30" ry="26" fill="#FFFFFF" fill-opacity="0.6" />
+      <circle cx="40" cy="58" r="2.5" fill={color} />
+      <circle cx="60" cy="58" r="2.5" fill={color} />
+      <path d="M47 67 L 50 70 L 53 67 Z" fill={color} />
+      <path d="M45 73 Q 50 77 55 73" />
+    </svg>
+  )
+}
+{
+  kind === 'dog' && (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      stroke={color}
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class={className}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M22 32 Q 18 18 28 18 L 36 38 Z" fill={color} fill-opacity="0.35" />
+      <path d="M78 32 Q 82 18 72 18 L 64 38 Z" fill={color} fill-opacity="0.35" />
+      <ellipse cx="50" cy="58" rx="32" ry="28" fill="#FFFFFF" fill-opacity="0.6" />
+      <circle cx="40" cy="56" r="2.6" fill={color} />
+      <circle cx="60" cy="56" r="2.6" fill={color} />
+      <ellipse cx="50" cy="66" rx="3" ry="2.2" fill={color} />
+      <path d="M50 68 L 50 72 M 46 73 Q 50 76 54 73" />
+      <path d="M58 73 Q 64 71 64 67" />
+    </svg>
+  )
+}

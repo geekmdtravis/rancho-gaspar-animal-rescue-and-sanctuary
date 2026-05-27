@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AnimalListing from '../../../components/AnimalListing.astro';
+import { t } from '../../../i18n/utils';
+
+const dict = t('pt-br');
+---
+
+<BaseLayout
+  lang="pt-br"
+  active="adopt"
+  title={dict.adoptPage.title}
+  description={dict.adoptPage.body}
+>
+  <AnimalListing lang="pt-br" status="adoptable" />
+</BaseLayout>

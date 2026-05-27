@@ -1,0 +1,426 @@
+---
+// AnimalProfile — a single animal's page. Adapts to status: adoptable shows an
+// "Apply to adopt" CTA, adoption fee, foster note, and the adoption-process
+// accordion; resident shows a clear "permanent resident, not for adoption"
+// callout instead. Both get the story, quick facts, a sponsor widget, and
+// similar animals.
+import { render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Breadcrumbs from './Breadcrumbs.astro';
+import SectionLabel from './SectionLabel.astro';
+import Badge from './Badge.astro';
+import Button from './Button.astro';
+import Accordion from './Accordion.astro';
+import DonationWidget from './DonationWidget.astro';
+import AnimalCard from './AnimalCard.astro';
+import PhotoSlot from './PhotoSlot.astro';
+import Heart from './icons/Heart.astro';
+import { t, localizePath, type Lang } from '../i18n/utils';
+import { similarAnimals, animalPath, type Animal } from '../lib/animals';
+
+interface Props {
+  lang: Lang;
+  entry: Animal;
+}
+const { lang, entry } = Astro.props;
+const dict = t(lang);
+const d = entry.data;
+const isAdopt = d.status === 'adoptable';
+
+const { Content } = await render(entry);
+const similar = await similarAnimals(entry, lang);
+
+const statusLabel = isAdopt ? dict.status.adoptable : dict.status.resident;
+const meta = [d.sex === 'unknown' ? null : d.sex, d.age, d.breed, d.weight].filter(Boolean);
+const facts = [
+  ...d.quickFacts,
+  ...(isAdopt && d.adoptionFee ? [{ label: dict.profile.fee, value: d.adoptionFee }] : []),
+];
+
+const crumbs = [
+  { label: dict.nav.home, href: localizePath('/', lang) },
+  {
+    label: isAdopt ? dict.adoptPage.breadcrumb : dict.residentsPage.breadcrumb,
+    href: localizePath(isAdopt ? '/adopt' : '/residents', lang),
+  },
+  { label: d.name },
+];
+
+const applyLabel = `${dict.profile.apply} ${d.name}`;
+const aboutHeading = `${dict.profile.aboutHeading} ${d.name}`;
+const applyHref = `mailto:hello@ranchogaspar.org?subject=${encodeURIComponent(applyLabel)}`;
+const backHref = localizePath(isAdopt ? '/adopt' : '/residents', lang);
+---
+
+<section class="rg-container rg-section--tight">
+  <Breadcrumbs items={crumbs} />
+
+  <div class="ap-top">
+    <!-- Gallery -->
+    <div class="ap-gallery">
+      {
+        d.cover ? (
+          <Image
+            src={d.cover}
+            alt={d.coverAlt ?? d.name}
+            widths={[480, 768, 1024]}
+            sizes="(max-width: 980px) 92vw, 560px"
+            class="ap-hero-img"
+          />
+        ) : (
+          <PhotoSlot ratio="4 / 3" radius={20} kind={d.species} label={`${d.name} · photo`} />
+        )
+      }
+      {
+        d.gallery.length > 0 && (
+          <div class="ap-thumbs">
+            {d.gallery.slice(0, 4).map((img, i) => (
+              <Image
+                src={img}
+                alt={`${d.name} ${i + 1}`}
+                widths={[120, 240]}
+                sizes="120px"
+                class="ap-thumb"
+              />
+            ))}
+          </div>
+        )
+      }
+    </div>
+
+    <!-- Detail panel -->
+    <div class="ap-panel">
+      <div class="ap-badges">
+        <Badge variant={isAdopt ? 'primary' : 'lilac'}>{statusLabel}</Badge>
+        {d.tags.map((tag) => <Badge variant="sage">{tag}</Badge>)}
+      </div>
+
+      <h1 class="ap-name rg-display">
+        {d.name}
+        <span class="ap-name-heart"><Heart size={24} color="var(--rg-primary)" /></span>
+      </h1>
+      {meta.length > 0 && <p class="ap-meta">{meta.join(' · ')}</p>}
+
+      {
+        !isAdopt && (
+          <div class="ap-resident-note">
+            <Heart size={16} color="var(--rg-primary-deep)" filled />
+            <span>{dict.status.residentNote}</span>
+          </div>
+        )
+      }
+
+      {
+        facts.length > 0 && (
+          <div class="ap-facts">
+            <SectionLabel>{dict.profile.quickFacts}</SectionLabel>
+            <dl>
+              {facts.map((f) => (
+                <div class="ap-fact">
+                  <dt>{f.label}</dt>
+                  <dd>{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )
+      }
+
+      <div class="ap-cta">
+        {
+          isAdopt ? (
+            <Button href={applyHref} variant="primary" size="lg" block>
+              <Heart slot="icon" size={16} color="#fff" filled />
+              {applyLabel}
+            </Button>
+          ) : (
+            <Button href="#sponsor" variant="primary" size="lg" block>
+              <Heart slot="icon" size={16} color="#fff" filled />
+              {dict.profile.sponsorTitle}
+            </Button>
+          )
+        }
+        <a
+          class="ap-icon-btn"
+          href={`mailto:hello@ranchogaspar.org`}
+          aria-label={dict.profile.save}
+        >
+          <Heart size={18} color="var(--rg-primary)" />
+        </a>
+      </div>
+
+      {
+        isAdopt && (
+          <div class="ap-foster">
+            <Heart size={16} color="var(--rg-primary-deep)" filled />
+            <div>
+              <strong>{dict.profile.fosterTitle}</strong>
+              <p>{dict.profile.fosterBody}</p>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  <!-- Story + process / sponsor -->
+  <div class="ap-lower">
+    <div class="ap-story">
+      <SectionLabel>{dict.profile.aboutEyebrow}</SectionLabel>
+      <h2 class="ap-h2 rg-display">{aboutHeading}</h2>
+      <div class="ap-prose">
+        <Content />
+      </div>
+
+      {
+        isAdopt && (
+          <div class="ap-process">
+            <SectionLabel>{dict.profile.processEyebrow}</SectionLabel>
+            <h2 class="ap-h2 rg-display">{dict.profile.processHeading}</h2>
+            <Accordion items={dict.profile.process} />
+          </div>
+        )
+      }
+    </div>
+
+    <aside class="ap-aside" id="sponsor">
+      <SectionLabel>{dict.profile.sponsorEyebrow}</SectionLabel>
+      <h3 class="ap-aside-title rg-display">{dict.profile.sponsorTitle}</h3>
+      <p class="ap-aside-body">{dict.profile.sponsorBody}</p>
+      <DonationWidget lang={lang} compact amounts={[25, 50, 100, 200]} defaultAmount={50} />
+    </aside>
+  </div>
+
+  <!-- Similar -->
+  {
+    similar.length > 0 && (
+      <div class="ap-similar">
+        <SectionLabel>{dict.profile.similarEyebrow}</SectionLabel>
+        <h2 class="ap-h2 rg-display">{dict.profile.similarHeading}</h2>
+        <div class="ap-similar-grid">
+          {similar.map((e) => (
+            <AnimalCard
+              name={e.data.name}
+              kind={e.data.species}
+              sex={e.data.sex === 'unknown' ? undefined : e.data.sex}
+              age={e.data.age}
+              description={e.data.summary}
+              status={e.data.status}
+              statusLabel={
+                e.data.status === 'adoptable' ? dict.status.adoptable : dict.status.resident
+              }
+              meetLabel={dict.adoptables.meet}
+              tags={e.data.tags}
+              href={localizePath(animalPath(e), lang)}
+              image={e.data.cover}
+              imageAlt={e.data.coverAlt}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  <p class="ap-back">
+    <a href={backHref}>← {isAdopt ? dict.profile.backAdopt : dict.profile.backResidents}</a>
+  </p>
+</section>
+
+<style>
+  .ap-top {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 36px;
+  }
+  .ap-hero-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+  .ap-thumbs {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .ap-thumb {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  .ap-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .ap-name {
+    font-size: 48px;
+    margin: 0;
+    line-height: 1.1;
+  }
+  .ap-name-heart {
+    margin-left: 8px;
+  }
+  .ap-meta {
+    margin: 6px 0 0;
+    font-size: 16px;
+    color: var(--rg-ink-soft);
+  }
+  .ap-resident-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--rg-primary-faint);
+    border: 1px solid var(--rg-primary-soft);
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--rg-primary-deep);
+  }
+  .ap-facts {
+    margin-top: 20px;
+    background: var(--rg-surface);
+    border: 1px solid var(--rg-border);
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .ap-facts dl {
+    margin: 10px 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+    column-gap: 16px;
+  }
+  .ap-fact {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .ap-fact dt {
+    color: var(--rg-ink-soft);
+  }
+  .ap-fact dd {
+    margin: 0;
+    color: var(--rg-ink);
+    font-weight: 700;
+    text-align: right;
+  }
+  .ap-cta {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .ap-icon-btn {
+    width: 52px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--rg-surface);
+    border: 1.5px solid var(--rg-border);
+    border-radius: 999px;
+  }
+  .ap-icon-btn:hover {
+    background: var(--rg-primary-faint);
+  }
+  .ap-foster {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: var(--rg-primary-faint);
+    border: 1px solid var(--rg-primary-soft);
+    border-radius: 14px;
+    color: var(--rg-primary-deep);
+  }
+  .ap-foster strong {
+    font-size: 14px;
+  }
+  .ap-foster p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--rg-ink-soft);
+    line-height: 1.5;
+  }
+  .ap-lower {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  .ap-h2 {
+    font-size: 24px;
+    margin: 4px 0 12px;
+  }
+  .ap-prose {
+    font-size: 16px;
+    color: var(--rg-ink-soft);
+    line-height: 1.7;
+  }
+  .ap-prose :global(p) {
+    margin: 0 0 16px;
+  }
+  .ap-process {
+    margin-top: 28px;
+  }
+  .ap-aside {
+    position: sticky;
+    top: 88px;
+  }
+  .ap-aside-title {
+    font-size: 22px;
+    margin: 4px 0 6px;
+  }
+  .ap-aside-body {
+    font-size: 14px;
+    color: var(--rg-ink-soft);
+    line-height: 1.55;
+    margin: 0 0 16px;
+  }
+  .ap-similar {
+    margin-top: 48px;
+  }
+  .ap-similar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .ap-back {
+    margin-top: 32px;
+  }
+  .ap-back a {
+    font-weight: 700;
+    color: var(--rg-primary-deep);
+  }
+
+  @media (max-width: 980px) {
+    .ap-top,
+    .ap-lower {
+      grid-template-columns: 1fr;
+    }
+    .ap-name {
+      font-size: 36px;
+    }
+    .ap-aside {
+      position: static;
+    }
+    .ap-similar-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    .ap-similar-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

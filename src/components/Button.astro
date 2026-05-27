@@ -1,0 +1,140 @@
+---
+// Button — renders an <a> when `href` is given, otherwise a <button>.
+// Variants and sizes ported from components-core.jsx Button. Icons are passed
+// via the `icon` / `iconRight` named slots.
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger' | 'soft';
+  size?: 'sm' | 'md' | 'lg';
+  block?: boolean;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  class?: string;
+  ariaLabel?: string;
+}
+const {
+  variant = 'primary',
+  size = 'md',
+  block = false,
+  href,
+  type = 'button',
+  disabled = false,
+  class: className,
+  ariaLabel,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+const classes = ['btn', `btn--${variant}`, `btn--${size}`, block && 'btn--block', className];
+---
+
+<Tag
+  class:list={classes}
+  href={href}
+  type={href ? undefined : type}
+  disabled={href ? undefined : disabled}
+  aria-label={ariaLabel}
+>
+  {
+    Astro.slots.has('icon') && (
+      <span class="btn__icon">
+        <slot name="icon" />
+      </span>
+    )
+  }
+  <slot />
+  {
+    Astro.slots.has('iconRight') && (
+      <span class="btn__icon">
+        <slot name="iconRight" />
+      </span>
+    )
+  }
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1.5px solid transparent;
+    border-radius: var(--rg-btn-radius);
+    font-family: var(--rg-font-body);
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background 0.15s,
+      transform 0.15s,
+      box-shadow 0.15s;
+    text-decoration: none;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn__icon {
+    display: inline-flex;
+  }
+
+  /* sizes */
+  .btn--sm {
+    height: 32px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+  .btn--md {
+    height: 42px;
+    padding: 0 20px;
+    font-size: 15px;
+  }
+  .btn--lg {
+    height: 52px;
+    padding: 0 28px;
+    font-size: 16px;
+  }
+  .btn--block {
+    display: flex;
+    width: 100%;
+  }
+
+  /* variants */
+  .btn--primary {
+    background: var(--rg-primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(217, 107, 134, 0.25);
+  }
+  .btn--primary:hover {
+    background: var(--rg-primary-deep);
+  }
+  .btn--secondary {
+    background: var(--rg-primary-soft);
+    color: var(--rg-primary-deep);
+  }
+  .btn--secondary:hover {
+    background: var(--rg-primary-faint);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--rg-ink);
+  }
+  .btn--ghost:hover {
+    background: var(--rg-primary-faint);
+  }
+  .btn--outline {
+    background: transparent;
+    color: var(--rg-ink);
+    border-color: var(--rg-border-strong);
+  }
+  .btn--outline:hover {
+    background: var(--rg-primary-faint);
+  }
+  .btn--danger {
+    background: var(--rg-danger);
+    color: #fff;
+  }
+  .btn--soft {
+    background: var(--rg-accent-sky);
+    color: #1f4e70;
+  }
+</style>

@@ -1,0 +1,65 @@
+---
+// GetInvolvedCard — centered card with a big icon medallion, title, blurb,
+// and a CTA. Ported from components-blocks.jsx GetInvolvedCard.
+import Button from './Button.astro';
+import Icon from './icons/Icon.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  cta: string;
+  href: string;
+  accent?: 'pink' | 'sage' | 'sky' | 'lilac';
+}
+const { title, description, cta, href, accent = 'pink' } = Astro.props;
+const bg = { pink: 'var(--rg-primary-soft)', sage: '#DCE9D5', sky: '#D5E8F2', lilac: '#E2D5EE' }[
+  accent
+];
+const fg = {
+  pink: 'var(--rg-primary)',
+  sage: '#5F7F5C',
+  sky: 'var(--rg-accent-sky)',
+  lilac: '#7F5FA6',
+}[accent];
+const btnVar = accent === 'pink' ? 'primary' : 'soft';
+---
+
+<div class="gicard">
+  <div class="gicard__icon" style={{ background: bg, color: fg }}><slot name="icon" /></div>
+  <h3 class="gicard__title">{title}</h3>
+  <p class="gicard__desc">{description}</p>
+  <Button href={href} variant={btnVar}>{cta}<Icon slot="iconRight" name="arrow-right" /></Button>
+</div>
+
+<style>
+  .gicard {
+    background: var(--rg-surface);
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid var(--rg-border);
+    font-family: var(--rg-font-body);
+    text-align: center;
+  }
+  .gicard__icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .gicard__title {
+    margin: 0;
+    font-family: var(--rg-font-display);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--rg-ink);
+  }
+  .gicard__desc {
+    margin: 8px 0 16px;
+    font-size: 14px;
+    color: var(--rg-ink-soft);
+    line-height: 1.55;
+  }
+</style>

@@ -1,0 +1,112 @@
+/* global.css — base reset + shared utilities for Rancho Gaspar */
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--rg-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--rg-font-body);
+  color: var(--rg-ink);
+  background: var(--rg-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  line-height: 1.55;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--rg-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* shimmer used by skeletons / loading photo slots */
+@keyframes rgShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ── shared layout helpers ── */
+.rg-container {
+  max-width: var(--rg-maxw);
+  margin: 0 auto;
+  padding-inline: 32px;
+}
+
+.rg-section {
+  padding-block: 48px;
+}
+
+.rg-section--tight {
+  padding-block: 32px;
+}
+
+/* display type defaults */
+.rg-display {
+  font-family: var(--rg-font-display);
+  font-weight: 600;
+  font-style: var(--rg-display-style);
+  letter-spacing: -0.5px;
+  color: var(--rg-ink);
+}
+
+.rg-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--rg-primary);
+  margin: 0 0 12px;
+}
+
+.rg-eyebrow {
+  font-family: var(--rg-font-accent);
+  color: var(--rg-primary);
+}
+
+@media (max-width: 980px) {
+  .rg-container {
+    padding-inline: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

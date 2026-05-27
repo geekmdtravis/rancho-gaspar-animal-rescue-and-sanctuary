@@ -1,0 +1,227 @@
+---
+// DonationWidget — frequency toggle + preset amounts + donate CTA. Ported from
+// components-blocks.jsx DonationWidget. Interactivity is a tiny inline script
+// (no framework) so the widget stays static-friendly. Point `donateUrl` at
+// your processor (Pix/Stripe/etc.) when ready.
+import Heart from './icons/Heart.astro';
+import { t, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  amounts?: number[];
+  defaultAmount?: number;
+  compact?: boolean;
+  donateUrl?: string;
+}
+const {
+  lang,
+  amounts = [25, 50, 100, 250],
+  defaultAmount = 50,
+  compact = false,
+  donateUrl = '#donate',
+} = Astro.props;
+const dict = t(lang);
+const currency = 'R$';
+---
+
+<div class:list={['donate', compact && 'donate--compact']} data-donation data-currency={currency}>
+  <div class="donate__deco" aria-hidden="true"><Heart size={28} color="var(--rg-primary)" /></div>
+  <h3 class="donate__title">{dict.donate.title}</h3>
+  <p class="donate__body">{dict.donate.body}</p>
+
+  <div class="donate__freq" role="group" aria-label={dict.donate.title}>
+    <button type="button" class="donate__freq-btn is-active" data-freq="one"
+      >{dict.donate.oneTime}</button
+    >
+    <button type="button" class="donate__freq-btn" data-freq="month">{dict.donate.monthly}</button>
+  </div>
+
+  <div class="donate__amounts">
+    {
+      amounts.map((a) => (
+        <button
+          type="button"
+          class:list={['donate__amount', a === defaultAmount && 'is-active']}
+          data-amount={a}
+          aria-pressed={a === defaultAmount ? 'true' : 'false'}
+        >
+          {currency} {a}
+        </button>
+      ))
+    }
+  </div>
+
+  <a class="donate__cta" href={donateUrl} data-donate-cta data-per-month={dict.donate.perMonth}>
+    <Heart size={16} color="#fff" filled />
+    <span data-donate-label>{dict.donate.cta} {currency} {defaultAmount}</span>
+  </a>
+
+  <div class="donate__trust">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      aria-hidden="true"
+    >
+      <rect x="2.5" y="5" width="7" height="5" rx="1"></rect>
+      <path d="M4 5V3.5a2 2 0 014 0V5"></path>
+    </svg>
+    {dict.donate.trust}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-donation]').forEach((widget) => {
+    const currency = widget.dataset.currency ?? 'R$';
+    const cta = widget.querySelector<HTMLElement>('[data-donate-cta]');
+    const label = widget.querySelector<HTMLElement>('[data-donate-label]');
+    const baseLabel = label?.textContent?.trim().split(/\s+/)[0] ?? 'Donate';
+    const perMonth = cta?.dataset.perMonth ?? '/mo';
+    let amount = Number(
+      widget.querySelector<HTMLElement>('.donate__amount.is-active')?.dataset.amount ?? '50',
+    );
+    let freq: 'one' | 'month' = 'one';
+
+    const render = () => {
+      if (label)
+        label.textContent = `${baseLabel} ${currency} ${amount}${freq === 'month' ? perMonth : ''}`;
+    };
+
+    widget.querySelectorAll<HTMLElement>('.donate__freq-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        freq = (btn.dataset.freq as 'one' | 'month') ?? 'one';
+        widget
+          .querySelectorAll('.donate__freq-btn')
+          .forEach((b) => b.classList.toggle('is-active', b === btn));
+        render();
+      });
+    });
+
+    widget.querySelectorAll<HTMLElement>('.donate__amount').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        amount = Number(btn.dataset.amount ?? '0');
+        widget.querySelectorAll('.donate__amount').forEach((b) => {
+          const active = b === btn;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-pressed', String(active));
+        });
+        render();
+      });
+    });
+
+    render();
+  });
+</script>
+
+<style>
+  .donate {
+    background: var(--rg-primary-faint);
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid var(--rg-primary-soft);
+    font-family: var(--rg-font-body);
+    position: relative;
+    overflow: hidden;
+  }
+  .donate--compact {
+    padding: 20px;
+  }
+  .donate__deco {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    opacity: 0.4;
+  }
+  .donate__title {
+    margin: 0;
+    font-family: var(--rg-font-display);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--rg-ink);
+  }
+  .donate--compact .donate__title {
+    font-size: 22px;
+  }
+  .donate__body {
+    margin: 6px 0 18px;
+    font-size: 14px;
+    color: var(--rg-ink-soft);
+    line-height: 1.5;
+  }
+  .donate__freq {
+    display: flex;
+    gap: 6px;
+    background: var(--rg-surface);
+    border-radius: 999px;
+    padding: 4px;
+    margin-bottom: 14px;
+  }
+  .donate__freq-btn {
+    flex: 1;
+    padding: 8px 0;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: var(--rg-ink-soft);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.15s;
+  }
+  .donate__freq-btn.is-active {
+    background: var(--rg-primary);
+    color: #fff;
+  }
+  .donate__amounts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .donate__amount {
+    padding: 12px 0;
+    border: 1.5px solid var(--rg-border);
+    background: var(--rg-surface);
+    color: var(--rg-ink);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .donate__amount.is-active {
+    border-color: transparent;
+    background: var(--rg-primary);
+    color: #fff;
+  }
+  .donate__cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 52px;
+    width: 100%;
+    background: var(--rg-primary);
+    color: #fff;
+    border-radius: var(--rg-btn-radius);
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 2px 8px rgba(217, 107, 134, 0.25);
+    transition: background 0.15s;
+  }
+  .donate__cta:hover {
+    background: var(--rg-primary-deep);
+  }
+  .donate__trust {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--rg-ink-mute);
+  }
+</style>

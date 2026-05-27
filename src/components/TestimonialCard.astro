@@ -1,0 +1,93 @@
+---
+// TestimonialCard — quote + star rating + author, with an avatar. Ported from
+// components-blocks.jsx TestimonialCard.
+import Avatar from './Avatar.astro';
+
+interface Props {
+  quote: string;
+  author: string;
+  role?: string;
+  rating?: number;
+  kind?: 'dog' | 'cat' | 'bunny';
+}
+const { quote, author, role, rating = 5, kind = 'dog' } = Astro.props;
+const stars = Array.from({ length: 5 }, (_, i) => i < rating);
+---
+
+<figure class="tcard">
+  <div class="tcard__body">
+    <div class="tcard__mark" aria-hidden="true">&ldquo;</div>
+    <blockquote class="tcard__quote">{quote}</blockquote>
+    <div class="tcard__stars" aria-label={`${rating} out of 5`}>
+      {
+        stars.map((filled) => (
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill={filled ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12.2 3.7 14.5l.8-4.9L1 6.2l4.8-.7L8 1z" />
+          </svg>
+        ))
+      }
+    </div>
+    <figcaption>
+      <div class="tcard__author">{author}</div>
+      {role && <div class="tcard__role">{role}</div>}
+    </figcaption>
+  </div>
+  <Avatar kind={kind} size={64} ring />
+</figure>
+
+<style>
+  .tcard {
+    margin: 0;
+    background: var(--rg-surface);
+    border-radius: 18px;
+    padding: 24px;
+    border: 1px solid var(--rg-border);
+    font-family: var(--rg-font-body);
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .tcard__body {
+    flex: 1;
+  }
+  .tcard__mark {
+    font-size: 36px;
+    color: var(--rg-primary-soft);
+    font-family: var(--rg-font-display);
+    line-height: 0.8;
+    margin-bottom: -6px;
+  }
+  .tcard__quote {
+    margin: 0;
+    font-family: var(--rg-font-display);
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--rg-ink);
+    font-style: italic;
+  }
+  .tcard__stars {
+    display: flex;
+    gap: 2px;
+    margin-top: 12px;
+    color: var(--rg-primary);
+  }
+  .tcard__author {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--rg-ink);
+  }
+  .tcard__role {
+    font-size: 12px;
+    color: var(--rg-ink-mute);
+  }
+</style>

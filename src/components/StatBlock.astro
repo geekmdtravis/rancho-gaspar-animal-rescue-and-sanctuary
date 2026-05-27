@@ -1,0 +1,67 @@
+---
+// StatBlock — big number + label + subtext, with an optional icon in a soft
+// circle. Ported from components-blocks.jsx StatBlock.
+interface Props {
+  value: string;
+  label: string;
+  sub?: string;
+  accent?: 'primary' | 'sage' | 'sky' | 'lilac';
+}
+const { value, label, sub, accent = 'primary' } = Astro.props;
+const accentColor = {
+  primary: 'var(--rg-primary)',
+  sage: 'var(--rg-accent-sage)',
+  sky: 'var(--rg-accent-sky)',
+  lilac: 'var(--rg-accent-lilac)',
+}[accent];
+---
+
+<div class="stat">
+  {
+    Astro.slots.has('icon') && (
+      <div class="stat__icon" style={{ color: accentColor }}>
+        <slot name="icon" />
+      </div>
+    )
+  }
+  <div class="stat__value">{value}</div>
+  <div class="stat__label">{label}</div>
+  {sub && <div class="stat__sub">{sub}</div>}
+</div>
+
+<style>
+  .stat {
+    font-family: var(--rg-font-body);
+    text-align: center;
+  }
+  .stat__icon {
+    display: inline-flex;
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    background: var(--rg-primary-faint);
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .stat__value {
+    font-family: var(--rg-font-display);
+    font-size: 44px;
+    font-weight: 700;
+    color: var(--rg-ink);
+    line-height: 1;
+  }
+  .stat__label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--rg-primary);
+    margin-top: 6px;
+  }
+  .stat__sub {
+    font-size: 13px;
+    color: var(--rg-ink-soft);
+    margin-top: 4px;
+  }
+</style>
