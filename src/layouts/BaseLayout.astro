@@ -2,6 +2,7 @@
 // BaseLayout — html shell shared by every page: fonts, meta, global styles,
 // the sticky nav, and the footer. Pages provide their <main> via the slot.
 import '../styles/global.css';
+import ConstructionBanner from '../components/ConstructionBanner.astro';
 import NavHeader from '../components/NavHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { t, localizePath, stripLocale, type Lang } from '../i18n/utils';
@@ -58,6 +59,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString(
   </head>
   <body>
     <a class="skip-link" href="#main">{dict.nav.skipToContent}</a>
+    <ConstructionBanner lang={lang} />
     <NavHeader lang={lang} active={active} />
     <main id="main">
       <slot />

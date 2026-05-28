@@ -1,0 +1,74 @@
+---
+// ConstructionBanner — slim, branded announcement strip rendered at the very
+// top of every page (above the sticky nav). Sets honest expectations while the
+// site, animal profiles, 501(c)(3) approval, and donation processing come
+// online. Intentionally non-dismissible so first-time visitors always see it.
+import Icon from './icons/Icon.astro';
+import { t, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const dict = t(lang);
+---
+
+<aside class="construction-banner" role="note" aria-label={dict.construction.label}>
+  <div class="construction-banner__inner">
+    <span class="construction-banner__icon" aria-hidden="true">
+      <Icon name="info" size={14} />
+    </span>
+    <p class="construction-banner__text">
+      <strong class="construction-banner__label">{dict.construction.label}:</strong>
+      {dict.construction.body}
+    </p>
+  </div>
+</aside>
+
+<style>
+  .construction-banner {
+    background: var(--rg-primary-faint);
+    border-bottom: 1px solid var(--rg-border);
+    color: var(--rg-ink-soft);
+    font-family: var(--rg-font-body);
+  }
+  .construction-banner__inner {
+    max-width: var(--rg-maxw);
+    margin: 0 auto;
+    padding: 8px 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .construction-banner__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--rg-primary-deep);
+    flex-shrink: 0;
+  }
+  .construction-banner__text {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    letter-spacing: 0.1px;
+  }
+  .construction-banner__label {
+    color: var(--rg-primary-deep);
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  @media (max-width: 980px) {
+    .construction-banner__inner {
+      padding: 8px 20px;
+      align-items: flex-start;
+    }
+    .construction-banner__icon {
+      padding-top: 2px;
+    }
+    .construction-banner__text {
+      font-size: 12px;
+    }
+  }
+</style>

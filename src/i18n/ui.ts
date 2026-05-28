@@ -202,7 +202,10 @@ const en = {
     },
     madeWith: 'Made with',
     inBrazil: 'in Brazil',
-    nonprofit: 'US nonprofit · EIN 42-2779431',
+    // TODO(501c3): once the IRS issues the determination letter, drop the
+    // "501(c)(3) pending" clause here and in the pt-br entry below, and revisit
+    // the construction banner + donate "Tax-deductible" trust line.
+    nonprofit: 'US nonprofit · 501(c)(3) pending · EIN 42-2779431',
   },
   status: {
     adoptable: 'Adoptable',
@@ -377,6 +380,13 @@ const en = {
     body: "We're a small family team building Rancho Gaspar's site page by page. While this one comes together, meet our animals or reach out — we'd love to hear from you.",
     ctaAnimals: 'Meet our animals',
     ctaContact: 'Email us',
+  },
+  // Site-wide announcement strip rendered at the very top of every page (above
+  // the sticky nav). Honest, low-profile expectation-setting while the site,
+  // animal profiles, 501(c)(3) approval, and donation processing come online.
+  construction: {
+    label: 'Heads up',
+    body: "Our site is still under construction — animal profiles are being added, our 501(c)(3) approval is pending, and we can't yet accept donations. Thank you for your patience.",
   },
   common: {
     learnMore: 'Learn more',
@@ -571,7 +581,8 @@ const ptBr: Dictionary = {
     },
     madeWith: 'Feito com',
     inBrazil: 'no Brasil',
-    nonprofit: 'Organização sem fins lucrativos dos EUA · EIN 42-2779431',
+    // TODO(501c3): see TODO on the en counterpart above.
+    nonprofit: 'Organização sem fins lucrativos dos EUA · 501(c)(3) pendente · EIN 42-2779431',
   },
   status: {
     adoptable: 'Para adoção',
@@ -723,6 +734,10 @@ const ptBr: Dictionary = {
     body: 'Somos uma pequena família construindo o site do Rancho Gaspar página por página. Enquanto esta fica pronta, conheça nossos animais ou fale com a gente — vamos adorar seu contato.',
     ctaAnimals: 'Conheça nossos animais',
     ctaContact: 'Envie um e-mail',
+  },
+  construction: {
+    label: 'Atenção',
+    body: 'Nosso site ainda está em construção — os perfis dos animais estão sendo adicionados, nossa aprovação 501(c)(3) está pendente e ainda não podemos receber doações. Obrigado pela paciência.',
   },
   common: {
     learnMore: 'Saiba mais',
