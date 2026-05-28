@@ -27,7 +27,6 @@ const en = {
     events: 'Events',
     contact: 'Contact',
     donate: 'Donate Now',
-    save: 'Saved animals',
     home: 'Home',
     skipToContent: 'Skip to content',
     openMenu: 'Open menu',
@@ -38,7 +37,7 @@ const en = {
     eyebrow: 'Olá from Brazil 🇧🇷',
     titleLine1: 'Rescue. Heal.',
     titleEmphasis: 'Love.',
-    body: 'We rescue animals in need, nurse them back to health, and help them find loving forever homes — and for those who can not be placed, this ranch is home for life. Together, we create second chances.',
+    body: "In our part of rural Brazil there is no shelter to call and no rescue network on the way. Stray and abandoned animals are on their own — until they aren't. We rescue, heal, and find loving homes. For those who can't be placed, this ranch is home for life.",
     ctaAdopt: 'Adopt a Pet',
     ctaDonate: 'Donate Now',
     ctaVolunteer: 'Volunteer',
@@ -60,12 +59,38 @@ const en = {
     photoAlt:
       'Bruxa, one of our sanctuary cats, in the garden with two other rescues in the background',
   },
+  // Homepage "why this work is different" section. We sit in the rural
+  // Brazilian interior where the rescue infrastructure most US visitors take
+  // for granted (municipal shelter, low-cost clinic, foster network) simply
+  // does not exist. This block frames that gap honestly — factual rather
+  // than catastrophizing — so the rest of the homepage reads against the
+  // right backdrop.
+  safetyNet: {
+    label: 'Why this work',
+    title: 'We are the safety net.',
+    intro:
+      'Animal rescue in much of the US has imperfect but real infrastructure — municipal shelters, spay/neuter clinics, foster networks. In the rural Brazilian interior where Rancho Gaspar sits, almost none of that exists.',
+    gaps: [
+      {
+        title: 'No shelter to call',
+        desc: 'There is no municipal animal shelter to take a stray in.',
+      },
+      {
+        title: 'No nearby clinic',
+        desc: 'No low-cost spay or neuter clinic within reach for most families.',
+      },
+      {
+        title: 'No rescue network',
+        desc: 'No other groups to absorb overflow or take an urgent case.',
+      },
+    ],
+    close: 'The animals are on their own. We are their support system.',
+  },
   adoptables: {
     label: 'Meet our adoptable animals',
     title: 'Your new best friend is waiting',
     body: "Each one of these little ones has a story — and a personality bigger than they realize. Browse who's looking for a home this week.",
     viewAll: 'View all adoptable pets',
-    saveFavorites: 'Save your favorites',
     meet: 'Meet',
     empty: 'No adoptable animals listed right now — check back soon, or follow us for updates.',
   },
@@ -229,10 +254,25 @@ const en = {
     eyebrow: 'Our story',
     title: 'A family sanctuary shaped by one stray cat',
     intro:
-      'Around 2017, the Gaspar family brought home their first stray cat. That one rescue changed what they could see around them: cats in their part of Brazil were not just homeless, they were often misunderstood, ignored, and left without the same informal support that some street dogs receive.',
+      'Around 2017, the Gaspar family brought home their first stray cat — Tito, the first cat anyone in the household had ever owned. He became part of the family, and that one rescue changed what they could see around them: cats in their part of Brazil were not just homeless, they were often misunderstood, ignored, and left without the same informal support that some street dogs receive.',
+    // Long-form counterpart to the homepage `safetyNet` section. The homepage
+    // names the gap in one short block; here we have room to spell out each
+    // missing piece concretely so the rest of the about page lands against
+    // the right backdrop.
+    safetyNetTitle: 'No shelter to call, no rescue network on the way',
+    safetyNet:
+      'Animal rescue in much of the United States rests on infrastructure most visitors take for granted: municipal shelters, low-cost spay and neuter clinics, foster networks, animal control. The rural Brazilian interior where Rancho Gaspar sits has almost none of it. There is no shelter where someone can drop off a stray cat. There is no nearby clinic offering an affordable spay or neuter. There is no rescue network with capacity to absorb a difficult case. When an animal is hungry, hurt, or carrying yet another unplanned litter, no one is on the way — which is the gap this ranch was built to fill.',
     backgroundTitle: 'Why cats became the center of the work',
     background:
-      'Brazil has a serious stray animal crisis, and dogs suffer from abandonment too. But cats can face a different kind of vulnerability. Myths, misinformation, and old superstitions still affect how people treat them, especially black or dark-coated cats. While some dogs may become familiar neighborhood animals, cats are often less visible, less trusted, and less likely to be fed, protected, or adopted.',
+      'Within that gap, cats face an additional kind of vulnerability. Myths, misinformation, and old superstitions still affect how people treat them, especially black or dark-coated cats. While some dogs may become familiar neighborhood animals — fed, watched out for, even given names — cats are often less visible, less trusted, and less likely to be fed, protected, or adopted.',
+    // The personal origin: how one family pet (not a rescue, not a sanctuary
+    // resident — a pet) opened the family's eyes to the wider problem and
+    // grew into systematic rescue work. The pet/resident/rescue distinction
+    // is deliberate: it keeps personal pet ownership cleanly separated from
+    // the nonprofit's mission inventory.
+    callingTitle: 'From one cat to a calling',
+    calling:
+      "What started with one beloved family cat — Tito — grew into a calling. He wasn't a sanctuary resident or a rescue project; he was simply theirs. But the animal who had arrived as a stray turned out to be exactly the kind of cat the local stigma denied could exist: gentle, social, and deeply affectionate. The more cats and dogs the family began to notice around them, the harder it became to walk past. Sympathy turned into resolve, and resolve turned into routine: tracking down the animal nobody else was coming for, getting them to the vet, neutering or spaying them, and finding the right next step. Addressing the stray companion animal crisis in this part of Brazil became less of a hobby and more of a life's work.",
     missionTitle: 'What Rancho Gaspar does',
     mission:
       'The ranch exists because we refuse to leave wonderful animals uncared for, suffering, or reproducing unchecked. We rescue, quarantine, assess temperament, provide veterinary care, spay or neuter when appropriate, and work toward the right forever home. For some animals, that means adoption into a loving family. For others, it means permanent sanctuary care at the ranch.',
@@ -242,6 +282,15 @@ const en = {
     scopeTitle: 'Cats first, but not cats only',
     scope:
       'Cats make up the majority of our rescue work, but dogs and bunnies are not excluded. When we can help safely and responsibly, we do. Some species or situations may not be compatible with a ranch full of cats, but we are always willing to hear what is happening and see whether we can help or point someone in the right direction.',
+    // The community-ask beat. Wording is intentionally careful: the ask is
+    // framed around the nonprofit mission (not the family), the split-country
+    // structure is named up-front, and the adoptable-vs-resident policy is
+    // surfaced as evidence that placements are not ad-hoc. All factual
+    // claims here are already independently visible elsewhere on the site
+    // (footer EIN, donate trust line, animalRoute() routing logic).
+    communityTitle: 'Bigger than one family',
+    community:
+      'One family can only carry so much. Rancho Gaspar was built from the start to outlast a single household — registered as a US 501(c)(3) nonprofit with its financial home in Murrieta, California, while every rescue, recovery, spay or neuter, and day of sanctuary care happens at the ranch in Mendonça, São Paulo. Every animal we take in has nowhere else to turn, and every animal is placed under a clear written status: adoptable, through our application and meet-and-match process, or permanent resident, when age, health, or temperament makes adoption unsafe or unkind. The mission has outgrown what one family can do alone. If you can donate, sponsor an animal, volunteer, foster, or adopt, the sanctuary’s reach grows with you.',
     residentTitle: 'Current sanctuary residents',
     residentBody:
       'These counts are pulled from our resident inventory, so they reflect the animals currently marked as permanent residents on the site.',
@@ -255,10 +304,16 @@ const en = {
     // a real image is uploaded (see PhotoSlot.astro).
     photos: {
       hero: 'Negresco and Negresca, two of the cats in our care',
+      safetyNet:
+        'A young woman on a stepladder reaches over a tall brick wall toward two black cats',
+      calling:
+        'Tito, a chocolate-point cat with bright blue eyes, curled up in a fluffy cream and pink cat bed',
       background: 'rescued cats',
       mission: 'vet care & recovery',
       ranch: 'the ranch',
       scope: 'dogs & bunnies too',
+      community:
+        'Gatão, an orange-and-white tabby cat sitting on terracotta tiles beside bright pink flowers',
     },
     locationsTitle: 'Where we operate',
     locationsBody:
@@ -351,7 +406,6 @@ const ptBr: Dictionary = {
     events: 'Eventos',
     contact: 'Contato',
     donate: 'Doar Agora',
-    save: 'Animais salvos',
     home: 'Início',
     skipToContent: 'Pular para o conteúdo',
     openMenu: 'Abrir menu',
@@ -362,7 +416,7 @@ const ptBr: Dictionary = {
     eyebrow: 'Olá do Brasil 🇧🇷',
     titleLine1: 'Resgatar. Curar.',
     titleEmphasis: 'Amar.',
-    body: 'Resgatamos animais em situação de risco, oferecemos cuidados médicos e ajudamos a encontrar lares cheios de amor — e, para os que não podem ser adotados, um lar permanente aqui. Juntos, criamos segundas chances.',
+    body: 'No interior rural do Brasil onde estamos, não há abrigo para chamar nem rede de resgate a caminho. Os animais em situação de rua e abandonados estão por conta própria — até que não estejam mais. Resgatamos, cuidamos e encontramos lares cheios de amor. Para os que não podem ser adotados, este rancho é lar para a vida toda.',
     ctaAdopt: 'Adote um Pet',
     ctaDonate: 'Doar Agora',
     ctaVolunteer: 'Seja Voluntário',
@@ -387,12 +441,32 @@ const ptBr: Dictionary = {
     photoAlt:
       'Bruxa, uma das nossas gatas do santuário, no jardim com duas outras resgatadas ao fundo',
   },
+  safetyNet: {
+    label: 'Por que este trabalho',
+    title: 'Nós somos a rede de apoio.',
+    intro:
+      'O resgate animal em boa parte dos EUA conta com uma infraestrutura imperfeita, mas real — abrigos municipais, clínicas de castração, redes de lares temporários. No interior rural do Brasil, onde fica o Rancho Gaspar, quase nada disso existe.',
+    gaps: [
+      {
+        title: 'Sem abrigo para chamar',
+        desc: 'Não há abrigo municipal para acolher um animal em situação de rua.',
+      },
+      {
+        title: 'Sem clínica próxima',
+        desc: 'Não há clínica de castração de baixo custo ao alcance da maioria das famílias.',
+      },
+      {
+        title: 'Sem rede de resgate',
+        desc: 'Não há outras ONGs para absorver casos urgentes ou excedentes.',
+      },
+    ],
+    close: 'Os animais estão por conta própria. Nós somos seu sistema de apoio.',
+  },
   adoptables: {
     label: 'Conheça nossos animais para adoção',
     title: 'Seu novo melhor amigo está esperando',
     body: 'Cada um desses pequenos tem uma história — e uma personalidade maior do que imaginam. Veja quem procura um lar esta semana.',
     viewAll: 'Ver todos os pets para adoção',
-    saveFavorites: 'Salve seus favoritos',
     meet: 'Conhecer',
     empty: 'Nenhum animal para adoção no momento — volte em breve ou nos siga para novidades.',
   },
@@ -542,10 +616,16 @@ const ptBr: Dictionary = {
     eyebrow: 'Nossa história',
     title: 'Um santuário familiar marcado por uma gata de rua',
     intro:
-      'Por volta de 2017, a família Gaspar levou para casa sua primeira gata de rua. Aquele resgate mudou o que eles conseguiam enxergar ao redor: gatos nesta parte do Brasil não estavam apenas sem lar, muitas vezes eram mal compreendidos, ignorados e deixados sem o mesmo apoio informal que alguns cães de rua recebem.',
+      'Por volta de 2017, a família Gaspar levou para casa seu primeiro gato de rua — Tito, o primeiro gato que alguém na casa já havia tido. Ele passou a fazer parte da família, e aquele resgate mudou o que eles conseguiam enxergar ao redor: gatos nesta parte do Brasil não estavam apenas sem lar, muitas vezes eram mal compreendidos, ignorados e deixados sem o mesmo apoio informal que alguns cães de rua recebem.',
+    safetyNetTitle: 'Sem abrigo para chamar, sem rede de resgate a caminho',
+    safetyNet:
+      'Em boa parte dos Estados Unidos, o resgate animal se apoia numa infraestrutura que muitos consideram garantida: abrigos municipais, clínicas de castração de baixo custo, redes de lares temporários, serviço de controle animal. No interior rural do Brasil, onde fica o Rancho Gaspar, quase nada disso existe. Não há um abrigo onde alguém possa deixar um gato em situação de rua. Não há clínica próxima oferecendo castração acessível. Não há rede de resgate com capacidade para absorver um caso difícil. Quando um animal está com fome, ferido ou carregando mais uma ninhada não planejada, não há ninguém a caminho — e é exatamente esse vácuo que este rancho foi construído para preencher.',
     backgroundTitle: 'Por que os gatos viraram o centro do trabalho',
     background:
-      'O Brasil enfrenta uma crise séria de animais em situação de rua, e cães também sofrem com abandono. Mas gatos podem enfrentar uma vulnerabilidade diferente. Mitos, desinformação e antigas superstições ainda afetam a forma como são tratados, especialmente gatos pretos ou de pelagem escura. Enquanto alguns cães podem se tornar animais conhecidos da vizinhança, gatos muitas vezes são menos visíveis, menos confiáveis aos olhos das pessoas e menos propensos a receber comida, proteção ou adoção.',
+      'Dentro desse vácuo, os gatos enfrentam um tipo adicional de vulnerabilidade. Mitos, desinformação e antigas superstições ainda afetam a forma como são tratados, especialmente os gatos pretos ou de pelagem escura. Enquanto alguns cães podem se tornar animais conhecidos da vizinhança — alimentados, observados, até batizados —, os gatos costumam ser menos visíveis, menos confiáveis aos olhos das pessoas e menos propensos a receber comida, proteção ou adoção.',
+    callingTitle: 'De um gato a um chamado',
+    calling:
+      'O que começou com um gato querido da família — Tito — virou um chamado. Ele não era residente do santuário nem um projeto de resgate; era simplesmente da família. Mas o gato que havia chegado como abandonado se mostrou exatamente o tipo de animal que o estigma local insistia em negar: gentil, sociável e profundamente carinhoso. Quanto mais gatos e cães a família começou a notar ao redor, mais difícil ficou passar por eles sem fazer nada. A compaixão virou determinação, e a determinação virou rotina: encontrar o animal que ninguém mais ia buscar, levar ao veterinário, castrar e definir o próximo passo certo. Enfrentar a crise dos animais de companhia em situação de rua nesta parte do Brasil deixou de ser um hobby para virar trabalho de uma vida.',
     missionTitle: 'O que o Rancho Gaspar faz',
     mission:
       'O rancho existe porque nos recusamos a deixar animais maravilhosos sem cuidado, sofrendo ou se reproduzindo sem controle. Resgatamos, fazemos quarentena, avaliamos temperamento, oferecemos cuidados veterinários, castramos quando apropriado e buscamos o lar definitivo certo. Para alguns animais, isso significa adoção por uma família amorosa. Para outros, significa cuidado permanente no santuário.',
@@ -555,6 +635,9 @@ const ptBr: Dictionary = {
     scopeTitle: 'Gatos primeiro, mas não apenas gatos',
     scope:
       'Gatos formam a maior parte do nosso trabalho de resgate, mas cães e coelhos não são excluídos. Quando podemos ajudar com segurança e responsabilidade, ajudamos. Algumas espécies ou situações podem não ser compatíveis com um rancho cheio de gatos, mas sempre estamos dispostos a ouvir o que está acontecendo e ver se podemos ajudar ou indicar um caminho.',
+    communityTitle: 'Maior do que uma família',
+    community:
+      'Uma família só consegue carregar até certo ponto. O Rancho Gaspar foi construído desde o início para ir além de um único lar — registrado como organização sem fins lucrativos 501(c)(3) dos EUA, com sua sede financeira em Murrieta, na Califórnia, enquanto cada resgate, recuperação, castração e dia de cuidado do santuário acontece no rancho em Mendonça, São Paulo. Cada animal que recebemos não tem para onde ir, e cada animal é classificado dentro de uma política escrita: para adoção, por meio do nosso processo de solicitação e apresentação, ou residente permanente, quando idade, saúde ou temperamento tornam a adoção arriscada ou inadequada. A missão cresceu além do que uma única família consegue sustentar sozinha. Se você puder doar, apadrinhar um animal, ser voluntário, oferecer um lar temporário ou adotar, o alcance do santuário cresce com você.',
     residentTitle: 'Residentes atuais do santuário',
     residentBody:
       'Estes números vêm do nosso inventário de residentes, então refletem os animais atualmente marcados como residentes permanentes no site.',
@@ -566,10 +649,16 @@ const ptBr: Dictionary = {
     },
     photos: {
       hero: 'Negresco e Negresca, dois dos gatos sob nossos cuidados',
+      safetyNet:
+        'Uma jovem em uma escada estende a mão sobre um muro alto de tijolos em direção a dois gatos pretos',
+      calling:
+        'Tito, um gato chocolate-point de olhos azuis brilhantes, enroscado em uma caminha felpuda creme e rosa',
       background: 'gatos resgatados',
       mission: 'cuidados veterinários',
       ranch: 'o rancho',
       scope: 'cães e coelhos também',
+      community:
+        'Gatão, um gato laranja e branco sentado em pisos de terracota ao lado de flores rosas vibrantes',
     },
     locationsTitle: 'Onde atuamos',
     locationsBody:

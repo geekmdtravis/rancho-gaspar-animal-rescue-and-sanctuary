@@ -8,10 +8,21 @@ import DrawnAnimal from './DrawnAnimal.astro';
 // Placeholder hero until we have a purpose-built lead image — this is two of
 // the cats in our care, not a family photo, so keep the alt neutral.
 import aboutHero from '../assets/uploads/negresco-negresca-feral.jpeg';
+// Photo for the "no one else is coming" row — a young volunteer on a
+// stepladder reaching across a brick wall to two cats. The image carries
+// the section's argument without needing caption support.
+import aboutNobodyElse from '../assets/uploads/about-nobody-else.jpeg';
+// Tito — the first cat the Gaspar household ever owned. The "from one cat
+// to a calling" row tells his story; the photo grounds it in a real face.
+import aboutTito from '../assets/uploads/tito-relaxing-in-pink.jpeg';
 import aboutRescueCats from '../assets/uploads/about-rescue-cats.jpeg';
 import aboutVetCare from '../assets/uploads/vet-care-recovery-2.jpeg';
 import aboutTheRanch from '../assets/uploads/about-the-ranch.jpeg';
 import aboutDogsToo from '../assets/uploads/about-dogs-too.jpeg';
+// Gatão — sits next to the "bigger than one family" community-ask row.
+// Showing one of the sanctuary's animals at the moment we ask for help
+// reminds the reader who the support actually reaches.
+import aboutGatao from '../assets/uploads/gatao-looking-dashing.jpeg';
 import { listAnimals, isDeceased } from '../lib/animals';
 import { t, type Lang } from '../i18n/utils';
 
@@ -47,13 +58,38 @@ const labelFor = (key: keyof typeof counts, value: number) => {
 // The story reads as an alternating image/text "zig-zag": each row flips which
 // side the photo sits on. The `kind` picks which drawn animal fills the
 // placeholder so the illustrations feel intentional per section.
+//
+// Narrative order — keep this list in lockstep with the section copy in
+// `aboutPage` (i18n/ui.ts):
+//   safetyNet  → the systemic gap (mirrors homepage's "We are the safety net")
+//   background → the cat-specific cultural layer that compounds the gap
+//   calling    → the personal origin: one family pet became a life's work
+//   mission    → what the ranch actually does, day-to-day
+//   ranch      → Julio Gaspar's twenty-year build
+//   scope      → cats first, but dogs and bunnies welcome
+//   community  → limits reached, asking the community in, with the 501(c)(3)
+//                structure and adoptable/resident policy named in-line
 const story = [
+  {
+    title: page.safetyNetTitle,
+    body: page.safetyNet,
+    kind: 'cat',
+    photo: page.photos.safetyNet,
+    img: aboutNobodyElse,
+  },
   {
     title: page.backgroundTitle,
     body: page.background,
     kind: 'cat',
     photo: page.photos.background,
     img: aboutRescueCats,
+  },
+  {
+    title: page.callingTitle,
+    body: page.calling,
+    kind: 'cat',
+    photo: page.photos.calling,
+    img: aboutTito,
   },
   {
     title: page.missionTitle,
@@ -75,6 +111,13 @@ const story = [
     kind: 'bunny',
     photo: page.photos.scope,
     img: aboutDogsToo,
+  },
+  {
+    title: page.communityTitle,
+    body: page.community,
+    kind: 'dog',
+    photo: page.photos.community,
+    img: aboutGatao,
   },
 ] as const;
 ---
