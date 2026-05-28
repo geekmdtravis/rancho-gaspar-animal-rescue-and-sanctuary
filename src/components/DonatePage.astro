@@ -356,7 +356,14 @@ const currency = '$';
     if (qAmount === 'other') {
       form.querySelector<HTMLElement>('.dp__amount[data-amount="other"]')?.click();
     } else if (qAmount) {
-      const preset = form.querySelector<HTMLElement>(`.dp__amount[data-amount="${qAmount}"]`);
+      // `qAmount` is raw query-string text — interpolating it straight into a
+      // CSS selector lets `"` or `]` throw a DOMException and abort the rest
+      // of setup (including the FX rate fetch below). `CSS.escape` returns a
+      // selector-safe encoding for any string; a non-matching attribute value
+      // just yields `null` and we fall through to the custom-amount branch.
+      const preset = form.querySelector<HTMLElement>(
+        `.dp__amount[data-amount="${CSS.escape(qAmount)}"]`,
+      );
       if (preset) preset.click();
       else if (Number(qAmount) >= 1) {
         // A custom figure that isn't one of the presets: select Other + prefill.

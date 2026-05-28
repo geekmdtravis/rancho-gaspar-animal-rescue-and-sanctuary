@@ -32,8 +32,14 @@ export default [
     },
   },
   {
-    // Node-run tooling: build scripts and config files.
-    files: ['scripts/**/*.{js,mjs}', '*.config.{js,mjs,ts}', 'eslint.config.js'],
+    // Node-run tooling: build scripts, config files, and unit tests (run via
+    // `node --test`, so they share the same global surface as scripts).
+    files: [
+      'scripts/**/*.{js,mjs}',
+      'tests/unit/**/*.{js,mjs}',
+      '*.config.{js,mjs,ts}',
+      'eslint.config.js',
+    ],
     languageOptions: {
       globals: { console: 'readonly', process: 'readonly', URL: 'readonly' },
     },

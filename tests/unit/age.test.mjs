@@ -1,6 +1,14 @@
 // Age is computed from a date of birth, so the arithmetic must be exact and
 // stable regardless of when the build runs. `now` is injected so these stay
 // deterministic forever.
+//
+// Force a westerly TZ before any Date is created so YYYY-MM-DD dates (parsed
+// at UTC midnight) shift back a day when read with *local* getters — the
+// exact failure mode the UTC-getter fix in age.ts prevents. If this regresses,
+// the boundary test below trips immediately in any v8 build that honors
+// process.env.TZ (Node 22+ does).
+process.env.TZ = 'America/Los_Angeles';
+
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ageParts, formatAgeWith, lifeSpanWith } from '../../src/i18n/age.ts';
@@ -70,4 +78,26 @@ test('lifeSpanWith: falls back to death year alone when birth is unknown', () =>
 test('lifeSpanWith: undefined/invalid death date yields undefined (animal is living)', () => {
   assert.equal(lifeSpanWith(new Date('2015-06-01'), true, undefined), undefined);
   assert.equal(lifeSpanWith(new Date('2015-06-01'), true, new Date('bad')), undefined);
+});
+
+// Regression guard for the timezone shift bug. `new Date('2025-05-26')` parses
+// to UTC midnight; in PT (UTC-7/-8) its *local* date is May 25, not May 26. A
+// local-getter impl would treat the day before the first birthday as already
+// "1 year" because both dob and now would read as the 25th. With UTC getters
+// the dob is May 26 and the comparison correctly says "not yet".
+test('ageParts: YYYY-MM-DD dob is interpreted in UTC, not local TZ', () => {
+  const dob = new Date('2025-05-26'); // UTC midnight May 26
+  const dayBeforeBday = new Date('2026-05-25T23:00:00Z');
+  assert.deepEqual(ageParts(dob, dayBeforeBday), { value: 11, unit: 'month' });
+  const onBday = new Date('2026-05-26T00:00:00Z');
+  assert.deepEqual(ageParts(dob, onBday), { value: 1, unit: 'year' });
+});
+
+// Same guard for the memorial year span. In PT, a dob parsed at UTC midnight
+// on Jan 1 has local year = previous year; the buggy impl would render
+// "2019–2024" for an animal actually born and died in 2020/2024.
+test('lifeSpanWith: year span uses UTC year, not local TZ year', () => {
+  const dobNewYearsUtc = new Date('2020-01-01'); // UTC midnight Jan 1, 2020
+  const dod = new Date('2024-09-10');
+  assert.equal(lifeSpanWith(dobNewYearsUtc, false, dod), '2020–2024');
 });

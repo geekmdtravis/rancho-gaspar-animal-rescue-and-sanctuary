@@ -24,13 +24,20 @@ export interface AgeWords {
  * Whole-unit age from `dob` as of `now`. Returns years once the animal is at
  * least a year old, otherwise months; under a month old it's `newborn`. A
  * future or invalid `dob` clamps to newborn rather than producing nonsense.
+ *
+ * All arithmetic runs in UTC. CMS dob/dod values arrive as "YYYY-MM-DD"
+ * strings, which JavaScript parses as UTC midnight; reading them with local
+ * getters in a westerly build TZ (e.g. PT) shifts the date back one day, so
+ * animals can tick over to N years old a day — or, at year boundaries, a year
+ * — early. UTC getters keep the calendar-day semantics the editor intended.
  */
 export function ageParts(dob: Date, now: Date = new Date()): AgeParts {
   if (Number.isNaN(dob.getTime())) return { value: 0, unit: 'newborn' };
 
-  let months = (now.getFullYear() - dob.getFullYear()) * 12 + (now.getMonth() - dob.getMonth());
+  let months =
+    (now.getUTCFullYear() - dob.getUTCFullYear()) * 12 + (now.getUTCMonth() - dob.getUTCMonth());
   // Not a full month into the current month yet — back it out.
-  if (now.getDate() < dob.getDate()) months -= 1;
+  if (now.getUTCDate() < dob.getUTCDate()) months -= 1;
 
   if (months <= 0) return { value: 0, unit: 'newborn' };
   if (months < 12) return { value: months, unit: 'month' };
@@ -50,10 +57,12 @@ export function lifeSpanWith(
   dod: Date | undefined | null,
 ): string | undefined {
   if (!dod || Number.isNaN(dod.getTime())) return undefined;
-  const death = dod.getFullYear();
+  // UTC getters for the same reason as `ageParts`: CMS dates are calendar
+  // days, not instants, and a westerly local TZ would shift the year boundary.
+  const death = dod.getUTCFullYear();
   if (!dob || Number.isNaN(dob.getTime())) return String(death);
   const prefix = dobEstimated ? '~' : '';
-  return `${prefix}${dob.getFullYear()}–${death}`;
+  return `${prefix}${dob.getUTCFullYear()}–${death}`;
 }
 
 /**

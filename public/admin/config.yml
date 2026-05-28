@@ -144,9 +144,12 @@ collections:
           widget: number,
           required: false,
           value_type: int,
-          min: 0,
+          # Matches the content schema's `.min(1)` (src/content.config.ts). $0
+          # is rejected by `astro check` — leave the field blank to suppress
+          # the fee on a profile instead of entering zero.
+          min: 1,
           i18n: duplicate,
-          hint: 'In US dollars. The site shows it USD-first with an approximate R$ value.',
+          hint: 'In US dollars. The site shows it USD-first with an approximate R$ value. Leave blank to omit the fee on this profile.',
         }
       - name: quickFacts
         label: Quick facts

@@ -62,11 +62,15 @@ brand with the warm **Lora × Nunito** type pairing.
 - Full **component library** ported from the design (buttons, badges, cards,
   nav, footer, logo, illustrations, accordion, breadcrumbs…).
 - **Animal content model** with the core resident-vs-adoptable distinction.
+- **Donate page** (`/donate`) — standalone giving flow that accepts `?freq=`
+  and `?amount=` from the home/footer donation widgets and pre-fills the form
+  for continuity. Stubbed checkout submit awaits the Cloudflare Worker that
+  will create the Givebutter charge.
 
 ### Not yet built (natural next steps)
 
-The nav/footer still link to these routes: `/donate`, `/contact`, `/stories`.
-All shared components needed to assemble them already exist.
+The nav/footer still link to these routes: `/contact`, `/stories`. All
+shared components needed to assemble them already exist.
 
 Impact and events pages are intentionally deferred for now; the site should lean
 on About Us instead of publishing impact/event messaging until there is a clear
