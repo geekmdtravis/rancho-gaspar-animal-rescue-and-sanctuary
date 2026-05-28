@@ -69,15 +69,15 @@ const en = {
     label: 'Why this work',
     title: 'We are the safety net.',
     intro:
-      'Animal rescue in much of the US has imperfect but real infrastructure — municipal shelters, spay/neuter clinics, foster networks. In the rural Brazilian interior where Rancho Gaspar sits, almost none of that exists.',
+      'Animal rescue in much of the US has imperfect but real infrastructure — municipal shelters, foster networks, animal control. In the rural Brazilian interior where Rancho Gaspar sits, almost none of that exists.',
     gaps: [
       {
         title: 'No shelter to call',
         desc: 'There is no municipal animal shelter to take a stray in.',
       },
       {
-        title: 'No nearby clinic',
-        desc: 'No low-cost spay or neuter clinic within reach for most families.',
+        title: 'No one to bring strays in',
+        desc: 'A nearby vet handles affordable spay and neuter, but no one is paid to catch and transport unowned animals. That last step falls to us.',
       },
       {
         title: 'No rescue network',
@@ -261,7 +261,7 @@ const en = {
     // the right backdrop.
     safetyNetTitle: 'No shelter to call, no rescue network on the way',
     safetyNet:
-      'Animal rescue in much of the United States rests on infrastructure most visitors take for granted: municipal shelters, low-cost spay and neuter clinics, foster networks, animal control. The rural Brazilian interior where Rancho Gaspar sits has almost none of it. There is no shelter where someone can drop off a stray cat. There is no nearby clinic offering an affordable spay or neuter. There is no rescue network with capacity to absorb a difficult case. When an animal is hungry, hurt, or carrying yet another unplanned litter, no one is on the way — which is the gap this ranch was built to fill.',
+      'Animal rescue in much of the United States rests on infrastructure most visitors take for granted: municipal shelters, foster networks, animal control trucks that pick up unowned animals. The rural Brazilian interior where Rancho Gaspar sits has almost none of it. There is no shelter where someone can drop off a stray cat. A nearby vet does offer affordable spay and neuter, but there is no one paid to catch and transport unowned animals to that vet — that last step always falls to us. There is no rescue network with capacity to absorb a difficult case. When an animal is hungry, hurt, or carrying yet another unplanned litter, no one is on the way — which is the gap this ranch was built to fill.',
     backgroundTitle: 'Why cats became the center of the work',
     background:
       'Within that gap, cats face an additional kind of vulnerability. Myths, misinformation, and old superstitions still affect how people treat them, especially black or dark-coated cats. While some dogs may become familiar neighborhood animals — fed, watched out for, even given names — cats are often less visible, less trusted, and less likely to be fed, protected, or adopted.',
@@ -281,7 +281,7 @@ const en = {
       'The sanctuary owners live between the United States and Brazil, while the Brazil ranch is dedicated primarily to the animals. The ranch was built by Julio Gaspar over roughly twenty years before he passed away, so it carries special meaning: a monument to his care and effort for the family, and now a safe home for animals in the Mendonça region who are misunderstood, hungry, at risk, or likely to continue reproducing without help.',
     scopeTitle: 'Cats first, but not cats only',
     scope:
-      'Cats make up the majority of our rescue work, but dogs and bunnies are not excluded. When we can help safely and responsibly, we do. Some species or situations may not be compatible with a ranch full of cats, but we are always willing to hear what is happening and see whether we can help or point someone in the right direction.',
+      'Take Bart, the dog in this photo. When we first found him, he had a large puncture wound on his right hindquarter, infested with fly larvae — the kind of injury that becomes routine in a place where stray dogs spend their days fighting each other, or whatever local wildlife they happen to cross. We nursed him back to health. In that same week, we located another stray who had been in a fight with an anteater. Cats make up the majority of our rescue work, but dogs and bunnies are not excluded — when we can help safely and responsibly, we do. Some species or situations may not be compatible with a ranch full of cats, but we are always willing to hear what is happening and see whether we can help or point someone in the right direction.',
     // The community-ask beat. Wording is intentionally careful: the ask is
     // framed around the nonprofit mission (not the family), the split-country
     // structure is named up-front, and the adoptable-vs-resident policy is
@@ -311,7 +311,8 @@ const en = {
       background: 'rescued cats',
       mission: 'vet care & recovery',
       ranch: 'the ranch',
-      scope: 'dogs & bunnies too',
+      scope:
+        'Bart, a brown short-haired dog with a small white chest patch, sitting on tiled floor and looking up at the camera with an open-mouth smile',
       community:
         'Gatão, an orange-and-white tabby cat sitting on terracotta tiles beside bright pink flowers',
     },
@@ -445,15 +446,15 @@ const ptBr: Dictionary = {
     label: 'Por que este trabalho',
     title: 'Nós somos a rede de apoio.',
     intro:
-      'O resgate animal em boa parte dos EUA conta com uma infraestrutura imperfeita, mas real — abrigos municipais, clínicas de castração, redes de lares temporários. No interior rural do Brasil, onde fica o Rancho Gaspar, quase nada disso existe.',
+      'O resgate animal em boa parte dos EUA conta com uma infraestrutura imperfeita, mas real — abrigos municipais, redes de lares temporários, serviço de controle animal. No interior rural do Brasil, onde fica o Rancho Gaspar, quase nada disso existe.',
     gaps: [
       {
         title: 'Sem abrigo para chamar',
         desc: 'Não há abrigo municipal para acolher um animal em situação de rua.',
       },
       {
-        title: 'Sem clínica próxima',
-        desc: 'Não há clínica de castração de baixo custo ao alcance da maioria das famílias.',
+        title: 'Sem quem leve os animais até lá',
+        desc: 'Um veterinário próximo faz castração a preço acessível, mas não há ninguém pago para resgatar e transportar animais sem dono. Essa última etapa cai sobre nós.',
       },
       {
         title: 'Sem rede de resgate',
@@ -619,7 +620,7 @@ const ptBr: Dictionary = {
       'Por volta de 2017, a família Gaspar levou para casa seu primeiro gato de rua — Tito, o primeiro gato que alguém na casa já havia tido. Ele passou a fazer parte da família, e aquele resgate mudou o que eles conseguiam enxergar ao redor: gatos nesta parte do Brasil não estavam apenas sem lar, muitas vezes eram mal compreendidos, ignorados e deixados sem o mesmo apoio informal que alguns cães de rua recebem.',
     safetyNetTitle: 'Sem abrigo para chamar, sem rede de resgate a caminho',
     safetyNet:
-      'Em boa parte dos Estados Unidos, o resgate animal se apoia numa infraestrutura que muitos consideram garantida: abrigos municipais, clínicas de castração de baixo custo, redes de lares temporários, serviço de controle animal. No interior rural do Brasil, onde fica o Rancho Gaspar, quase nada disso existe. Não há um abrigo onde alguém possa deixar um gato em situação de rua. Não há clínica próxima oferecendo castração acessível. Não há rede de resgate com capacidade para absorver um caso difícil. Quando um animal está com fome, ferido ou carregando mais uma ninhada não planejada, não há ninguém a caminho — e é exatamente esse vácuo que este rancho foi construído para preencher.',
+      'Em boa parte dos Estados Unidos, o resgate animal se apoia numa infraestrutura que muitos consideram garantida: abrigos municipais, redes de lares temporários e serviço de controle animal que recolhe animais sem dono. No interior rural do Brasil, onde fica o Rancho Gaspar, quase nada disso existe. Não há um abrigo onde alguém possa deixar um gato em situação de rua. Há um veterinário próximo que faz castração a preço acessível, mas não há ninguém pago para resgatar e levar animais sem dono até ele — essa última etapa sempre cai sobre nós. Não há rede de resgate com capacidade para absorver um caso difícil. Quando um animal está com fome, ferido ou carregando mais uma ninhada não planejada, não há ninguém a caminho — e é exatamente esse vácuo que este rancho foi construído para preencher.',
     backgroundTitle: 'Por que os gatos viraram o centro do trabalho',
     background:
       'Dentro desse vácuo, os gatos enfrentam um tipo adicional de vulnerabilidade. Mitos, desinformação e antigas superstições ainda afetam a forma como são tratados, especialmente os gatos pretos ou de pelagem escura. Enquanto alguns cães podem se tornar animais conhecidos da vizinhança — alimentados, observados, até batizados —, os gatos costumam ser menos visíveis, menos confiáveis aos olhos das pessoas e menos propensos a receber comida, proteção ou adoção.',
@@ -634,7 +635,7 @@ const ptBr: Dictionary = {
       'Os responsáveis pelo santuário vivem entre os Estados Unidos e o Brasil, enquanto o rancho no Brasil é dedicado principalmente aos animais. O rancho foi construído por Julio Gaspar ao longo de cerca de vinte anos antes de seu falecimento, por isso tem um significado especial: é um monumento ao cuidado e ao esforço dele pela família, e agora também um lar seguro para animais da região de Mendonça que são mal compreendidos, passam fome, estão em risco ou podem continuar se reproduzindo sem ajuda.',
     scopeTitle: 'Gatos primeiro, mas não apenas gatos',
     scope:
-      'Gatos formam a maior parte do nosso trabalho de resgate, mas cães e coelhos não são excluídos. Quando podemos ajudar com segurança e responsabilidade, ajudamos. Algumas espécies ou situações podem não ser compatíveis com um rancho cheio de gatos, mas sempre estamos dispostos a ouvir o que está acontecendo e ver se podemos ajudar ou indicar um caminho.',
+      'Veja o Bart, o cão desta foto. Quando o encontramos pela primeira vez, ele tinha uma grande ferida perfurante no quarto traseiro direito, infestada por larvas de mosca — o tipo de ferida que vira rotina num lugar onde os cães de rua passam os dias brigando entre si ou com qualquer animal silvestre que cruzem. Cuidamos dele até se recuperar. Naquela mesma semana, encontramos outro animal de rua que havia se envolvido numa briga com um tamanduá. Os gatos formam a maior parte do nosso trabalho de resgate, mas cães e coelhos não são excluídos — quando podemos ajudar com segurança e responsabilidade, ajudamos. Algumas espécies ou situações podem não ser compatíveis com um rancho cheio de gatos, mas sempre estamos dispostos a ouvir o que está acontecendo e ver se podemos ajudar ou indicar um caminho.',
     communityTitle: 'Maior do que uma família',
     community:
       'Uma família só consegue carregar até certo ponto. O Rancho Gaspar foi construído desde o início para ir além de um único lar — registrado como organização sem fins lucrativos 501(c)(3) dos EUA, com sua sede financeira em Murrieta, na Califórnia, enquanto cada resgate, recuperação, castração e dia de cuidado do santuário acontece no rancho em Mendonça, São Paulo. Cada animal que recebemos não tem para onde ir, e cada animal é classificado dentro de uma política escrita: para adoção, por meio do nosso processo de solicitação e apresentação, ou residente permanente, quando idade, saúde ou temperamento tornam a adoção arriscada ou inadequada. A missão cresceu além do que uma única família consegue sustentar sozinha. Se você puder doar, apadrinhar um animal, ser voluntário, oferecer um lar temporário ou adotar, o alcance do santuário cresce com você.',
@@ -656,7 +657,8 @@ const ptBr: Dictionary = {
       background: 'gatos resgatados',
       mission: 'cuidados veterinários',
       ranch: 'o rancho',
-      scope: 'cães e coelhos também',
+      scope:
+        'Bart, um cão marrom de pelo curto com uma pequena mancha branca no peito, sentado em piso azulejado e olhando para a câmera com um sorriso de boca aberta',
       community:
         'Gatão, um gato laranja e branco sentado em pisos de terracota ao lado de flores rosas vibrantes',
     },
