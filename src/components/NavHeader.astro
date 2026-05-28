@@ -68,6 +68,17 @@ const switchHref = localizePath(basePath, otherLang);
   </div>
 </header>
 
+<script>
+  // The switcher href is built at static build time from the pathname only, so
+  // it can't know about runtime query params. Carry the live search + hash over
+  // on switch — the donate page forwards `?freq=&amount=` and the chosen gift
+  // should survive a language change.
+  const langLink = document.querySelector<HTMLAnchorElement>('.nav__lang');
+  if (langLink && (location.search || location.hash)) {
+    langLink.href += location.search + location.hash;
+  }
+</script>
+
 <style>
   .nav {
     position: sticky;

@@ -1,0 +1,15 @@
+---
+// Donate — standalone giving page. The site's donation widgets forward the
+// chosen amount + frequency here as query params for continuity.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DonatePage from '../components/DonatePage.astro';
+import { t } from '../i18n/utils';
+
+const lang = 'en';
+const dict = t(lang);
+const title = dict.donatePage.title;
+---
+
+<BaseLayout lang={lang} active="donate" title={title} description={dict.donatePage.intro}>
+  <DonatePage lang={lang} />
+</BaseLayout>

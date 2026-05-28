@@ -12,7 +12,7 @@ const en = {
   site: {
     name: 'Rancho Gaspar',
     org: 'Rancho Gaspar Animal Sanctuary & Rescue',
-    tagline: 'Animal Rescue',
+    tagline: 'Animal Sanctuary & Rescue',
     motto: 'Rescue. Heal. Love. Repeat.',
     description:
       'A small family-run sanctuary in Mendonça, SP, giving rescued dogs and cats a second chance at love.',
@@ -72,11 +72,48 @@ const en = {
     oneTime: 'One-time',
     monthly: 'Monthly',
     cta: 'Donate',
+    other: 'Other',
+    otherHint: 'Choose your amount on the next page',
     perMonth: '/mo',
     trust: 'Secure · Trusted · Tax-deductible',
     fxNote: 'Amounts in USD · ≈ {brl} today',
     // Shown when the in-browser rate fetch fails (see lib/fx-client.ts).
     fxNoteUnavailable: 'Amounts in USD · R$ unavailable',
+  },
+  // Standalone /donate page: the donation widget's CTA forwards the chosen
+  // amount + frequency here as query params (continuity); checkout itself is
+  // stubbed pending a Cloudflare Worker.
+  donatePage: {
+    eyebrow: 'Support the sanctuary',
+    title: 'Make your gift',
+    intro:
+      'Every gift directly funds rescue, veterinary care, food, and shelter for animals who have nowhere else to turn. Choose an amount and how you would like to give.',
+    freqOne: 'One-time',
+    freqMonthly: 'Monthly',
+    amountLegend: 'Choose an amount',
+    other: 'Other',
+    customLabel: 'Enter a custom amount (USD)',
+    customPlaceholder: 'e.g. 18',
+    amountError: 'Please enter an amount of $1 or more.',
+    fxNote: '≈ {brl} today',
+    fxUnavailable: 'BRL equivalent unavailable',
+    methodLegend: 'How would you like to give?',
+    givebutterTitle: 'Card or Apple Pay',
+    givebutterDesc: 'Fast, secure checkout powered by Givebutter.',
+    givebutterBadge: 'Recommended',
+    cryptoTitle: 'Cryptocurrency',
+    cryptoDesc: 'Give with Bitcoin, Ethereum, or USDC.',
+    cryptoChoose: 'Choose a coin',
+    pixTitle: 'Pix (Brazil)',
+    pixDesc: 'Local Brazilian transfers are on the way.',
+    pixBadge: 'Coming soon',
+    summaryPrefix: 'Your gift',
+    perMonth: '/mo',
+    cta: 'Continue to give',
+    stubTitle: 'Almost there.',
+    stubBody:
+      'Secure checkout is being connected to our payment partner. This button will soon take you to a protected page to complete your gift. Thank you for your patience — and your kindness.',
+    trust: 'Secure · Trusted · Tax-deductible',
   },
   // Shared currency strings. `unavailable` fills a BRL parenthetical when the
   // in-browser rate fetch fails (see lib/fx-client.ts + FxAmount.astro).
@@ -214,7 +251,7 @@ const en = {
     // Monospace labels naming the photo that should fill each placeholder until
     // a real image is uploaded (see PhotoSlot.astro).
     photos: {
-      family: 'the Gaspar family',
+      hero: 'Negresco and Negresca, two of the cats in our care',
       background: 'rescued cats',
       mission: 'vet care & recovery',
       ranch: 'the ranch',
@@ -297,7 +334,7 @@ const ptBr: Dictionary = {
   site: {
     name: 'Rancho Gaspar',
     org: 'Rancho Gaspar Animal Sanctuary & Rescue',
-    tagline: 'Resgate Animal',
+    tagline: 'Santuário e Resgate de Animais',
     motto: 'Resgatar. Curar. Amar. Repetir.',
     description:
       'Um pequeno santuário familiar em Mendonça, SP, dando a cães e gatos resgatados uma segunda chance de amar.',
@@ -360,10 +397,44 @@ const ptBr: Dictionary = {
     oneTime: 'Única',
     monthly: 'Mensal',
     cta: 'Doar',
+    other: 'Outro',
+    otherHint: 'Escolha o valor na próxima página',
     perMonth: '/mês',
     trust: 'Seguro · Confiável · Dedutível de impostos',
     fxNote: 'Valores em USD · ≈ {brl} hoje',
     fxNoteUnavailable: 'Valores em USD · R$ indisponível',
+  },
+  donatePage: {
+    eyebrow: 'Apoie o santuário',
+    title: 'Faça sua doação',
+    intro:
+      'Cada doação financia diretamente o resgate, os cuidados veterinários, a alimentação e o abrigo de animais que não têm para onde ir. Escolha um valor e como deseja doar.',
+    freqOne: 'Única',
+    freqMonthly: 'Mensal',
+    amountLegend: 'Escolha um valor',
+    other: 'Outro',
+    customLabel: 'Digite um valor personalizado (USD)',
+    customPlaceholder: 'ex.: 18',
+    amountError: 'Informe um valor de US$ 1 ou mais.',
+    fxNote: '≈ {brl} hoje',
+    fxUnavailable: 'Equivalente em BRL indisponível',
+    methodLegend: 'Como você gostaria de doar?',
+    givebutterTitle: 'Cartão ou Apple Pay',
+    givebutterDesc: 'Checkout rápido e seguro com Givebutter.',
+    givebutterBadge: 'Recomendado',
+    cryptoTitle: 'Criptomoeda',
+    cryptoDesc: 'Doe com Bitcoin, Ethereum ou USDC.',
+    cryptoChoose: 'Escolha uma moeda',
+    pixTitle: 'Pix (Brasil)',
+    pixDesc: 'As transferências por Pix estão a caminho.',
+    pixBadge: 'Em breve',
+    summaryPrefix: 'Sua doação',
+    perMonth: '/mês',
+    cta: 'Continuar para doar',
+    stubTitle: 'Quase lá.',
+    stubBody:
+      'O checkout seguro está sendo conectado ao nosso parceiro de pagamentos. Em breve este botão levará você a uma página protegida para concluir sua doação. Obrigado pela paciência — e pela generosidade.',
+    trust: 'Seguro · Confiável · Dedutível de impostos',
   },
   fx: {
     unavailable: 'R$ indisponível',
@@ -489,7 +560,7 @@ const ptBr: Dictionary = {
       bunny: { singular: 'coelho', plural: 'coelhos' },
     },
     photos: {
-      family: 'a família Gaspar',
+      hero: 'Negresco e Negresca, dois dos gatos sob nossos cuidados',
       background: 'gatos resgatados',
       mission: 'cuidados veterinários',
       ranch: 'o rancho',

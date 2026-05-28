@@ -19,9 +19,9 @@ test.describe('Client-side currency conversion', () => {
     // The honest fallback is replaced, not left alongside the number.
     await expect(lead).not.toContainText('R$ unavailable');
 
-    // The donation widget shares the same rate (default $50 → R$ 260).
+    // The donation widget shares the same rate (default $5 → R$ 26).
     await page.goto('/');
-    await expect(page.locator('.donate__fx').first()).toContainText('≈ R$ 260');
+    await expect(page.locator('.donate__fx').first()).toContainText('≈ R$ 26');
   });
 
   test('shows "unavailable" — never a stale guess — when the fetch fails', async ({ page }) => {

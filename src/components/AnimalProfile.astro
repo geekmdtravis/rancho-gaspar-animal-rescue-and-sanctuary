@@ -292,7 +292,7 @@ const backLabel = isAdopt ? dict.profile.backAdopt : dict.profile.backResidents;
           <SectionLabel>{dict.profile.sponsorEyebrow}</SectionLabel>
           <h3 class="ap-aside-title rg-display">{dict.profile.sponsorTitle}</h3>
           <p class="ap-aside-body">{dict.profile.sponsorBody}</p>
-          <DonationWidget lang={lang} compact amounts={[25, 50, 100, 200]} defaultAmount={50} />
+          <DonationWidget lang={lang} compact defaultFreq="month" />
         </aside>
       )
     }

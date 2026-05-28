@@ -1,0 +1,685 @@
+---
+// DonatePage — the standalone /donate experience. The donation widgets across
+// the site forward the visitor's chosen amount + frequency here as query
+// params (`?freq=one&amount=10` or `?amount=other`) so the gift carries over
+// (continuity). This page lets them confirm/adjust the gift and pick a payment
+// method.
+//
+// Checkout itself is STUBBED: the "Continue" button gathers the selection and
+// surfaces a friendly placeholder. The real handoff (Givebutter card/Apple Pay
+// and crypto via BTC/ETH/USDC) will be wired to a Cloudflare Worker — see the
+// `// TODO(worker)` marker in the inline script.
+import Breadcrumbs from './Breadcrumbs.astro';
+import SectionLabel from './SectionLabel.astro';
+import Heart from './icons/Heart.astro';
+import { t, localizePath, type Lang } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const dict = t(lang);
+const d = dict.donatePage;
+
+const amounts = [5, 10, 25];
+const defaultAmount = 5;
+const coins = ['BTC', 'ETH', 'USDC'];
+const currency = '$';
+---
+
+<section class="rg-container rg-section--tight">
+  <Breadcrumbs
+    items={[{ label: dict.nav.home, href: localizePath('/', lang) }, { label: d.title }]}
+  />
+
+  <div class="dp">
+    <header class="dp__intro">
+      <SectionLabel>{d.eyebrow}</SectionLabel>
+      <h1 class="dp__title rg-display">{d.title}</h1>
+      <p class="dp__lead">{d.intro}</p>
+    </header>
+
+    <form
+      class="dp__form"
+      data-donate-form
+      data-currency={currency}
+      data-per-month={d.perMonth}
+      data-summary-prefix={d.summaryPrefix}
+      data-cta={d.cta}
+      data-amount-error={d.amountError}
+      data-fx-note={d.fxNote}
+      data-fx-unavailable={d.fxUnavailable}
+    >
+      <!-- Frequency -->
+      <div class="dp__freq" role="group" aria-label={d.freqOne + ' / ' + d.freqMonthly}>
+        <button type="button" class="dp__freq-btn is-active" data-freq="one">{d.freqOne}</button>
+        <button type="button" class="dp__freq-btn" data-freq="month">{d.freqMonthly}</button>
+      </div>
+
+      <!-- Amount -->
+      <fieldset class="dp__fieldset">
+        <legend class="dp__legend">{d.amountLegend}</legend>
+        <div class="dp__amounts">
+          {
+            amounts.map((a) => (
+              <button
+                type="button"
+                class:list={['dp__amount', a === defaultAmount && 'is-active']}
+                data-amount={a}
+                aria-pressed={a === defaultAmount ? 'true' : 'false'}
+              >
+                {currency}
+                {a}
+              </button>
+            ))
+          }
+          <button type="button" class="dp__amount" data-amount="other" aria-pressed="false">
+            {d.other}
+          </button>
+        </div>
+
+        <div class="dp__custom" data-custom hidden>
+          <label class="dp__custom-label" for="dp-custom">{d.customLabel}</label>
+          <div class="dp__custom-field">
+            <span class="dp__custom-prefix" aria-hidden="true">{currency}</span>
+            <input
+              id="dp-custom"
+              class="dp__custom-input"
+              type="number"
+              min="1"
+              step="1"
+              inputmode="numeric"
+              placeholder={d.customPlaceholder}
+              data-custom-input
+            />
+          </div>
+          <p class="dp__error" data-amount-error-msg hidden>{d.amountError}</p>
+        </div>
+
+        <p class="dp__fx" data-fx>{d.fxUnavailable}</p>
+      </fieldset>
+
+      <!-- Payment method -->
+      <fieldset class="dp__fieldset">
+        <legend class="dp__legend">{d.methodLegend}</legend>
+        <div class="dp__methods">
+          <button type="button" class="dp__method is-active" data-method="givebutter">
+            <span class="dp__method-icon" aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect>
+                <path d="M2.5 9.5h19"></path>
+              </svg>
+            </span>
+            <span class="dp__method-text">
+              <span class="dp__method-title">{d.givebutterTitle}</span>
+              <span class="dp__method-desc">{d.givebutterDesc}</span>
+            </span>
+            <span class="dp__method-badge">{d.givebutterBadge}</span>
+          </button>
+
+          <button type="button" class="dp__method" data-method="crypto" aria-expanded="false">
+            <span class="dp__method-icon" aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="9"></circle>
+                <path
+                  d="M9 8h4a2 2 0 010 4H9zm0 4h4.5a2 2 0 010 4H9zm0-6.5V8m0 8v1.5M11 6.5V8m0 8v1.5"
+                ></path>
+              </svg>
+            </span>
+            <span class="dp__method-text">
+              <span class="dp__method-title">{d.cryptoTitle}</span>
+              <span class="dp__method-desc">{d.cryptoDesc}</span>
+            </span>
+          </button>
+
+          <div class="dp__method dp__method--disabled" aria-disabled="true">
+            <span class="dp__method-icon" aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 3l4 4-4 4-4-4 4-4zm0 10l4 4-4 4-4-4 4-4z"></path>
+              </svg>
+            </span>
+            <span class="dp__method-text">
+              <span class="dp__method-title">{d.pixTitle}</span>
+              <span class="dp__method-desc">{d.pixDesc}</span>
+            </span>
+            <span class="dp__method-badge dp__method-badge--mute">{d.pixBadge}</span>
+          </div>
+        </div>
+
+        <div class="dp__coins" data-coins hidden>
+          <span class="dp__coins-label">{d.cryptoChoose}</span>
+          <div class="dp__coins-row">
+            {
+              coins.map((c, i) => (
+                <button
+                  type="button"
+                  class:list={['dp__coin', i === 0 && 'is-active']}
+                  data-coin={c}
+                  aria-pressed={i === 0 ? 'true' : 'false'}
+                >
+                  {c}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      </fieldset>
+
+      <button type="submit" class="dp__cta" data-submit>
+        <Heart size={16} color="#fff" filled />
+        <span data-cta-label>{d.cta}</span>
+      </button>
+
+      <div class="dp__stub" data-stub hidden role="status">
+        <strong>{d.stubTitle}</strong>
+        {d.stubBody}
+      </div>
+
+      <div class="dp__trust">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <rect x="2.5" y="5" width="7" height="5" rx="1"></rect>
+          <path d="M4 5V3.5a2 2 0 014 0V5"></path>
+        </svg>
+        {d.trust}
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  import { usdToBrl, brl } from '../lib/fx-client';
+
+  const form = document.querySelector<HTMLFormElement>('[data-donate-form]');
+  if (form) {
+    const currency = form.dataset.currency ?? '$';
+    const perMonth = form.dataset.perMonth ?? '/mo';
+    const summaryPrefix = form.dataset.summaryPrefix ?? 'Your gift';
+    const ctaText = form.dataset.cta ?? 'Continue to give';
+    const fxNote = form.dataset.fxNote ?? '';
+    const fxUnavailable = form.dataset.fxUnavailable ?? '';
+
+    const ctaLabel = form.querySelector<HTMLElement>('[data-cta-label]');
+    const custom = form.querySelector<HTMLElement>('[data-custom]');
+    const customInput = form.querySelector<HTMLInputElement>('[data-custom-input]');
+    const errorMsg = form.querySelector<HTMLElement>('[data-amount-error-msg]');
+    const coinsBox = form.querySelector<HTMLElement>('[data-coins]');
+    const fxEl = form.querySelector<HTMLElement>('[data-fx]');
+    const stub = form.querySelector<HTMLElement>('[data-stub]');
+
+    let freq: 'one' | 'month' = 'one';
+    let amount: number | 'other' = 5;
+    let method = 'givebutter';
+    let coin = 'BTC';
+    let rate: number | null = null;
+
+    // The effective USD figure: the chosen preset, or the typed custom value.
+    const effective = (): number =>
+      amount === 'other' ? Math.floor(Number(customInput?.value) || 0) : amount;
+
+    const setActive = (sel: string, match: Element) =>
+      form.querySelectorAll(sel).forEach((b) => {
+        const on = b === match;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+
+    const render = () => {
+      const usd = effective();
+      const valid = usd >= 1;
+
+      if (fxEl)
+        fxEl.textContent =
+          valid && rate != null && fxNote ? fxNote.replace('{brl}', brl(usd, rate)) : fxUnavailable;
+
+      if (ctaLabel) {
+        const suffix = freq === 'month' ? perMonth : '';
+        ctaLabel.textContent = valid
+          ? `${ctaText} · ${summaryPrefix} ${currency}${usd}${suffix}`
+          : ctaText;
+      }
+    };
+
+    form.querySelectorAll<HTMLElement>('.dp__freq-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        freq = btn.dataset.freq === 'month' ? 'month' : 'one';
+        setActive('.dp__freq-btn', btn);
+        render();
+      });
+    });
+
+    form.querySelectorAll<HTMLElement>('.dp__amount').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const v = btn.dataset.amount ?? '0';
+        amount = v === 'other' ? 'other' : Number(v);
+        setActive('.dp__amount', btn);
+        const isOther = amount === 'other';
+        if (custom) custom.hidden = !isOther;
+        if (isOther) customInput?.focus();
+        else if (errorMsg) errorMsg.hidden = true;
+        render();
+      });
+    });
+
+    customInput?.addEventListener('input', () => {
+      if (errorMsg) errorMsg.hidden = true;
+      render();
+    });
+
+    form.querySelectorAll<HTMLElement>('.dp__method').forEach((btn) => {
+      if (btn.classList.contains('dp__method--disabled')) return;
+      btn.addEventListener('click', () => {
+        method = btn.dataset.method ?? 'givebutter';
+        form.querySelectorAll('.dp__method').forEach((b) => {
+          if (b.classList.contains('dp__method--disabled')) return;
+          b.classList.toggle('is-active', b === btn);
+        });
+        const isCrypto = method === 'crypto';
+        btn.setAttribute('aria-expanded', String(isCrypto));
+        if (coinsBox) coinsBox.hidden = !isCrypto;
+      });
+    });
+
+    form.querySelectorAll<HTMLElement>('.dp__coin').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        coin = btn.dataset.coin ?? 'BTC';
+        setActive('.dp__coin', btn);
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const usd = effective();
+      if (usd < 1) {
+        if (errorMsg) errorMsg.hidden = false;
+        customInput?.focus();
+        return;
+      }
+
+      // The selection the checkout handoff will consume.
+      const payload = {
+        amount: usd,
+        currency: 'USD',
+        frequency: freq,
+        method,
+        coin: method === 'crypto' ? coin : undefined,
+      };
+      // TODO(worker): POST `payload` to the Cloudflare Worker that creates the
+      // Givebutter checkout / crypto charge, then redirect to the returned URL.
+      console.info('[donate] checkout payload (stub):', payload);
+      if (stub) {
+        stub.hidden = false;
+        stub.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+
+    // Continuity: pre-fill from the widget's `?freq=&amount=` query params.
+    const params = new URLSearchParams(location.search);
+    const qFreq = params.get('freq');
+    if (qFreq === 'month')
+      form.querySelector<HTMLElement>('.dp__freq-btn[data-freq="month"]')?.click();
+    const qAmount = params.get('amount');
+    if (qAmount === 'other') {
+      form.querySelector<HTMLElement>('.dp__amount[data-amount="other"]')?.click();
+    } else if (qAmount) {
+      const preset = form.querySelector<HTMLElement>(`.dp__amount[data-amount="${qAmount}"]`);
+      if (preset) preset.click();
+      else if (Number(qAmount) >= 1) {
+        // A custom figure that isn't one of the presets: select Other + prefill.
+        form.querySelector<HTMLElement>('.dp__amount[data-amount="other"]')?.click();
+        if (customInput) customInput.value = String(Math.floor(Number(qAmount)));
+      }
+    }
+
+    render();
+    usdToBrl().then((r) => {
+      rate = r;
+      render();
+    });
+  }
+</script>
+
+<style>
+  .dp {
+    margin-top: 24px;
+    max-width: 640px;
+  }
+  .dp__intro {
+    margin-bottom: 24px;
+  }
+  .dp__title {
+    font-size: 42px;
+    line-height: 1.1;
+    margin: 12px 0 8px;
+  }
+  .dp__lead {
+    font-size: 17px;
+    color: var(--rg-ink-soft);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .dp__form {
+    background: var(--rg-primary-faint);
+    border: 1px solid var(--rg-primary-soft);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  /* Frequency */
+  .dp__freq {
+    display: flex;
+    gap: 6px;
+    background: var(--rg-surface);
+    border-radius: 999px;
+    padding: 4px;
+    margin-bottom: 22px;
+  }
+  .dp__freq-btn {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: var(--rg-ink-soft);
+    border-radius: 999px;
+    font-family: var(--rg-font-body);
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.15s;
+  }
+  .dp__freq-btn.is-active {
+    background: var(--rg-primary);
+    color: #fff;
+  }
+
+  .dp__fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 22px;
+  }
+  .dp__legend {
+    padding: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--rg-ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+  }
+
+  /* Amounts */
+  .dp__amounts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .dp__amount {
+    padding: 14px 0;
+    border: 1.5px solid var(--rg-border);
+    background: var(--rg-surface);
+    color: var(--rg-ink);
+    border-radius: 12px;
+    font-family: var(--rg-font-body);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .dp__amount.is-active {
+    border-color: transparent;
+    background: var(--rg-primary);
+    color: #fff;
+  }
+
+  .dp__custom {
+    margin-top: 12px;
+  }
+  .dp__custom-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rg-ink-soft);
+    margin-bottom: 6px;
+  }
+  .dp__custom-field {
+    display: flex;
+    align-items: center;
+    background: var(--rg-surface);
+    border: 1.5px solid var(--rg-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .dp__custom-field:focus-within {
+    border-color: var(--rg-primary);
+  }
+  .dp__custom-prefix {
+    padding: 0 4px 0 14px;
+    font-weight: 700;
+    color: var(--rg-ink-soft);
+  }
+  .dp__custom-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 14px 12px 0;
+    font-family: var(--rg-font-body);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--rg-ink);
+  }
+  .dp__custom-input:focus {
+    outline: none;
+  }
+  .dp__error {
+    margin: 8px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rg-danger);
+  }
+
+  .dp__fx {
+    margin: 14px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rg-ink-mute);
+  }
+
+  /* Methods */
+  .dp__methods {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dp__method {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    text-align: left;
+    padding: 16px;
+    border: 1.5px solid var(--rg-border);
+    background: var(--rg-surface);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--rg-font-body);
+  }
+  .dp__method:hover:not(.dp__method--disabled) {
+    border-color: var(--rg-primary-soft);
+  }
+  .dp__method.is-active {
+    border-color: var(--rg-primary);
+    background: var(--rg-surface);
+    box-shadow: 0 0 0 1px var(--rg-primary);
+  }
+  .dp__method--disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .dp__method-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: 10px;
+    background: var(--rg-primary-faint);
+    color: var(--rg-primary-deep);
+  }
+  .dp__method-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+  .dp__method-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--rg-ink);
+  }
+  .dp__method-desc {
+    font-size: 13px;
+    color: var(--rg-ink-soft);
+    line-height: 1.4;
+  }
+  .dp__method-badge {
+    flex: none;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--rg-primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .dp__method-badge--mute {
+    background: var(--rg-border);
+    color: var(--rg-ink-soft);
+  }
+
+  .dp__coins {
+    margin-top: 12px;
+    padding: 14px;
+    background: var(--rg-surface);
+    border: 1.5px solid var(--rg-border);
+    border-radius: 14px;
+  }
+  .dp__coins-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rg-ink-soft);
+    margin-bottom: 10px;
+  }
+  .dp__coins-row {
+    display: flex;
+    gap: 8px;
+  }
+  .dp__coin {
+    flex: 1;
+    padding: 10px 0;
+    border: 1.5px solid var(--rg-border);
+    background: var(--rg-bg);
+    color: var(--rg-ink);
+    border-radius: 10px;
+    font-family: var(--rg-font-body);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .dp__coin.is-active {
+    border-color: transparent;
+    background: var(--rg-primary);
+    color: #fff;
+  }
+
+  /* CTA + footers */
+  .dp__cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 54px;
+    width: 100%;
+    border: none;
+    background: var(--rg-primary);
+    color: #fff;
+    border-radius: var(--rg-btn-radius);
+    font-family: var(--rg-font-body);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(217, 107, 134, 0.25);
+    transition: background 0.15s;
+  }
+  .dp__cta:hover {
+    background: var(--rg-primary-deep);
+  }
+  .dp__stub {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--rg-surface);
+    border: 1px solid var(--rg-primary-soft);
+    font-size: 14px;
+    color: var(--rg-ink-soft);
+    line-height: 1.5;
+  }
+  .dp__stub strong {
+    color: var(--rg-ink);
+  }
+  .dp__trust {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--rg-ink-mute);
+  }
+
+  @media (max-width: 980px) {
+    .dp__title {
+      font-size: 34px;
+    }
+    .dp__form {
+      padding: 20px;
+    }
+  }
+</style>

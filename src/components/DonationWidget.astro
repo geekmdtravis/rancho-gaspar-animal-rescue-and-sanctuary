@@ -4,21 +4,23 @@
 // (no framework) so the widget stays static-friendly. Point `donateUrl` at
 // your processor (Pix/Stripe/etc.) when ready.
 import Heart from './icons/Heart.astro';
-import { t, type Lang } from '../i18n/utils';
+import { t, localizePath, type Lang } from '../i18n/utils';
 
 interface Props {
   lang: Lang;
   amounts?: number[];
   defaultAmount?: number;
+  defaultFreq?: 'one' | 'month';
   compact?: boolean;
   donateUrl?: string;
 }
 const {
   lang,
-  amounts = [25, 50, 100, 250],
-  defaultAmount = 50,
+  amounts = [5, 10, 25],
+  defaultAmount = 5,
+  defaultFreq = 'one',
   compact = false,
-  donateUrl = '#donate',
+  donateUrl = localizePath('/donate', lang),
 } = Astro.props;
 const dict = t(lang);
 // USD is primary (most donors are in the US); BRL is shown as an approximate
@@ -32,6 +34,8 @@ const currency = '$';
   class:list={['donate', compact && 'donate--compact']}
   data-donation
   data-currency={currency}
+  data-default-freq={defaultFreq}
+  data-other-hint={dict.donate.otherHint}
   data-fx-note={dict.donate.fxNote}
   data-fx-note-unavailable={dict.donate.fxNoteUnavailable}
 >
@@ -40,10 +44,16 @@ const currency = '$';
   <p class="donate__body">{dict.donate.body}</p>
 
   <div class="donate__freq" role="group" aria-label={dict.donate.title}>
-    <button type="button" class="donate__freq-btn is-active" data-freq="one"
-      >{dict.donate.oneTime}</button
+    <button
+      type="button"
+      class:list={['donate__freq-btn', defaultFreq === 'one' && 'is-active']}
+      data-freq="one">{dict.donate.oneTime}</button
     >
-    <button type="button" class="donate__freq-btn" data-freq="month">{dict.donate.monthly}</button>
+    <button
+      type="button"
+      class:list={['donate__freq-btn', defaultFreq === 'month' && 'is-active']}
+      data-freq="month">{dict.donate.monthly}</button
+    >
   </div>
 
   <div class="donate__amounts">
@@ -60,11 +70,20 @@ const currency = '$';
         </button>
       ))
     }
+    <button type="button" class="donate__amount" data-amount="other" aria-pressed="false">
+      {dict.donate.other}
+    </button>
   </div>
 
   <p class="donate__fx" data-donate-approx>{dict.donate.fxNoteUnavailable}</p>
 
-  <a class="donate__cta" href={donateUrl} data-donate-cta data-per-month={dict.donate.perMonth}>
+  <a
+    class="donate__cta"
+    href={donateUrl}
+    data-donate-cta
+    data-donate-base={donateUrl}
+    data-per-month={dict.donate.perMonth}
+  >
     <Heart size={16} color="#fff" filled />
     <span data-donate-label>{dict.donate.cta} {currency}{defaultAmount}</span>
   </a>
@@ -93,24 +112,37 @@ const currency = '$';
     const currency = widget.dataset.currency ?? '$';
     const fxNote = widget.dataset.fxNote ?? '';
     const fxNoteUnavailable = widget.dataset.fxNoteUnavailable ?? '';
-    const cta = widget.querySelector<HTMLElement>('[data-donate-cta]');
+    const otherHint = widget.dataset.otherHint ?? '';
+    const cta = widget.querySelector<HTMLAnchorElement>('[data-donate-cta]');
     const label = widget.querySelector<HTMLElement>('[data-donate-label]');
     const approx = widget.querySelector<HTMLElement>('[data-donate-approx]');
     const baseLabel = label?.textContent?.trim().split(/\s+/)[0] ?? 'Donate';
     const perMonth = cta?.dataset.perMonth ?? '/mo';
-    let amount = Number(
-      widget.querySelector<HTMLElement>('.donate__amount.is-active')?.dataset.amount ?? '50',
-    );
-    let freq: 'one' | 'month' = 'one';
+    // Where the CTA points; the selection is appended as query params so the
+    // /donate page can pre-fill (continuity).
+    const donateBase = cta?.dataset.donateBase ?? '#';
+    const initialAmount =
+      widget.querySelector<HTMLElement>('.donate__amount.is-active')?.dataset.amount ?? '5';
+    let amount: number | 'other' = initialAmount === 'other' ? 'other' : Number(initialAmount);
+    let freq: 'one' | 'month' = widget.dataset.defaultFreq === 'month' ? 'month' : 'one';
     // Filled once the in-browser rate fetch resolves; null until then / on fail.
     let rate: number | null = null;
 
     const render = () => {
+      // Forward the chosen amount + frequency to the donate page.
+      if (cta) cta.href = `${donateBase}?${new URLSearchParams({ freq, amount: String(amount) })}`;
       if (label)
-        label.textContent = `${baseLabel} ${currency}${amount}${freq === 'month' ? perMonth : ''}`;
+        label.textContent =
+          amount === 'other'
+            ? baseLabel
+            : `${baseLabel} ${currency}${amount}${freq === 'month' ? perMonth : ''}`;
       if (approx)
         approx.textContent =
-          rate != null && fxNote ? fxNote.replace('{brl}', brl(amount, rate)) : fxNoteUnavailable;
+          amount === 'other'
+            ? otherHint
+            : rate != null && fxNote
+              ? fxNote.replace('{brl}', brl(amount, rate))
+              : fxNoteUnavailable;
     };
 
     widget.querySelectorAll<HTMLElement>('.donate__freq-btn').forEach((btn) => {
@@ -125,7 +157,8 @@ const currency = '$';
 
     widget.querySelectorAll<HTMLElement>('.donate__amount').forEach((btn) => {
       btn.addEventListener('click', () => {
-        amount = Number(btn.dataset.amount ?? '0');
+        const v = btn.dataset.amount ?? '0';
+        amount = v === 'other' ? 'other' : Number(v);
         widget.querySelectorAll('.donate__amount').forEach((b) => {
           const active = b === btn;
           b.classList.toggle('is-active', active);

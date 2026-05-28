@@ -1,0 +1,14 @@
+---
+// Doar — página de doação (mirror PT-BR de /donate).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DonatePage from '../../components/DonatePage.astro';
+import { t } from '../../i18n/utils';
+
+const lang = 'pt-br';
+const dict = t(lang);
+const title = dict.donatePage.title;
+---
+
+<BaseLayout lang={lang} active="donate" title={title} description={dict.donatePage.intro}>
+  <DonatePage lang={lang} />
+</BaseLayout>

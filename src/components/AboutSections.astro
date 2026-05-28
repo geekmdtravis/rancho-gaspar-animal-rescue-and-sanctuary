@@ -1,9 +1,17 @@
 ---
+import { Image } from 'astro:assets';
 import SectionLabel from './SectionLabel.astro';
 import Badge from './Badge.astro';
 import Icon from './icons/Icon.astro';
 import PhotoSlot from './PhotoSlot.astro';
 import DrawnAnimal from './DrawnAnimal.astro';
+// Placeholder hero until we have a purpose-built lead image — this is two of
+// the cats in our care, not a family photo, so keep the alt neutral.
+import aboutHero from '../assets/uploads/negresco-negresca-feral.jpeg';
+import aboutRescueCats from '../assets/uploads/about-rescue-cats.jpeg';
+import aboutVetCare from '../assets/uploads/vet-care-recovery-2.jpeg';
+import aboutTheRanch from '../assets/uploads/about-the-ranch.jpeg';
+import aboutDogsToo from '../assets/uploads/about-dogs-too.jpeg';
 import { listAnimals, isDeceased } from '../lib/animals';
 import { t, type Lang } from '../i18n/utils';
 
@@ -45,10 +53,29 @@ const story = [
     body: page.background,
     kind: 'cat',
     photo: page.photos.background,
+    img: aboutRescueCats,
   },
-  { title: page.missionTitle, body: page.mission, kind: 'dog', photo: page.photos.mission },
-  { title: page.ranchTitle, body: page.ranch, kind: 'cat', photo: page.photos.ranch },
-  { title: page.scopeTitle, body: page.scope, kind: 'bunny', photo: page.photos.scope },
+  {
+    title: page.missionTitle,
+    body: page.mission,
+    kind: 'dog',
+    photo: page.photos.mission,
+    img: aboutVetCare,
+  },
+  {
+    title: page.ranchTitle,
+    body: page.ranch,
+    kind: 'cat',
+    photo: page.photos.ranch,
+    img: aboutTheRanch,
+  },
+  {
+    title: page.scopeTitle,
+    body: page.scope,
+    kind: 'bunny',
+    photo: page.photos.scope,
+    img: aboutDogsToo,
+  },
 ] as const;
 ---
 
@@ -60,7 +87,14 @@ const story = [
       <p class="about-intro">{page.intro}</p>
     </div>
     <div class="about-hero__media">
-      <PhotoSlot ratio="4 / 5" radius={24} kind="cat" label={page.photos.family} />
+      <Image
+        src={aboutHero}
+        alt={page.photos.hero}
+        widths={[400, 600, 900]}
+        sizes="(max-width: 860px) 92vw, 440px"
+        quality={82}
+        class="about-hero__img"
+      />
     </div>
   </div>
 </section>
@@ -70,7 +104,18 @@ const story = [
     story.map((s, i) => (
       <article class:list={['about-row', i % 2 === 1 && 'about-row--flip']}>
         <div class="about-row__media">
-          <PhotoSlot ratio="4 / 3" radius={20} kind={s.kind} label={s.photo} />
+          {s.img ? (
+            <Image
+              src={s.img}
+              alt={s.photo}
+              widths={[400, 600, 900]}
+              sizes="(max-width: 860px) 92vw, 440px"
+              quality={82}
+              class="about-row__img"
+            />
+          ) : (
+            <PhotoSlot ratio="1 / 1" radius={20} kind={s.kind} label={s.photo} />
+          )}
         </div>
         <div class="about-row__text">
           <h2 class="about-row__title rg-display">{s.title}</h2>
@@ -133,11 +178,12 @@ const story = [
 </section>
 
 <style>
-  /* Hero — copy beside a tall portrait, mirroring the home hero's rhythm. */
+  /* Hero — copy beside a square photo. Equal columns + gap match the story
+     rows below, so the hero image is the same size as the others. */
   .about-hero {
     display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 48px;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
     align-items: center;
     margin-top: 24px;
   }
@@ -155,8 +201,17 @@ const story = [
   }
   .about-hero__media {
     width: 100%;
-    max-width: 380px;
-    margin-left: auto;
+  }
+  /* Square crop; the image fills it via cover so it's never stretched.
+     height:auto is essential — the <Image> emits a height attribute, and
+     without this the attribute's definite height makes aspect-ratio a no-op. */
+  .about-hero__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 24px;
   }
 
   /* Story — alternating image/text rows. */
@@ -173,6 +228,16 @@ const story = [
   }
   .about-row__media {
     width: 100%;
+  }
+  /* Square crop matching the placeholder; height:auto keeps aspect-ratio live
+     against the <Image> height attribute (same gotcha as the hero). */
+  .about-row__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 20px;
   }
   .about-row--flip .about-row__media {
     order: 2;
@@ -315,10 +380,6 @@ const story = [
     .about-hero {
       grid-template-columns: 1fr;
       gap: 28px;
-    }
-    .about-hero__media {
-      max-width: 320px;
-      margin: 0 auto;
     }
     .about-row {
       grid-template-columns: 1fr;
