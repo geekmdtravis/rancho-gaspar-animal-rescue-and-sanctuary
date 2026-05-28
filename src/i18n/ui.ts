@@ -273,7 +273,6 @@ const en = {
     quickFacts: 'Quick facts',
     fee: 'Adoption fee',
     apply: 'Apply to adopt', // rendered as "Apply to adopt {name}"
-    save: 'Save',
     share: 'Share',
     fosterTitle: 'Foster-to-adopt available',
     fosterBody: 'Not quite ready? Try a two-week foster trial first. Same kindness, less pressure.',
@@ -582,7 +581,6 @@ const ptBr: Dictionary = {
     quickFacts: 'Informações',
     fee: 'Taxa de adoção',
     apply: 'Quero adotar', // exibido como "Quero adotar {name}"
-    save: 'Salvar',
     share: 'Compartilhar',
     fosterTitle: 'Apadrinhamento temporário disponível',
     fosterBody:

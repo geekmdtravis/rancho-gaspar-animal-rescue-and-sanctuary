@@ -24,8 +24,13 @@
       Local editing: open this page and choose "Work with Local Repository"
       (Chromium browsers, via the File System Access API — no proxy server).
       Production editing uses the GitHub backend in /admin/config.yml.
-      `is:inline` keeps Astro from trying to bundle the external CDN script.
+
+      The CMS bundle is vendored from the npm-installed @sveltia/cms (see
+      `scripts/copy-sveltia-cms.mjs`, wired into prebuild/predev). What ships
+      is the exact version pinned in package-lock.json — no floating major,
+      no runtime dependency on a third-party CDN. `is:inline` keeps Astro
+      from trying to bundle/transform the script.
     -->
-    <script is:inline src="https://unpkg.com/@sveltia/cms@0/dist/sveltia-cms.js"></script>
+    <script is:inline src="/admin/sveltia-cms.js"></script>
   </body>
 </html>

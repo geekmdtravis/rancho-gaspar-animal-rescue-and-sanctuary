@@ -219,15 +219,11 @@ const backLabel = isAdopt ? dict.profile.backAdopt : dict.profile.backResidents;
           )
         }
         {
-          isResident ? (
-            <a
-              class="ap-icon-btn"
-              href={`mailto:ranchogasparsanctuary@gmail.com`}
-              aria-label={dict.profile.save}
-            >
-              <Heart size={18} color="var(--rg-primary)" />
-            </a>
-          ) : (
+          /* Share is the only secondary action — we used to render a heart
+             "save" mailto for residents, but it was misleading (heart label
+             "Save" opening an email draft) and there aren't enough animals to
+             justify a save flow. Residents get no secondary button. */
+          !isResident && (
             <button
               class="ap-icon-btn"
               type="button"

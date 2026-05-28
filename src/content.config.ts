@@ -49,7 +49,9 @@ const animals = defineCollection({
       gallery: z.array(image()).default([]),
       // Adoption fee in USD (the canonical amount). Shown USD-first with an
       // approximate BRL value fetched in-browser — see src/lib/fx-client.ts.
-      adoptionFee: z.preprocess(blankToUndefined, z.number().nonnegative().optional()),
+      // $1 minimum: we never give animals away for $0 (it complicates intent
+      // and screening). Leave blank/null to suppress the fee on the profile.
+      adoptionFee: z.preprocess(blankToUndefined, z.number().min(1).optional()),
       quickFacts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
     }),
 });

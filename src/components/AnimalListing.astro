@@ -130,6 +130,7 @@ const speciesChips = [
               class="al-item"
               data-species={e.data.species}
               data-name={e.data.name.toLowerCase()}
+              data-breed={(e.data.breed ?? '').toLowerCase()}
               data-adopted={isAdopted(e) ? 'true' : undefined}
               hidden={isAdopted(e) || undefined}
             >
@@ -198,7 +199,11 @@ const speciesChips = [
       let visible = 0;
       for (const item of items) {
         const okSpecies = species === 'all' || item.dataset.species === species;
-        const okTerm = !term || (item.dataset.name ?? '').includes(term);
+        // The placeholder promises "name or breed" — match either field.
+        const okTerm =
+          !term ||
+          (item.dataset.name ?? '').includes(term) ||
+          (item.dataset.breed ?? '').includes(term);
         // Adopted animals stay hidden until the toggle is on.
         const okAdopted = showAdopted || item.dataset.adopted !== 'true';
         const show = okSpecies && okTerm && okAdopted;

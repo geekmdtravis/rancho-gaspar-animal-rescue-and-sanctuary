@@ -37,12 +37,18 @@ const switchHref = localizePath(basePath, otherLang);
       ariaLabel={dict.site.org}
     />
 
-    <input type="checkbox" id="nav-toggle" class="nav__checkbox" aria-hidden="true" />
-    <label for="nav-toggle" class="nav__burger" aria-label={dict.nav.openMenu}>
+    <button
+      type="button"
+      class="nav__burger"
+      aria-expanded="false"
+      aria-controls="nav-links"
+      aria-label={dict.nav.openMenu}
+      data-nav-toggle
+    >
       <span></span><span></span><span></span>
-    </label>
+    </button>
 
-    <nav class="nav__links" aria-label={dict.site.org}>
+    <nav id="nav-links" class="nav__links" aria-label={dict.site.org}>
       {
         links.map((l) => (
           <a
@@ -77,6 +83,34 @@ const switchHref = localizePath(basePath, otherLang);
   if (langLink && (location.search || location.hash)) {
     langLink.href += location.search + location.hash;
   }
+
+  // Mobile menu: a real button driven by aria-expanded. Previously this was a
+  // CSS-checkbox-hack (`<input type=checkbox>` + `<label>`), which is invisible
+  // to the keyboard — the input was display:none and labels aren't focusable.
+  // A button is focusable, responds to Enter/Space, and exposes the open state
+  // to assistive tech via aria-expanded.
+  const burger = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const navLinks = document.getElementById('nav-links');
+  if (burger && navLinks) {
+    const setOpen = (open: boolean) => {
+      burger.setAttribute('aria-expanded', String(open));
+    };
+    burger.addEventListener('click', () => {
+      setOpen(burger.getAttribute('aria-expanded') !== 'true');
+    });
+    // Close on Escape from anywhere inside the nav (focus might be on a link).
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && burger.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        burger.focus();
+      }
+    });
+    // Tapping a nav link should close the menu so the next page doesn't load
+    // with the panel stuck open if back-navigation restores this DOM.
+    navLinks
+      .querySelectorAll('a')
+      .forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  }
 </script>
 
 <style>
@@ -96,9 +130,19 @@ const switchHref = localizePath(basePath, otherLang);
     align-items: center;
     gap: 24px;
   }
-  .nav__checkbox,
   .nav__burger {
     display: none;
+    /* Reset native <button> chrome — the burger is a focusable button now,
+       not a styled <label>, so we override the UA defaults explicitly. */
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+  .nav__burger:focus-visible {
+    outline: 2px solid var(--rg-primary);
+    outline-offset: 2px;
+    border-radius: 6px;
   }
   .nav__links {
     display: flex;
@@ -176,16 +220,19 @@ const switchHref = localizePath(basePath, otherLang);
       gap: 4px;
       padding-top: 12px;
     }
-    .nav__checkbox:checked ~ .nav__links {
+    /* Burger uses aria-expanded as the open-state hook — that's what assistive
+       tech reads, and it's what the JS toggles, so we drive CSS off the same
+       attribute (no extra class to keep in sync). */
+    .nav__burger[aria-expanded='true'] ~ .nav__links {
       display: flex;
     }
-    .nav__checkbox:checked ~ .nav__burger span:nth-child(1) {
+    .nav__burger[aria-expanded='true'] span:nth-child(1) {
       transform: translateY(6px) rotate(45deg);
     }
-    .nav__checkbox:checked ~ .nav__burger span:nth-child(2) {
+    .nav__burger[aria-expanded='true'] span:nth-child(2) {
       opacity: 0;
     }
-    .nav__checkbox:checked ~ .nav__burger span:nth-child(3) {
+    .nav__burger[aria-expanded='true'] span:nth-child(3) {
       transform: translateY(-6px) rotate(-45deg);
     }
     .nav__link {
