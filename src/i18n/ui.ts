@@ -42,7 +42,8 @@ const en = {
     ctaAdopt: 'Adopt a Pet',
     ctaDonate: 'Donate Now',
     ctaVolunteer: 'Volunteer',
-    statValue: '36 animals rescued',
+    // Composed at render time as `{rescuedCount} {statValue}` — see Hero.astro.
+    statValue: 'animals rescued',
     statSub: 'thanks to our community',
     pillars: [
       {
@@ -56,6 +57,8 @@ const en = {
       },
     ],
     pillarFooter: 'Every heart counts',
+    photoAlt:
+      'Bruxa, one of our sanctuary cats, in the garden with two other rescues in the background',
   },
   adoptables: {
     label: 'Meet our adoptable animals',
@@ -363,7 +366,8 @@ const ptBr: Dictionary = {
     ctaAdopt: 'Adote um Pet',
     ctaDonate: 'Doar Agora',
     ctaVolunteer: 'Seja Voluntário',
-    statValue: '36 animais resgatados',
+    // Composto em tempo de renderização como `{rescuedCount} {statValue}` — ver Hero.astro.
+    statValue: 'animais resgatados',
     statSub: 'graças à nossa comunidade',
     pillars: [
       {
@@ -380,6 +384,8 @@ const ptBr: Dictionary = {
       },
     ],
     pillarFooter: 'Cada coração conta',
+    photoAlt:
+      'Bruxa, uma das nossas gatas do santuário, no jardim com duas outras resgatadas ao fundo',
   },
   adoptables: {
     label: 'Conheça nossos animais para adoção',

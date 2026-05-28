@@ -8,7 +8,6 @@ import BlurImage from './BlurImage.astro';
 import PhotoSlot from './PhotoSlot.astro';
 import Badge from './Badge.astro';
 import Button from './Button.astro';
-import Heart from './icons/Heart.astro';
 import Icon from './icons/Icon.astro';
 import { formatAge, formatLifespan, type Lang } from '../i18n/utils';
 
@@ -85,8 +84,10 @@ const badgeVariant = isMemorial
     : status === 'resident'
       ? 'lilac'
       : 'primary';
-// The share button is for animals still up for adoption; everyone else gets the
-// decorative heart in the corner.
+// The share button is for animals still up for adoption only. Residents,
+// memorials, and adopted animals get no corner UI — we used to render a
+// decorative heart there, but a heart icon in a top-corner reads as a
+// "save / favorite" affordance, and there's no save flow behind it.
 const showShare = !isMemorial && status === 'adoptable';
 ---
 
@@ -120,7 +121,7 @@ const showShare = !isMemorial && status === 'adoptable';
     </span>
   </a>
   {
-    showShare ? (
+    showShare && (
       <button
         class="acard__share"
         type="button"
@@ -141,10 +142,6 @@ const showShare = !isMemorial && status === 'adoptable';
           {copiedLabel}
         </span>
       </button>
-    ) : (
-      <span class="acard__heart" aria-hidden="true">
-        <Heart size={16} color="var(--rg-primary)" />
-      </span>
     )
   }
   <div class="acard__body">
@@ -243,18 +240,6 @@ const showShare = !isMemorial && status === 'adoptable';
     position: absolute;
     top: 12px;
     left: 12px;
-  }
-  .acard__heart {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.9);
-    display: grid;
-    place-items: center;
-    backdrop-filter: blur(8px);
   }
   .acard__share {
     position: absolute;

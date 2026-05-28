@@ -1,7 +1,10 @@
 ---
 // Hero — the home page banner. Ported from components-blocks.jsx HeroBlock:
-// copy + CTAs on the left, an illustrated dog+cat-in-a-heart in the middle,
-// and a "Rescue / Heal / Love" pillar card on the right.
+// copy + CTAs on the left, a real sanctuary cat photo clipped to a heart
+// shape in the middle, and a "Rescue / Heal / Love" pillar card on the right.
+// The middle column used to render an illustrated dog+cat inside an outlined
+// heart; using a real photo here makes the first impression specifically
+// about *our* animals, not generic pet iconography.
 import Confetti from './Confetti.astro';
 import Badge from './Badge.astro';
 import Button from './Button.astro';
@@ -9,7 +12,9 @@ import Heart from './icons/Heart.astro';
 import Paw from './icons/Paw.astro';
 import Icon from './icons/Icon.astro';
 import Avatar from './Avatar.astro';
-import DrawnAnimal from './DrawnAnimal.astro';
+import BlurImage from './BlurImage.astro';
+import heroPhoto from '../assets/uploads/bruxa-shy.jpeg';
+import { listAnimals } from '../lib/animals';
 import { t, type Lang } from '../i18n/utils';
 
 interface Props {
@@ -21,6 +26,10 @@ interface Props {
 const { lang, adoptHref, donateHref, volunteerHref } = Astro.props;
 const h = t(lang).hero;
 const avatarKinds = ['dog', 'cat', 'bunny'] as const;
+// "Animals rescued" is a cumulative count of every animal we have a record
+// for — adoptables, residents, adopted-out, and memorials all count. Pull
+// from the content collection so the homepage never lies about the tally.
+const rescuedCount = (await listAnimals(lang)).length;
 ---
 
 <section class="hero">
@@ -59,25 +68,82 @@ const avatarKinds = ['dog', 'cat', 'bunny'] as const;
           }
         </div>
         <div class="hero__social-text">
-          <strong>{h.statValue}</strong><br />{h.statSub}
+          <strong>{rescuedCount} {h.statValue}</strong><br />{h.statSub}
         </div>
       </div>
     </div>
 
-    <div class="hero__art" aria-hidden="true">
-      <svg width="100%" viewBox="0 0 400 380" xmlns="http://www.w3.org/2000/svg">
+    <div class="hero__art">
+      {
+        /*
+        Heart silhouette as a 6-segment cubic Bézier path. Each side uses
+        three segments — bottom → outer "shoulder" → lobe peak → cleft —
+        with tangent continuity tuned at every junction so the lobes read
+        as round humps rather than pointed peaks:
+          • outer shoulder (20, 180) / (380, 180): tangent is vertical
+            (control points sit directly above/below the junction).
+          • lobe peak (110, 50) / (290, 50): tangent is *horizontal*
+            (control points sit directly left/right of the peak). This is
+            the property that makes the top of each lobe round.
+          • cleft (200, 130): tangent reverses 180° (both adjoining
+            control points sit directly above at (200, 95)), producing
+            the deep notch a natural heart has.
+          • bottom point (200, 355): tangents meet at a shallow angle,
+            giving a gently pointed base rather than a smooth dome.
+
+        The clipPath uses `objectBoundingBox` units (normalized 0..1) so the
+        same path masks an HTML element of any size, as long as its
+        bounding box matches the heart's intrinsic 400×380 aspect ratio —
+        enforced by `aspect-ratio: 400 / 380` on `.hero__art` below.
+        Coordinates are the user-space path (see the outline SVG further
+        down) divided by (400, 380); keep them in lockstep when tweaking.
+      */
+      }
+      <svg class="hero__art-defs" aria-hidden="true" focusable="false">
+        <defs>
+          <clipPath id="hero-heart" clipPathUnits="objectBoundingBox">
+            <path
+              d="M 0.5 0.9342 C 0.225 0.8421 0.05 0.6316 0.05 0.4737 C 0.05 0.2763 0.1375 0.1316 0.275 0.1316 C 0.4 0.1316 0.5 0.2368 0.5 0.3421 C 0.5 0.2368 0.6 0.1316 0.725 0.1316 C 0.8625 0.1316 0.95 0.2763 0.95 0.4737 C 0.95 0.6316 0.775 0.8421 0.5 0.9342 Z"
+            ></path>
+          </clipPath>
+        </defs>
+      </svg>
+      <BlurImage
+        src={heroPhoto}
+        alt={h.photoAlt}
+        widths={[400, 600, 900]}
+        sizes="(max-width: 980px) 92vw, 440px"
+        quality={82}
+        ratio="400 / 380"
+        loading="eager"
+        fetchpriority="high"
+        wrapperClass="hero__art-photo"
+        imgClass="hero__art-photo-img"
+      />
+      {
+        /*
+        Brand-pink stroke outline drawn over the clipped photo. The path
+        matches the clipPath exactly; SVG strokes center on the path, so half
+        the 3px width sits on top of the photo edge and half extends beyond,
+        giving a clean ~1.5px rim without a visible gap.
+      */
+      }
+      <svg
+        class="hero__art-outline"
+        viewBox="0 0 400 380"
+        aria-hidden="true"
+        focusable="false"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <path
-          d="M200 350 C 60 250, 40 130, 120 80 C 160 55, 200 75, 200 120 C 200 75, 240 55, 280 80 C 360 130, 340 250, 200 350 Z"
+          d="M 200 355 C 90 320 20 240 20 180 C 20 105 55 50 110 50 C 160 50 200 90 200 130 C 200 90 240 50 290 50 C 345 50 380 105 380 180 C 380 240 310 320 200 355 Z"
           stroke="var(--rg-primary)"
           stroke-width="3"
-          fill="var(--rg-primary-soft)"
-          fill-opacity="0.45"
-          stroke-linejoin="round"></path>
+          fill="none"
+          stroke-linejoin="round"
+          vector-effect="non-scaling-stroke"></path>
       </svg>
-      <div class="hero__art-animals">
-        <DrawnAnimal kind="dog" size={150} color="var(--rg-primary-deep)" />
-        <DrawnAnimal kind="cat" size={130} color="var(--rg-primary-deep)" />
-      </div>
     </div>
 
     <div class="hero__pillars">
@@ -190,14 +256,48 @@ const avatarKinds = ['dog', 'cat', 'bunny'] as const;
   }
   .hero__art {
     position: relative;
+    width: 100%;
+    /* Same intrinsic proportion as the heart's original viewBox so the
+       normalized clipPath stays heart-shaped instead of stretching. */
+    aspect-ratio: 400 / 380;
   }
-  .hero__art-animals {
+  /* Off-screen container for the <defs>/<clipPath> — present in the DOM so
+     CSS `clip-path: url(#hero-heart)` can reference it, but takes no space. */
+  .hero__art-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+  /* BlurImage wrapper (passed wrapperClass="hero__art-photo"). `:global()`
+     because the rendered <span> lives in BlurImage's CSS scope, not ours.
+     Clipping the wrapper masks both the responsive <img> and the LQIP
+     blur layer beneath it, so the heart silhouette is the only visible
+     shape — no rectangular halo behind the cat. */
+  .hero__art :global(.hero__art-photo) {
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    width: 100%;
+    height: 100%;
+    clip-path: url(#hero-heart);
+  }
+  /* Bruxa's face sits low-right in the source frame; `object-position` lands
+     her eyes in the right lobe of the heart instead of near the narrow
+     point at the bottom. The wider heart silhouette now does most of the
+     compositional work, so the source image displays at its natural cover
+     scale — no extra zoom — and her head reads as part of a scene rather
+     than dominating the frame. */
+  .hero__art :global(.hero__art-photo-img) {
+    object-position: 58% 42%;
+  }
+  /* Stroked outline sits above the photo. `pointer-events: none` so the
+     SVG never intercepts clicks on anything below it. */
+  .hero__art-outline {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
   }
   .hero__pillars {
     background: var(--rg-surface);

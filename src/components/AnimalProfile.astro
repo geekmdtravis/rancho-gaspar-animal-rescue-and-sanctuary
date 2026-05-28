@@ -139,10 +139,7 @@ const backLabel = isAdopt ? dict.profile.backAdopt : dict.profile.backResidents;
         {d.tags.map((tag) => <Badge variant="sage">{tag}</Badge>)}
       </div>
 
-      <h1 class="ap-name rg-display">
-        {d.name}
-        <span class="ap-name-heart"><Heart size={24} color="var(--rg-primary)" /></span>
-      </h1>
+      <h1 class="ap-name rg-display">{d.name}</h1>
       {meta.length > 0 && <p class="ap-meta">{meta.join(' · ')}</p>}
 
       {
@@ -396,9 +393,6 @@ const backLabel = isAdopt ? dict.profile.backAdopt : dict.profile.backResidents;
     font-size: 48px;
     margin: 0;
     line-height: 1.1;
-  }
-  .ap-name-heart {
-    margin-left: 8px;
   }
   .ap-meta {
     margin: 6px 0 0;
