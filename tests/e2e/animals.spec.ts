@@ -1,7 +1,14 @@
 import { test, expect } from '@playwright/test';
 
+// TODO(content): the suite below assumes the placeholder animals (Luna,
+// Clover, Whiskers, Mochi, Grumpy) that lived under src/content/animals/ and
+// were removed in 64c0c08 ahead of real sanctuary profiles. Tests that
+// reference those slugs, the resident inventory, or `.al-lead`'s computed
+// adoption-fee minimum are skipped until real animals are uploaded; reactivate
+// (and re-point the slugs) as profiles land.
+
 test.describe('Adopt listing', () => {
-  test('lists adoptable animals and filters by species', async ({ page }) => {
+  test.skip('lists adoptable animals and filters by species', async ({ page }) => {
     await page.goto('/adopt');
     await expect(page.getByRole('heading', { level: 1 })).toContainText(
       'Find your new best friend',
@@ -16,7 +23,7 @@ test.describe('Adopt listing', () => {
     await expect(luna).toBeHidden();
   });
 
-  test('a real cover photo is cropped square, not rendered full-height', async ({ page }) => {
+  test.skip('a real cover photo is cropped square, not rendered full-height', async ({ page }) => {
     await page.goto('/adopt');
     // Clover is visible by default and has a real (portrait) cover photo; the
     // card must still crop it to a square rather than letting it run tall.
@@ -38,7 +45,9 @@ test.describe('Adopt listing', () => {
     );
   });
 
-  test('adopted animals are hidden until the "show adopted" toggle is on', async ({ page }) => {
+  test.skip('adopted animals are hidden until the "show adopted" toggle is on', async ({
+    page,
+  }) => {
     await page.goto('/adopt');
     // Whiskers has been adopted, so the card is rendered but hidden by default.
     const whiskers = page.locator('a[href="/adopt/whiskers"]').first();
@@ -58,7 +67,7 @@ test.describe('Adopt listing', () => {
   });
 });
 
-test.describe('Animal profiles', () => {
+test.describe.skip('Animal profiles', () => {
   test('adoptable profile shows an apply CTA', async ({ page }) => {
     await page.goto('/adopt/luna');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Luna');
@@ -106,7 +115,7 @@ test.describe('Animal profiles', () => {
   });
 });
 
-test.describe('Residents listing', () => {
+test.describe.skip('Residents listing', () => {
   test('lists permanent residents and animals in memoriam', async ({ page }) => {
     await page.goto('/residents');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('here to stay');
