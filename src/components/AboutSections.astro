@@ -1,8 +1,8 @@
 ---
-import { Image } from 'astro:assets';
 import SectionLabel from './SectionLabel.astro';
 import Badge from './Badge.astro';
 import Icon from './icons/Icon.astro';
+import BlurImage from './BlurImage.astro';
 import PhotoSlot from './PhotoSlot.astro';
 import DrawnAnimal from './DrawnAnimal.astro';
 // Placeholder hero until we have a purpose-built lead image — this is two of
@@ -86,16 +86,19 @@ const story = [
       <h1 class="about-title rg-display">{page.title}</h1>
       <p class="about-intro">{page.intro}</p>
     </div>
-    <div class="about-hero__media">
-      <Image
-        src={aboutHero}
-        alt={page.photos.hero}
-        widths={[400, 600, 900]}
-        sizes="(max-width: 860px) 92vw, 440px"
-        quality={82}
-        class="about-hero__img"
-      />
-    </div>
+    <BlurImage
+      src={aboutHero}
+      alt={page.photos.hero}
+      widths={[400, 600, 900]}
+      sizes="(max-width: 860px) 92vw, 440px"
+      quality={82}
+      ratio="1 / 1"
+      radius={24}
+      loading="eager"
+      fetchpriority="high"
+      wrapperClass="about-hero__media"
+      imgClass="about-hero__img"
+    />
   </div>
 </section>
 
@@ -103,20 +106,23 @@ const story = [
   {
     story.map((s, i) => (
       <article class:list={['about-row', i % 2 === 1 && 'about-row--flip']}>
-        <div class="about-row__media">
-          {s.img ? (
-            <Image
-              src={s.img}
-              alt={s.photo}
-              widths={[400, 600, 900]}
-              sizes="(max-width: 860px) 92vw, 440px"
-              quality={82}
-              class="about-row__img"
-            />
-          ) : (
+        {s.img ? (
+          <BlurImage
+            src={s.img}
+            alt={s.photo}
+            widths={[400, 600, 900]}
+            sizes="(max-width: 860px) 92vw, 440px"
+            quality={82}
+            ratio="1 / 1"
+            radius={20}
+            wrapperClass="about-row__media"
+            imgClass="about-row__img"
+          />
+        ) : (
+          <div class="about-row__media">
             <PhotoSlot ratio="1 / 1" radius={20} kind={s.kind} label={s.photo} />
-          )}
-        </div>
+          </div>
+        )}
         <div class="about-row__text">
           <h2 class="about-row__title rg-display">{s.title}</h2>
           <p>{s.body}</p>
@@ -199,19 +205,10 @@ const story = [
     font-size: 18px;
     line-height: 1.65;
   }
+  /* BlurImage owns the crop / aspect-ratio / overflow / object-fit for the
+     hero now. .about-hero__media is forwarded purely as a layout hook. */
   .about-hero__media {
     width: 100%;
-  }
-  /* Square crop; the image fills it via cover so it's never stretched.
-     height:auto is essential — the <Image> emits a height attribute, and
-     without this the attribute's definite height makes aspect-ratio a no-op. */
-  .about-hero__img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: 24px;
   }
 
   /* Story — alternating image/text rows. */
@@ -226,18 +223,10 @@ const story = [
     gap: 40px;
     align-items: center;
   }
+  /* BlurImage owns the row-image crop/aspect/radius; .about-row__media is a
+     pure layout hook (full width + zig-zag ordering). */
   .about-row__media {
     width: 100%;
-  }
-  /* Square crop matching the placeholder; height:auto keeps aspect-ratio live
-     against the <Image> height attribute (same gotcha as the hero). */
-  .about-row__img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: 20px;
   }
   .about-row--flip .about-row__media {
     order: 2;

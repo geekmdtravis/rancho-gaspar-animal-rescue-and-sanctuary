@@ -1,10 +1,10 @@
 ---
 // AnimalCard — the portrait card used in adoptable/resident grids. When the
-// animal has an optimized cover image it renders <Image> (responsive widths +
-// lazy + blur-friendly); otherwise it falls back to the illustrated PhotoSlot
-// so the page looks intentional before real photos are uploaded.
-import { Image } from 'astro:assets';
+// animal has an optimized cover image it renders <BlurImage> (responsive
+// widths + lazy + LQIP blur-up); otherwise it falls back to the illustrated
+// PhotoSlot so the page looks intentional before real photos are uploaded.
 import type { ImageMetadata } from 'astro';
+import BlurImage from './BlurImage.astro';
 import PhotoSlot from './PhotoSlot.astro';
 import Badge from './Badge.astro';
 import Button from './Button.astro';
@@ -101,16 +101,16 @@ const showShare = !isMemorial && status === 'adoptable';
   <a class="acard__media" href={href} aria-label={meetCta}>
     {
       image ? (
-        <span class="acard__imgwrap">
-          <Image
-            src={image}
-            alt={imageAlt ?? name}
-            widths={[180, 320, 480, 640]}
-            sizes="(max-width: 640px) 90vw, 300px"
-            class="acard__img"
-            loading="lazy"
-          />
-        </span>
+        <BlurImage
+          src={image}
+          alt={imageAlt ?? name}
+          widths={[180, 320, 480, 640]}
+          sizes="(max-width: 640px) 90vw, 300px"
+          loading="lazy"
+          ratio="1 / 1"
+          wrapperClass="acard__imgwrap"
+          imgClass="acard__img"
+        />
       ) : (
         <PhotoSlot ratio="1 / 1" radius={0} kind={kind} label={`${name} photo`} />
       )
@@ -225,24 +225,19 @@ const showShare = !isMemorial && status === 'adoptable';
     position: relative;
     display: block;
   }
-  /* Memorial cards read a touch quieter — a gentle desaturation on the photo. */
+  /* Memorial cards read a touch quieter — a gentle desaturation on the photo
+     and on the LQIP layer underneath, so the preview isn't full-color while
+     the desaturated final image loads. BlurImage owns the crop/overflow CSS;
+     we only add behavior on top of the .acard__imgwrap hook here. */
   .acard--memorial .acard__imgwrap :global(.acard__img),
   .acard--memorial :global(.photo-slot) {
     filter: grayscale(0.35) brightness(0.98);
   }
-  /* The wrapper (a real element I control) enforces the square crop; the image
-     just fills it. This is robust regardless of the width/height attributes
-     Astro's <Image> emits. :global reaches the <img> inside the component. */
-  .acard__imgwrap {
-    display: block;
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-  }
-  .acard__imgwrap :global(.acard__img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  /* The LQIP pseudo-element already carries `filter: blur(12px)` from
+     BlurImage; re-declare the full filter chain so we keep the blur AND
+     add the memorial desaturation, rather than overriding it. */
+  .acard--memorial .acard__imgwrap::before {
+    filter: blur(12px) grayscale(0.35) brightness(0.98);
   }
   .acard__status {
     position: absolute;

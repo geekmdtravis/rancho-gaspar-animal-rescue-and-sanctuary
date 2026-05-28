@@ -5,8 +5,8 @@
 // callout instead. Both get the story, quick facts, a sponsor widget, and
 // similar animals.
 import { render } from 'astro:content';
-import { Image } from 'astro:assets';
 import Breadcrumbs from './Breadcrumbs.astro';
+import BlurImage from './BlurImage.astro';
 import SectionLabel from './SectionLabel.astro';
 import Badge from './Badge.astro';
 import Button from './Button.astro';
@@ -96,15 +96,18 @@ const backLabel = isAdopt ? dict.profile.backAdopt : dict.profile.backResidents;
     <div class="ap-gallery">
       {
         d.cover ? (
-          <span class="ap-hero">
-            <Image
-              src={d.cover}
-              alt={d.coverAlt ?? d.name}
-              widths={[480, 768, 1024]}
-              sizes="(max-width: 980px) 92vw, 560px"
-              class="ap-hero-img"
-            />
-          </span>
+          <BlurImage
+            src={d.cover}
+            alt={d.coverAlt ?? d.name}
+            widths={[480, 768, 1024]}
+            sizes="(max-width: 980px) 92vw, 560px"
+            ratio="4 / 3"
+            radius={20}
+            loading="eager"
+            fetchpriority="high"
+            wrapperClass="ap-hero"
+            imgClass="ap-hero-img"
+          />
         ) : (
           <PhotoSlot ratio="4 / 3" radius={20} kind={d.species} label={`${d.name} · photo`} />
         )
@@ -113,15 +116,16 @@ const backLabel = isAdopt ? dict.profile.backAdopt : dict.profile.backResidents;
         d.gallery.length > 0 && (
           <div class="ap-thumbs">
             {d.gallery.slice(0, 4).map((img, i) => (
-              <span class="ap-thumb">
-                <Image
-                  src={img}
-                  alt={`${d.name} ${i + 1}`}
-                  widths={[120, 240]}
-                  sizes="120px"
-                  class="ap-thumb-img"
-                />
-              </span>
+              <BlurImage
+                src={img}
+                alt={`${d.name} ${i + 1}`}
+                widths={[120, 240]}
+                sizes="120px"
+                ratio="1 / 1"
+                radius={10}
+                wrapperClass="ap-thumb"
+                imgClass="ap-thumb-img"
+              />
             ))}
           </div>
         )
@@ -373,37 +377,14 @@ const backLabel = isAdopt ? dict.profile.backAdopt : dict.profile.backResidents;
     grid-template-columns: 1.1fr 1fr;
     gap: 36px;
   }
-  /* Wrapper elements (which I control) enforce the crop ratio; the <Image>
-     just fills them. Robust regardless of the width/height Astro emits. */
-  .ap-hero {
-    display: block;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    border-radius: 20px;
-  }
-  .ap-hero :global(.ap-hero-img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
+  /* BlurImage owns crop / aspect-ratio / overflow / object-fit for both the
+     hero and thumbnail wrappers — the .ap-hero and .ap-thumb classes are
+     forwarded purely as CSS hooks. Only the thumbnail grid layout lives here. */
   .ap-thumbs {
     margin-top: 12px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
-  }
-  .ap-thumb {
-    display: block;
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-    border-radius: 10px;
-  }
-  .ap-thumb :global(.ap-thumb-img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
   }
   .ap-badges {
     display: flex;
